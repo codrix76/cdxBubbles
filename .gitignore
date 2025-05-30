@@ -1,0 +1,30 @@
+# Build-Artefakte
+bin/
+obj/
+*.log
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# System-Dateien
+Thumbs.db
+.DS_Store
+
+# Backup-Dateien
+*.bak
+*.tmp
+
+# Debug-Daten
+*.csv
+*.json
+*.dat
+!Daten/       # Ausnahme: dein Daten-Ordner soll rein
+
+# Sonstige
+TestOutput/
