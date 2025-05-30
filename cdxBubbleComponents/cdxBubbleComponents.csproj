@@ -10,7 +10,6 @@
   <ItemGroup>
     <Folder Include="Helpers\" />
     <Folder Include="Behaviors\" />
-    <Folder Include="Converters\" />
     <Folder Include="Themes\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
