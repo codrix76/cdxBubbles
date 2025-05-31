@@ -2,85 +2,10 @@
              x:Name="Root"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:cdxBubbleComponents.Models" 
-             xmlns:conv="clr-namespace:cdxBubbleComponents.Converters"
-             Height="80" Width="80"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=models:BubbleElementModel, IsDesignTimeCreatable=True}">
+             Height="80" Width="80">
     
-    <UserControl.Resources>
-        <conv:SizeToWidthConverter x:Key="SizeToWidthConverter"/>
-        <conv:ActiveToBrushConverter x:Key="ActiveToBrushConverter"
-                                 ActiveBrush="DodgerBlue"
-                                 InactiveBrush="DarkGray"/>
-        <conv:HighlightToBackgroundConverter x:Key="HighlightToBackgroundConverter"
-                                         HighlightBrush="LightSteelBlue"
-                                         NormalBrush="Transparent"/>
-        <conv:SizeToHeightConverter x:Key="SizeToHeightConverter" BaseHeight="40" />
-        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <conv:BoolToVisibilityConverter x:Key="BoolToHiddenConverter" Invert="True" />
-    </UserControl.Resources>
 
     <Grid>
-        <Border x:Name="OuterBorder"
-                BorderThickness="{Binding Style.OuterBorderThickness}"
-                CornerRadius="{Binding Style.CornerRadiusCircular}"
-                BorderBrush="Transparent"
-                Padding="1" Grid.ColumnSpan="2"
-                Opacity="{Binding Style.Transparency}"
-                Width="{Binding Style.SizeFactor, Converter={StaticResource SizeToWidthConverter}}"
-                Height="{Binding Style.SizeFactor, Converter={StaticResource SizeToHeightConverter}}">
-            <Border x:Name="BubbleBorder"
-                    CornerRadius="{Binding Style.CornerRadiusTextual}"
-                    BorderThickness="{Binding Style.BorderThickness}"
-                    Padding="8"
-                    ToolTip=""
-                    RenderTransformOrigin="0.5,0.5" Margin="0,0,-1,-1"
-                    BorderBrush="{Binding IsActive, Converter={StaticResource ActiveToBrushConverter}}"
-                    Background="{Binding IsHighlighted, Converter={StaticResource HighlightToBackgroundConverter}}">
-
-                <StackPanel x:Name="ContentPanel"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Margin="4">
-                    <Image x:Name="IconImage"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Stretch="Uniform"
-                           Source="{Binding Icon}"
-                           Visibility="{Binding IsIconOnly, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                    <TextBlock x:Name="LabelText"
-                               Text="{Binding Label}"
-                               Foreground="{Binding Style.Foreground}"
-                               FontFamily="{Binding Style.FontFamily}"
-                               FontSize="{Binding Style.FontSize}"
-                               FontStyle="{Binding Style.FontStyle}"
-                               FontWeight="{Binding Style.FontWeight}"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap"
-                               Margin="4,2,4,0"/>
-                </StackPanel>
-
-                <!-- Style mit Hover-Trigger -->
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{Binding Style.HighlightColor}"/>
-                                <Setter Property="BorderBrush" Value="{Binding Style.OuterBorderColor}"/>
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-            </Border>
-        </Border>
+        
     </Grid>
 </UserControl>
