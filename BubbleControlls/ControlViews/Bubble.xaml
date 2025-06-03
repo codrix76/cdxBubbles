@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="BubbleControlls.ControlViews.Bubble"
+             x:Name="Root" Focusable="True" IsTabStop="True"
+             IsHitTestVisible = "true"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewmodels="clr-namespace:BubbleControlls.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:BubbleViewModel, IsDesignTimeCreatable=True}"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="100"
+             Height="Auto" Width="Auto" HorizontalAlignment="Stretch">
+    <Grid Background="Transparent" d:Background="Gray">
+        <Rectangle Fill="Transparent" />
+        <Border x:Name="OuterBorder"
+            BorderBrush="{Binding OuterBorderBrush, ElementName=Root}"
+            BorderThickness="{Binding OuterBorderThickness, ElementName=Root}"
+            CornerRadius="50"
+            Background="Transparent">
+            <Border x:Name="InnerBorder"
+                    IsHitTestVisible = "true"
+                    BorderBrush="CornflowerBlue"
+                    BorderThickness="{Binding InnerBorderThickness, ElementName=Root}"
+                    Background="{Binding BackgroundBrush, ElementName=Root}"
+                    CornerRadius="47"
+                    MouseEnter="InnerBorder_MouseEnter"
+                    MouseLeave="InnerBorder_MouseLeave"
+                    MouseLeftButtonDown="OnMouseDown"
+                    MouseLeftButtonUp="OnMouseUp"
+                    SnapsToDevicePixels="True">
+                <Grid x:Name="ContentGrid">
+                    <Image x:Name="IconImage" Stretch="Uniform"
+                           IsHitTestVisible="False"
+                           Source="{Binding Icon, ElementName=Root}"/>
+                    <TextBlock x:Name="BubbleText"
+                               Foreground="{Binding Foreground, ElementName=Root}"
+                               IsHitTestVisible="False"
+                                TextWrapping="Wrap"
+                                TextTrimming="CharacterEllipsis"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                FontFamily="{Binding FontFamilyName, ElementName=Root}"
+                                FontSize="{Binding FontSizeValue, ElementName=Root}"
+                                FontWeight="{Binding FontWeightValue, ElementName=Root}"
+                                FontStyle="{Binding FontStyleValue, ElementName=Root}"
+                                Text="{Binding Text, ElementName=Root}"/>  
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

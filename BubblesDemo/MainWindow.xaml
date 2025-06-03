@@ -4,10 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BubblesDemo"
-        xmlns:ctrls="clr-namespace:cdxBubbleComponents.Views;assembly=cdxBubbleComponents"
+        xmlns:ctrls="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
         mc:Ignorable="d"
         Title="MainWindow" Height="384" Width="606">
-    <Grid>
-        
+    <Grid Background="#2C2C2C">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <CheckBox x:Name="chcker" Content="test" Grid.Row="0"/>
+
+        <ctrls:Bubble x:Name="testBubble"
+                      Grid.Row="1"
+                      MaxWidth="400"
+                      Height="250" Width="Auto"
+                      OuterBorderBrush="Red"
+                      OuterBorderThickness="2"
+                      BackgroundBrush="Yellow"
+                      BorderBrushInner="Yellow"
+                      InnerBorderThickness="2"
+                      BorderDistance="10" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="43,0,0,0"
+                      Text="Destiny" FontSizeValue="30"
+                      Icon="C:\cdxBubbles\BubbleControlls\Assets\Destiny.png"
+                      TextIconLayout="IconAboveText"
+                      />
+
+
     </Grid>
 </Window>

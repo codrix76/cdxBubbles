@@ -1,13 +1,7 @@
-﻿using System.Text;
+﻿using BubbleControlls.ControlViews;
+using BubbleControlls.Models;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace BubblesDemo
 {
@@ -18,7 +12,18 @@ namespace BubblesDemo
     {
         public MainWindow()
         {
+            Console.WriteLine("Hallo Bubble");
             InitializeComponent();
+            //testBubble.OuterBorderBrush = new SolidColorBrush(Colors.LightBlue);
+            //testBubble.BackgroundBrush = new SolidColorBrush(Colors.LightGreen);
+            //testBubble.MouseLeftButtonDown += (s, e) => { MessageBox.Show("Klick!"); };
+            //testBubble.MouseEnter += (s, e) => MessageBox.Show("Hover!");
+            //testBubble.GotFocus += (s, e) => MessageBox.Show("Fokus!");
+            testBubble.ToolTipText = "Startet die Analyse für diesen Knoten";
+            testBubble.ApplyTheme(BubbleVisualThemes.NeonEdge());
+
+            testBubble.RenderStyle = BubbleRenderStyle.Style3D;
         }
+
     }
 }
