@@ -23,6 +23,9 @@ namespace BubblesDemo
             testBubble.ApplyTheme(BubbleVisualThemes.NeonEdge());
 
             testBubble.RenderStyle = BubbleRenderStyle.Style3D;
+            testBubble2.ApplyTheme(BubbleVisualThemes.EclipseCore());
+
+            testBubble2.RenderStyle = BubbleRenderStyle.Style3D;
         }
 
     }

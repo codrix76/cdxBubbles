@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100"
              Height="Auto" Width="Auto" HorizontalAlignment="Stretch">
-    <Grid Background="Transparent" d:Background="Gray">
+    <Grid Background="Transparent">
         <Rectangle Fill="Transparent" />
         <Border x:Name="OuterBorder"
             BorderBrush="{Binding OuterBorderBrush, ElementName=Root}"

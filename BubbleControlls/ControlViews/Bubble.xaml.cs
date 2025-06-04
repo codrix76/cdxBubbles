@@ -244,7 +244,8 @@ namespace BubbleControlls.ControlViews
                         {
                             new GradientStop(b.BackgroundHighlightColor, 0.0),
                             new GradientStop(b.BackgroundBrush is SolidColorBrush sb ? sb.Color : Colors.SteelBlue, 0.6),
-                            new GradientStop(Color.Multiply(b.BackgroundDarkColor, 0.4f), 1.0)
+                            //new GradientStop(Color.Multiply(b.BackgroundDarkColor, 0.7f), 1.0)
+                            new GradientStop(Darken(b.BackgroundDarkColor, 0.4f), 1.0)
                         }
                     };
                     b.OuterBorder.BorderBrush = new LinearGradientBrush
@@ -272,7 +273,15 @@ namespace BubbleControlls.ControlViews
                     break;
             }
         }
-
+        private static Color Darken(Color color, float factor)
+        {
+            return Color.FromArgb(
+                255, // volle Deckkraft
+                (byte)(color.R * factor),
+                (byte)(color.G * factor),
+                (byte)(color.B * factor)
+            );
+        }
         public double BorderDistance
         {
             get => (double)GetValue(BorderDistanceProperty);

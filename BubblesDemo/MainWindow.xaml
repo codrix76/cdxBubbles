@@ -29,6 +29,18 @@
                       TextIconLayout="IconAboveText"
                       />
 
-
+        <ctrls:Bubble x:Name="testBubble2"
+              Grid.Row="1" MaxWidth="400"
+                Height="112" Width="112"
+              OuterBorderBrush="Red"
+              OuterBorderThickness="2"
+              BackgroundBrush="Yellow"
+              BorderBrushInner="Yellow"
+              InnerBorderThickness="2"
+              BorderDistance="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="212,21,0,0"
+              Text="Destiny2" FontSizeValue="30"
+              Icon="C:\cdxBubbles\BubbleControlls\Assets\Destiny.png"
+              TextIconLayout="IconAboveText"
+              />
     </Grid>
 </Window>
