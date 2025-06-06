@@ -9,7 +9,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\cdx-Logo.ico" />
+    <None Remove="Assets\destiny.ico" />
+    <None Remove="Assets\Destiny.png" />
+    <None Remove="Assets\ProjectNew.png" />
+    <None Remove="Assets\ProjectNewSmall.png" />
+    <None Remove="Assets\projekt.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BubbleControlls\BubbleControlls.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\cdx-Logo.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\destiny.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Destiny.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Project.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\ProjectNew.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\ProjectNew.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\ProjectNewSmall.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\projekt.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

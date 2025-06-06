@@ -130,6 +130,35 @@ namespace BubbleControlls.Models
                 Use3DGradient = true
             };
         }
+        public static BubbleVisualTheme Standard()
+        {
+            return new BubbleVisualTheme
+            {
+                // Grundfarben basierend auf typischen Windows 10/11 UI-Tönen
+                Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),       // klassisches Control-Hellgrau
+                Border = new SolidColorBrush(Color.FromRgb(173, 173, 173)),           // SystemBorderBrush-ähnlich
+                OuterBorderColor = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+
+                HighlightColor = Color.FromRgb(255, 255, 255),                        // heller Lichtpunkt
+                BackgroundDarkColor = Color.FromRgb(200, 200, 200),
+                OuterBorderHighlightColor = Color.FromRgb(255, 255, 255),
+                OuterBorderDarkColor = Color.FromRgb(160, 160, 160),
+                InnerBorderHighlightColor = Color.FromRgb(255, 255, 255),
+                InnerBorderDarkColor = Color.FromRgb(180, 180, 180),
+
+                Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),         // SystemTextBrush-ähnlich
+
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 14,
+                FontWeight = FontWeights.Normal,
+                FontStyle = FontStyles.Normal,
+
+                BorderThickness = new Thickness(1),
+                OuterBorderThickness = new Thickness(1.5),
+
+                Use3DGradient = false
+            };
+        }
 
     }
 }

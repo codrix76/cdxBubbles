@@ -14,6 +14,7 @@ namespace BubbleControlls.ControlViews
         public Bubble()
         {
             InitializeComponent();
+            ApplyTheme(BubbleVisualThemes.Standard());
             this.Loaded += (s, e) => {
                 if (this.DataContext == null)
                 {
@@ -63,6 +64,12 @@ namespace BubbleControlls.ControlViews
                 0.95, 0.95,
                 InnerBorder.ActualWidth / 2,
                 InnerBorder.ActualHeight / 2);
+            e.Handled = false;
+            RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton)
+            {
+                RoutedEvent = MouseLeftButtonDownEvent,
+                Source = this
+            });
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -96,17 +103,19 @@ namespace BubbleControlls.ControlViews
 
             double outerHeight = OuterBorder.ActualHeight;
             double offset = BorderDistance;
-            double innerHeight = Math.Max(0, outerHeight - offset);
+            double cornerRadiusOuter = outerHeight / 2;
+            double cornerRadiusInner = Math.Max(0, (outerHeight - offset) / 2);
 
-            OuterBorder.MinWidth = outerHeight;
-            InnerBorder.MinWidth = innerHeight;
+            OuterBorder.CornerRadius = new CornerRadius(cornerRadiusOuter);
+            InnerBorder.CornerRadius = new CornerRadius(cornerRadiusInner);
 
-            OuterBorder.CornerRadius = new CornerRadius(outerHeight / 2);
-            InnerBorder.CornerRadius = new CornerRadius(innerHeight / 2);
+            // Abstand über Padding regeln, nicht über Height
+            InnerBorder.ClearValue(HeightProperty);
+            InnerBorder.Margin = new Thickness(offset / 2);
 
-            InnerBorder.Height = innerHeight;
-            InnerBorder.HorizontalAlignment = HorizontalAlignment.Center;
-            InnerBorder.VerticalAlignment = VerticalAlignment.Center;
+            // Bubble darf nicht zu schmal werden (Text + Icon + Puffer)
+            OuterBorder.MinWidth = Math.Max(outerHeight, InnerBorder.DesiredSize.Width + (offset*3));
+
         }
 
         // ---- Farben & Brushes ----
@@ -413,13 +422,14 @@ namespace BubbleControlls.ControlViews
 
             if (hasIcon && hasText)
             {
+                b.BubbleText.Padding = new Thickness(0);
                 switch (b.TextIconLayout)
                 {
                     case TextIconLayout.IconLeftOfText:
                         // Zeilen
-                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.3, GridUnitType.Star) });
-                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.4, GridUnitType.Star) });
-                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.3, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.1, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.1, GridUnitType.Star) });
 
                         // Spalten
                         b.ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Icon
@@ -429,36 +439,40 @@ namespace BubbleControlls.ControlViews
                         Grid.SetColumn(b.IconImage, 0);
 
                         Grid.SetRow(b.BubbleText, 1);
-                        Grid.SetColumn(b.BubbleText, 1);
+                        Grid.SetColumn(b.BubbleText,1);
 
                         if(b.InnerBorder.ActualHeight != 0)
                         {
                             double rowHeight = b.InnerBorder.ActualHeight * 0.3;
-                            b.IconImage.MaxHeight = rowHeight;
-                            b.FontSizeValue = rowHeight * 0.5; // optisch anpassen
+                            //b.IconImage.MaxHeight = rowHeight;
+                            //b.FontSizeValue = rowHeight * 0.9; // optisch anpassen
                         }
-                        
-                        b.IconImage.Margin = new Thickness(0);
+
+                        double leftPadding = Math.Max(6, b.InnerBorder.ActualWidth * 0.04);
+                        b.IconImage.Margin = new Thickness(leftPadding, 0, 6, 0);
+
                         b.IconImage.HorizontalAlignment = HorizontalAlignment.Center;
                         b.IconImage.VerticalAlignment = VerticalAlignment.Center;
                         b.BubbleText.HorizontalAlignment = HorizontalAlignment.Left;
                         b.BubbleText.VerticalAlignment = VerticalAlignment.Center;
+                        b.BubbleText.Margin = new Thickness(0, -1.5, 0, 0);
                         break;
 
                     case TextIconLayout.IconAboveText:
                     default:
-                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(3, GridUnitType.Star) });
-                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(2, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.5, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                        b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-                        Grid.SetRow(b.IconImage, 0);
-                        Grid.SetRow(b.BubbleText, 1);
-                        b.IconImage.Margin = new Thickness(0, 0, 0, -b.InnerBorder.ActualHeight / 5);
+                        Grid.SetRow(b.IconImage, 1);
+                        Grid.SetRow(b.BubbleText, 2);
+                        //b.IconImage.Margin = new Thickness(0, 0, 0, -b.InnerBorder.ActualHeight / 7);
 
                         b.IconImage.HorizontalAlignment = HorizontalAlignment.Center;
                         b.IconImage.VerticalAlignment = VerticalAlignment.Bottom;
                         b.BubbleText.HorizontalAlignment = HorizontalAlignment.Center;
                         b.BubbleText.VerticalAlignment = VerticalAlignment.Top;
-
+                        
                         break;
                 }
             }
@@ -469,6 +483,7 @@ namespace BubbleControlls.ControlViews
             else if (hasText)
             {
                 b.IconImage.Visibility = Visibility.Collapsed;
+                b.BubbleText.Padding = new Thickness(12, 0, 12, 0);
             }
             b.ContentGrid.InvalidateMeasure();
             b.ContentGrid.InvalidateArrange();

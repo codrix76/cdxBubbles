@@ -1,0 +1,44 @@
+﻿<Window x:Class="BubblesDemo.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ctrls="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
+        mc:Ignorable="d"
+        Height="756" Width="852"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Icon="Assets/cdx-Logo.ico"
+        Title=""
+        Loaded="Window_Loaded">
+    <Grid Background="Transparent">
+        <Canvas x:Name="RootCanvas" Background="Transparent">
+            <!-- Glow-Kreis unter der MainBubble -->
+            <Border x:Name="MainGlowPulse"
+                    Width="270" Height="270"
+                    Background="#A0CFF8" Opacity="1"
+                    CornerRadius="150"
+                    Visibility="Visible">
+                <Border.Effect>
+                    <DropShadowEffect x:Name="MainPulseEffect"
+                                      BlurRadius="80"
+                                      ShadowDepth="1"
+                                      Color="#A0CFF8"
+                                      Opacity="0.7"/>
+                </Border.Effect>
+            </Border>
+
+            <!-- MainBubble -->
+            <ctrls:Bubble x:Name="MainBubble"
+                          Width="250" Height="250"
+                          BorderDistance="10"
+                          Text="Demo"
+                          FontSizeValue="25"
+                          Icon="Assets/Destiny.png"
+                          TextIconLayout="IconAboveText" />
+        </Canvas>
+    </Grid>
+</Window>

@@ -10,19 +10,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100"
              Height="Auto" Width="Auto" HorizontalAlignment="Stretch">
-    <Grid Background="Transparent">
+    <Grid Background="Transparent" ShowGridLines="True">
         <Rectangle Fill="Transparent" />
         <Border x:Name="OuterBorder"
             BorderBrush="{Binding OuterBorderBrush, ElementName=Root}"
             BorderThickness="{Binding OuterBorderThickness, ElementName=Root}"
-            CornerRadius="50"
+            d:CornerRadius="50"
             Background="Transparent">
             <Border x:Name="InnerBorder"
                     IsHitTestVisible = "true"
                     BorderBrush="CornflowerBlue"
                     BorderThickness="{Binding InnerBorderThickness, ElementName=Root}"
                     Background="{Binding BackgroundBrush, ElementName=Root}"
-                    CornerRadius="47"
+                    d:CornerRadius="47"
                     MouseEnter="InnerBorder_MouseEnter"
                     MouseLeave="InnerBorder_MouseLeave"
                     MouseLeftButtonDown="OnMouseDown"
@@ -42,7 +42,8 @@
                                 FontSize="{Binding FontSizeValue, ElementName=Root}"
                                 FontWeight="{Binding FontWeightValue, ElementName=Root}"
                                 FontStyle="{Binding FontStyleValue, ElementName=Root}"
-                                Text="{Binding Text, ElementName=Root}"/>  
+                                Text="{Binding Text, ElementName=Root}"
+                                />  
                 </Grid>
             </Border>
         </Border>
