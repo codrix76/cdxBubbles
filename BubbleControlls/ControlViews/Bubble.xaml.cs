@@ -34,7 +34,6 @@ namespace BubbleControlls.ControlViews
             this.MouseLeftButtonDown += (s, e) =>
             {
                 this.Focus(); // Fokus setzen
-                e.Handled = true; // Klick nicht weitergeben
             };
             InnerBorder.IsHitTestVisible = true;
             this.GotFocus += (s, e) => { ActivateGlow(); };
@@ -64,12 +63,6 @@ namespace BubbleControlls.ControlViews
                 0.95, 0.95,
                 InnerBorder.ActualWidth / 2,
                 InnerBorder.ActualHeight / 2);
-            e.Handled = false;
-            RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, e.ChangedButton)
-            {
-                RoutedEvent = MouseLeftButtonDownEvent,
-                Source = this
-            });
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
