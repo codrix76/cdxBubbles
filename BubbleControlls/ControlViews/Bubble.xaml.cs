@@ -478,7 +478,13 @@ namespace BubbleControlls.ControlViews
             }
             else if (hasIcon)
             {
+                b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.1, GridUnitType.Star) });
+                b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.6, GridUnitType.Star) });
+                b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.1, GridUnitType.Star) });
+                Grid.SetRow(b.IconImage, 1);
                 b.BubbleText.Visibility = Visibility.Collapsed;
+                double leftmarge = -6;
+                b.IconImage.Margin = new Thickness(leftmarge, 0, leftmarge, 0);
             }
             else if (hasText)
             {

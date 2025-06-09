@@ -4,9 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BubblesDemo"
+        xmlns:ctrls="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Background="#3C3C3C">
-        
+        Title="MainWindow"
+        SizeToContent="WidthAndHeight"
+        d:Height="450" d:Width="800"
+        Height="Auto" Width="Auto"
+        Icon="Assets/destiny.ico">
+    <Grid>
+        <ctrls:BubbleMenu x:Name="bbMenu" BorderBrush="White" BorderThickness="1"
+                          />
     </Grid>
 </Window>

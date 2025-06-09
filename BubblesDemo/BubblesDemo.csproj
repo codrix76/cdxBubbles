@@ -9,12 +9,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\analyse.ico" />
+    <None Remove="Assets\analyse02.png" />
+    <None Remove="Assets\back_arrow.png" />
     <None Remove="Assets\cdx-Logo.ico" />
+    <None Remove="Assets\chart01.png" />
+    <None Remove="Assets\curve01.png" />
+    <None Remove="Assets\curve02.png" />
+    <None Remove="Assets\Data.png" />
     <None Remove="Assets\destiny.ico" />
     <None Remove="Assets\Destiny.png" />
+    <None Remove="Assets\exit.png" />
+    <None Remove="Assets\mainMenu.png" />
+    <None Remove="Assets\Open.png" />
     <None Remove="Assets\ProjectNew.png" />
     <None Remove="Assets\ProjectNewSmall.png" />
     <None Remove="Assets\projekt.png" />
+    <None Remove="Assets\Settings01.png" />
+    <None Remove="Assets\Settings02.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,13 +34,43 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\analyse.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\analyse02.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\back_arrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\cdx-Logo.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\chart01.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\curve01.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\curve02.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Data.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\destiny.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Destiny.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\exit.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\mainMenu.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Open.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Project.ico">
@@ -44,6 +86,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\projekt.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Settings01.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Settings02.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
