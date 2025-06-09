@@ -27,7 +27,7 @@ namespace BubblesDemo
             this.Loaded += (s, e) =>
             {
                 bbMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.TopLeftCorner;
-                bbMenu.Background = Brushes.LightGray;
+                bbMenu.Background = Brushes.DarkSlateBlue;
                 bbMenu.DistributionAlignment = DistributionAlignmentType.Center;
                 bbMenu.MainMenu = BuildMenu();
             };

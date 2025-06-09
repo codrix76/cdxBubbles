@@ -21,6 +21,7 @@ namespace BubbleControlls.ControlViews
         private double _defaultMargin = 10;
         private double _menuWidth = 0;
         private double _menuHeight = 0;
+        private Point _menuCenter = new Point(0, 0);
         #endregion
 
         #region Properties
@@ -132,31 +133,28 @@ namespace BubbleControlls.ControlViews
             _menuWidth = minLength + _defaultMargin + _bubbleMenuSpacing;
             _menuHeight = _menuWidth;
 
-            
-
             //MainMenu Center
-            Point center = new Point(0, 0);
             switch (BubbleMenuAlignment)
             {
                 case BubbleMenuAlignmentType.TopLeftCorner:
-                    center = new Point(BubbleMenuBigSize / 2, BubbleMenuBigSize / 2);
-                    _viewModel.MenuAreaFrom = new Point(minLength, center.Y);
-                    _viewModel.MenuAreaTo = new Point(center.X, minHeight);
+                    _menuCenter = new Point(BubbleMenuBigSize / 2, BubbleMenuBigSize / 2);
+                    _viewModel.MenuAreaFrom = new Point(minLength, _menuCenter.Y);
+                    _viewModel.MenuAreaTo = new Point(_menuCenter.X, minHeight);
                     _viewModel.MenuAreaFromRadian = ViewHelper.DegToRad(0);
                     _viewModel.MenuAreaToRadian = ViewHelper.DegToRad(90);
                     break;
                 case BubbleMenuAlignmentType.TopEdge:
-                    center = new Point(minLength + BubbleMenuBigSize / 2, BubbleMenuBigSize / 2);
-                    _viewModel.MenuAreaFrom = new Point(center.X + minLength, center.Y);
-                    _viewModel.MenuAreaTo = new Point(center.X - minLength, center.Y);
+                    _menuCenter = new Point(minLength + BubbleMenuBigSize / 2, BubbleMenuBigSize / 2);
+                    _viewModel.MenuAreaFrom = new Point(_menuCenter.X + minLength, _menuCenter.Y);
+                    _viewModel.MenuAreaTo = new Point(_menuCenter.X - minLength, _menuCenter.Y);
 
                     _viewModel.MenuAreaFromRadian = ViewHelper.DegToRad(0);
                     _viewModel.MenuAreaToRadian = ViewHelper.DegToRad(180);
                     break;
                 case BubbleMenuAlignmentType.LeftEdge:
-                    center = new Point(BubbleMenuBigSize / 2, minHeight + BubbleMenuBigSize / 2);
-                    _viewModel.MenuAreaFrom = new Point(center.X, center.Y - minHeight);
-                    _viewModel.MenuAreaTo = new Point(center.X, minHeight + minHeight);
+                    _menuCenter = new Point(BubbleMenuBigSize / 2, minHeight + BubbleMenuBigSize / 2);
+                    _viewModel.MenuAreaFrom = new Point(_menuCenter.X, _menuCenter.Y - minHeight);
+                    _viewModel.MenuAreaTo = new Point(_menuCenter.X, minHeight + minHeight);
                     _viewModel.MenuAreaFromRadian = ViewHelper.DegToRad(270);
                     _viewModel.MenuAreaToRadian = ViewHelper.DegToRad(90);
                     break;
@@ -164,36 +162,39 @@ namespace BubbleControlls.ControlViews
                     break;
             }
             // Control Grösse anpassen
-            this.Width = center.X + minLength + _defaultMargin;
-            this.Height = center.Y + minLength + _defaultMargin;
+            this.Width = _menuCenter.X + minLength + _defaultMargin;
+            this.Height = _menuCenter.Y + minLength + _defaultMargin;
 
             //Distribution Axis
             _viewModel.SetDistributionRadian(BubbleMenuAlignment);
 
             //Ränder für Menu Bubble bereich
-            MenuCanvas.Children.Add(ViewHelper.DrawLine(center, _viewModel.MenuAreaFrom, Brushes.Green, 2, false));
-            MenuCanvas.Children.Add(ViewHelper.DrawLine(center, _viewModel.MenuAreaTo, Brushes.Orange, 2, false));
+            MenuCanvas.Children.Add(ViewHelper.DrawLine(_menuCenter, _viewModel.MenuAreaFrom, Brushes.LightGray, 2, false));
+            MenuCanvas.Children.Add(ViewHelper.DrawLine(_menuCenter, _viewModel.MenuAreaTo, Brushes.LightGray, 2, false));
 
             // Zeichne Menu Bahnen
             for (int i = 0; i < _viewModel.MenuLevelSizes.Length; i++)
             {
                 //var path = ViewHelper.DrawArc(center, _viewModel.MenuLevelSizes[i].Center, _viewModel.MenuLevelSizes[i].Center, Brushes.Blue, 1, false);
-                var path = ViewHelper.DrawArc(center, _viewModel.MenuLevelSizes[i].Center, _viewModel.MenuAreaFromRadian, _viewModel.MenuAreaToRadian, Brushes.Blue, 1, false);
-                path.StrokeDashArray = new DoubleCollection { 2, 2 };
-                MenuCanvas.Children.Add(path);
+                var pathCenter = ViewHelper.DrawArc(_menuCenter, _viewModel.MenuLevelSizes[i].Center, _viewModel.MenuAreaFromRadian, _viewModel.MenuAreaToRadian, Brushes.WhiteSmoke, 1, false);
+                pathCenter.StrokeDashArray = new DoubleCollection { 2, 2 };
+                MenuCanvas.Children.Add(pathCenter);
                 //path = ViewHelper.DrawArc(center, _viewModel.MenuLevelSizes[i].End, _viewModel.MenuLevelSizes[i].End, Brushes.Red, 1, false);
-                path = ViewHelper.DrawArc(center, _viewModel.MenuLevelSizes[i].End, _viewModel.MenuAreaFromRadian, _viewModel.MenuAreaToRadian, Brushes.Red, 1, false);
-                path.StrokeDashArray = new DoubleCollection { 6, 2 };
-                MenuCanvas.Children.Add(path);
+                var borderpath = ViewHelper.DrawArc(_menuCenter, _viewModel.MenuLevelSizes[i].End, _viewModel.MenuAreaFromRadian, _viewModel.MenuAreaToRadian, Brushes.LightGray, 1, false);
+                borderpath.StrokeDashArray = new DoubleCollection { 6, 2 };
+                MenuCanvas.Children.Add(borderpath);
             }
 
             // Distribution punkte anzeigen
             for (int i = 0; i < _viewModel.MenuLevelSizes.Length; i++)
             {
-                var marker = ViewHelper.CreateMarker(center, _viewModel.DistributionRadian, _viewModel.MenuLevelSizes[i].Center, 3, Brushes.Purple);
+                var marker = ViewHelper.CreateMarker(_menuCenter, _viewModel.DistributionRadian, _viewModel.MenuLevelSizes[i].Center, 3, Brushes.Red);
                 MenuCanvas.Children.Add(marker);
             }
         }
+        /// <summary>
+        /// Positioniert das MainWindow entsprechend des MenuAlignmentProperties
+        /// </summary>
         public void SetMainWindowAlignment()
         {
             if (!_isLoaded) { return; }
