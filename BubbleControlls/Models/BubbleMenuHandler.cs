@@ -13,13 +13,18 @@ namespace BubbleControlls.Models
         #region Variablen
         private BubbleMenuItem _mainMenu = new BubbleMenuItem
         {
-            Text = "Main Menu",
-            SubItems = new List<BubbleMenuItem>()
+            Text = "Main Menu"
         };
+        private List<BubbleMenuItem> _menuPath = new List<BubbleMenuItem>();
+        private List<BubbleMenuItem> _selectableMenus = new List<BubbleMenuItem>();
+        private List<BubbleMenuItem> _guiItemsToRemove = new List<BubbleMenuItem>();
         #endregion
 
         #region Properties
         public BubbleMenuItem MainMenu { get => _mainMenu; set => _mainMenu = value; }
+        public List<BubbleMenuItem> MenuPath { get => _menuPath; }
+        public List<BubbleMenuItem> SelectableMenus { get => _selectableMenus; }
+        public List<BubbleMenuItem> GuiItemsToRemove { get => _guiItemsToRemove; set => _guiItemsToRemove = value; }
 
         #endregion
 
@@ -58,6 +63,9 @@ namespace BubbleControlls.Models
         }
         public BubbleMenuItem? FindMenu(string name)
         {
+            if (_mainMenu.Name == name)
+                return _mainMenu;
+
             return _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
         }
 
@@ -128,6 +136,96 @@ namespace BubbleControlls.Models
             }
 
             return (maxLevel, maxCount);
+        }
+
+        public void HandleClick(string name)
+        {
+            BubbleMenuItem? selected = FindMenu(name);
+            if (selected == null)
+                return;
+
+            // Klick auf MainMenu (kein Parent)
+            if (selected.Parent == null)
+            {
+                _guiItemsToRemove.AddRange(_menuPath);
+                _guiItemsToRemove.AddRange(_selectableMenus);
+                _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Deleted);
+                _menuPath.Clear();
+                _selectableMenus.Clear();
+
+                if (selected.SubItems.Count > 0)
+                {
+                    _selectableMenus.AddRange(selected.SubItems);
+                    _selectableMenus.ForEach(item => item.Level = BubbleMenuLevel.Selection);
+                }
+                return;
+            }
+
+            // Klick auf Menü im Pfad → Pfad abschneiden und Submenüs anzeigen
+            int existingIndex = _menuPath.IndexOf(selected);
+            if (existingIndex >= 0)
+            {
+                // Nur bis inklusive dieses Elements behalten
+                _guiItemsToRemove.AddRange(_menuPath.Skip(existingIndex + 1).ToList());
+                _guiItemsToRemove.AddRange(_selectableMenus);
+                _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Deleted);
+
+                _menuPath.RemoveRange(existingIndex + 1, _menuPath.Count - (existingIndex + 1));
+
+                _selectableMenus.Clear();
+                _selectableMenus.AddRange(selected.SubItems);
+                _selectableMenus.ForEach(item => item.Level = BubbleMenuLevel.Selection);
+                return;
+            }
+
+            // Klick auf Menü mit SubItems → navigieren
+            if (selected.SubItems.Count > 0)
+            {
+                _guiItemsToRemove.AddRange(_selectableMenus);
+                _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Deleted);
+
+                _menuPath.Add(selected);
+                _menuPath[_menuPath.Count - 1].Level = BubbleMenuLevel.Path;
+
+                _selectableMenus.Clear();
+                _selectableMenus.AddRange(selected.SubItems);
+                _selectableMenus.ForEach(item => item.Level = BubbleMenuLevel.Selection);
+                return;
+            }
+
+            // Klick auf Menü **ohne** SubItems → Aktion auslösen
+            // → Kein Ändern des Pfads oder der Submenüs
+            selected.OnClick?.Invoke(selected);
+        }
+
+        public List<BubbleMenuItem> FindAllItemsWithLevel(BubbleMenuLevel level)
+        {
+            var result = new List<BubbleMenuItem>();
+
+            void Traverse(BubbleMenuItem item)
+            {
+                if (item.Level == level)
+                    result.Add(item);
+
+                foreach (var child in item.SubItems)
+                    Traverse(child);
+            }
+
+            if (MainMenu != null)
+                Traverse(MainMenu);
+
+            return result;
+        }
+
+        public void ResetDeleted()
+        {
+            //var toRemoveItems = FindAllItemsWithLevel(BubbleMenuLevel.Deleted);
+            //foreach (var item in toRemoveItems)
+            //{
+            //    item.Level = BubbleMenuLevel.Neutral;
+            //}
+            _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Neutral);
+            _guiItemsToRemove.Clear();
         }
     }
 }

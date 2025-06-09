@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BubbleControlls.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -110,6 +111,54 @@ namespace BubbleControlls.Helpers
             };
 
             return path;
+        }
+
+        public static Point CalculateBubblePosition(
+            Point center,
+            double radius,
+            double startRadian,
+            double stepRadian,
+            int totalElements,
+            int elementIndex,
+            DistributionAlignmentType alignment)
+        {
+            if (totalElements <= 0) return center;
+
+            // Der totale Winkelbereich der Bubble-Kette
+            double totalSpan = (totalElements - 1) * stepRadian;
+
+            double angle;
+
+            switch (alignment)
+            {
+                case DistributionAlignmentType.Center:
+                    // Zentriere die gesamte Gruppe um den Startwinkel
+                    angle = startRadian - totalSpan / 2 + elementIndex * stepRadian;
+                    break;
+
+                case DistributionAlignmentType.From:
+                    // Beginnt exakt beim Startwinkel
+                    angle = startRadian + elementIndex * stepRadian;
+                    break;
+
+                case DistributionAlignmentType.To:
+                    // Endet exakt beim Startwinkel
+                    angle = startRadian - (totalElements - 1 - elementIndex) * stepRadian;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(alignment));
+            }
+
+            double x = center.X + radius * Math.Cos(angle);
+            double y = center.Y + radius * Math.Sin(angle);
+
+            return new Point(x, y);
+        }
+
+        public static double GetLevelAngle(double radius, double elementsize)
+        {
+            return elementsize / radius;
         }
     }
 }

@@ -36,8 +36,8 @@ namespace BubbleControlls.ControlViews
                 this.Focus(); // Fokus setzen
             };
             InnerBorder.IsHitTestVisible = true;
-            this.GotFocus += (s, e) => { ActivateGlow(); };
-            this.LostFocus += (s, e) => { DeactivateGlow(); };
+            //this.GotFocus += (s, e) => { ActivateGlow(); };
+            //this.LostFocus += (s, e) => { DeactivateGlow(); };
             this.FocusVisualStyle = null;
         }
 
@@ -72,6 +72,16 @@ namespace BubbleControlls.ControlViews
         private void OnMouseLeaveCancelClickEffect(object sender, MouseEventArgs e)
         {
             InnerBorder.RenderTransform = null;
+        }
+        protected override void OnGotFocus(RoutedEventArgs e)
+        {
+            base.OnGotFocus(e);
+            ActivateGlow(); // deine visuelle Reaktion
+        }
+        protected override void OnLostFocus(RoutedEventArgs e)
+        {
+            base.OnLostFocus(e);
+            DeactivateGlow(); // Glow entfernen
         }
         public void ActivateGlow()
         {

@@ -12,7 +12,7 @@
         Height="Auto" Width="Auto"
         Icon="Assets/destiny.ico">
     <Grid>
-        <ctrls:BubbleMenu x:Name="bbMenu" BorderBrush="White" BorderThickness="1"
+        <ctrls:BubbleMenu x:Name="BubbleMenu" BorderBrush="White" BorderThickness="1"
                           />
     </Grid>
 </Window>

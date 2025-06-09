@@ -15,12 +15,13 @@ namespace BubbleControlls.Models
         public string Text { get; set; } = string.Empty;
         public string Tooltip { get; set; } = string.Empty;
         public string? IconPath { get; set; }
+        public BubbleMenuLevel Level { get; set; } = BubbleMenuLevel.Neutral;
 
         public bool IsEnabled { get; set; } = true;
         public bool IsHighlighted { get; set; } = false;
         public Color? CustomColor { get; set; }
 
-        public List<BubbleMenuItem> SubItems { get; set; } = new();
+        public List<BubbleMenuItem> SubItems { get; private set; } = new();
         public Func<List<BubbleMenuItem>>? LoadSubItems { get; set; }
 
         public Action<BubbleMenuItem>? OnClick { get; set; }
@@ -30,5 +31,11 @@ namespace BubbleControlls.Models
         public bool CloseMenuOnClick { get; set; } = true;
 
         public bool HasDynamicSubItems => LoadSubItems != null;
+
+        public void AddSubItem(BubbleMenuItem item)
+        {
+            item.Parent = this;
+            SubItems.Add(item);
+        }
     }
 }

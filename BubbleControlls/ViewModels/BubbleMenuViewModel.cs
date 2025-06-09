@@ -36,7 +36,7 @@ namespace BubbleControlls.ViewModels
         {
         }
 
-
+        #region Methods
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -72,6 +72,13 @@ namespace BubbleControlls.ViewModels
             _menuLevelSizes[3] = new MenuLevelDefinition(_menuLevelSizes[2].End, _menuLevelSizes[2].End + big / 2, _menuLevelSizes[2].End + big + spacing / 2);
             GetMenuLevelLenght = _menuLevelSizes[3].End;
         }
+        #endregion
 
+        #region EventHandling
+        public void BubbleClicked(string id)
+        {
+            _bubbleMenuHandler.HandleClick(id);
+        }
+        #endregion
     }
 }
