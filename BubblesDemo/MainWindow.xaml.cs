@@ -1,18 +1,5 @@
-﻿using BubbleControlls.ControlViews;
+﻿using System.Windows;
 using BubbleControlls.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace BubblesDemo
 {
@@ -27,9 +14,9 @@ namespace BubblesDemo
             
             this.Loaded += (s, e) =>
             {
-                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.LeftEdge;
-                BubbleMenu.Background = Brushes.DarkSlateBlue;
-                BubbleMenu.DistributionAlignment = DistributionAlignmentType.Center;
+                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.TopEdge;
+                //BubbleMenu.Background = Brushes.DarkSlateBlue;
+                BubbleMenu.DistributionAlignment = DistributionAlignmentType.From;
                 BubbleMenu.BubbleMenuBigSize = 80.0;
                 BubbleMenu.BubbleMenuSmallSize = 45.0;
                 BubbleMenu.MainMenu = BuildMenu();

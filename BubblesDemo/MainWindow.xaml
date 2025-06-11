@@ -10,9 +10,13 @@
         SizeToContent="WidthAndHeight"
         d:Height="450" d:Width="800"
         Height="Auto" Width="Auto"
-        Icon="Assets/destiny.ico">
+        Icon="Assets/destiny.ico"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        >
     <Grid>
-        <ctrls:BubbleMenu x:Name="BubbleMenu" BorderBrush="White" BorderThickness="1"
+        <ctrls:BubbleMenu x:Name="BubbleMenu"
                           />
     </Grid>
 </Window>
