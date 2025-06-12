@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:BubblesDemo"
         xmlns:controlViews="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
         mc:Ignorable="d"
-        Title="RingTest" Height="600" Width="800">
+        Title="RingTest" Height="600" Width="800"
+        Background="Black">
     <Grid>
         <controlViews:BubbleRingControl  x:Name="myBubbleRing" Width="400" Height="300"/>
     </Grid>

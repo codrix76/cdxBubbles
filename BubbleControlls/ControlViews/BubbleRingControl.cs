@@ -46,7 +46,7 @@ namespace BubbleControlls.ControlViews
         /// </summary>
         public static readonly DependencyProperty RingBackgroundProperty =
             DependencyProperty.Register(nameof(RingBackground), typeof(Brush), typeof(BubbleRingControl),
-                new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromArgb(80, 0, 255, 255)), FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromArgb(50, 100, 149, 237)), FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <inheritdoc cref="RingBackgroundProperty"/>
         public Brush RingBackground
@@ -61,7 +61,7 @@ namespace BubbleControlls.ControlViews
         public static readonly DependencyProperty RingBorderBrushProperty =
             DependencyProperty.Register(nameof(RingBorderBrush), typeof(Brush), typeof(BubbleRingControl),
                 new FrameworkPropertyMetadata(
-                    new SolidColorBrush(Color.FromArgb(150, 0, 255, 255)),
+                    new SolidColorBrush(Color.FromArgb(80, 100, 149, 237)),
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnRingBorderBrushChanged
                 ));
@@ -262,6 +262,16 @@ namespace BubbleControlls.ControlViews
             set => SetValue(TrackAlignmentProperty, value);
         }
         
+        public static readonly DependencyProperty ScrollArrowHeightProperty =
+            DependencyProperty.Register(nameof(ScrollArrowHeight), typeof(double), typeof(BubbleRingControl),
+                new FrameworkPropertyMetadata(8.0, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public double ScrollArrowHeight
+        {
+            get => (double)GetValue(ScrollArrowHeightProperty);
+            set => SetValue(ScrollArrowHeightProperty, value);
+        }
+        
         #endregion
 
         #region Event Handlers
@@ -408,36 +418,49 @@ namespace BubbleControlls.ControlViews
                 Center.X + RadiusX * Math.Cos(EndAngleRad + RingRotationRad),
                 Center.Y + RadiusY * Math.Sin(EndAngleRad + RingRotationRad));
 
-            void DrawArrow(Point center, double angle, bool isVisible, out Rect hitbox)
-            {
-                hitbox = Rect.Empty;
-                if (!isVisible) return;
-
-                Vector dir = new Vector(Math.Cos(angle), Math.Sin(angle));
-                Vector ortho = new Vector(-dir.Y, dir.X);
-
-                Point p1 = center + dir * arrowSize;
-                Point p2 = center - dir * arrowSize * 0.6 + ortho * arrowSize * 0.6;
-                Point p3 = center - dir * arrowSize * 0.6 - ortho * arrowSize * 0.6;
-
-                StreamGeometry geo = new StreamGeometry();
-                using (var ctx = geo.Open())
-                {
-                    ctx.BeginFigure(p1, true, true);
-                    ctx.LineTo(p2, true, false);
-                    ctx.LineTo(p3, true, false);
-                }
-                geo.Freeze();
-
-                dc.DrawGeometry(Brushes.LightGray, new Pen(Brushes.Black, 1), geo);
-
-                hitbox = new Rect(p1, p2); // einfache Treffbox für Klick
-            }
-
             // Pfeile zeichnen
-            DrawArrow(start, StartAngleRad + RingRotationRad, canScrollBack, out _scrollBackHitbox);
-            DrawArrow(end, EndAngleRad + RingRotationRad, canScrollForward, out _scrollForwardHitbox);
+            DrawArrow(dc, start, StartAngleRad + RingRotationRad, canScrollBack, true, out _scrollBackHitbox);
+            DrawArrow(dc, end, EndAngleRad + RingRotationRad, canScrollForward, false, out _scrollForwardHitbox);
             _scrollTarget = Math.Clamp(_scrollTarget, 0, GetMaxScrollOffset());
+        }
+        void DrawArrow(DrawingContext dc, Point center, double angle, bool isVisible, bool isStart, out Rect hitbox)
+        {
+            hitbox = Rect.Empty;
+            if (!isVisible) return;
+
+            Vector dir = new Vector(Math.Cos(angle), Math.Sin(angle));
+            Vector ortho = new Vector(-dir.Y, dir.X);
+            double height = 10;
+            
+            Point p1 = new Point(
+                center.X - PathWidth * Math.Cos(angle),
+                center.Y - PathWidth * Math.Sin(angle));
+
+            Point p2 = center;
+
+            Point midpoint = new Point(
+                (p1.X + p2.X) / 2,
+                (p1.Y + p2.Y) / 2);
+            Vector tangent = new Vector(-Math.Sin(angle), Math.Cos(angle));
+            if (isStart)
+                tangent *= -1;
+            
+            Point p3 = new Point(
+                midpoint.X + height * tangent.X,
+                midpoint.Y + height * tangent.Y);
+
+            StreamGeometry geo = new StreamGeometry();
+            using (var ctx = geo.Open())
+            {
+                ctx.BeginFigure(p1, true, true);
+                ctx.LineTo(p2, true, false);
+                ctx.LineTo(p3, true, false);
+            }
+            geo.Freeze();
+            
+            dc.DrawGeometry(RingBorderBrush, new Pen(RingBorderBrush, RingBorderThickness), geo);
+
+            hitbox = new Rect(p1, p2); // einfache Treffbox für Klick
         }
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -546,7 +569,7 @@ namespace BubbleControlls.ControlViews
                 this.Effect = new DropShadowEffect
                 {
                     Color = solid.Color,
-                    BlurRadius = 40,
+                    BlurRadius = 200,
                     ShadowDepth = 0,
                     Opacity = 0.8
                 };

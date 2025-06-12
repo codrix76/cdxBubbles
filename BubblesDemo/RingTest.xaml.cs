@@ -17,10 +17,13 @@ namespace BubblesDemo
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            myBubbleRing.RingRotation = 45.0;
+            myBubbleRing.RingRotation = 0.0;
             myBubbleRing.StartAngle = 0.0;
             myBubbleRing.EndAngle = 90.0;
             myBubbleRing.ElementDistance = 50.0;
+            myBubbleRing.RingBorderBrush = Brushes.Yellow;
+            myBubbleRing.RingBackground = Brushes.Yellow;
+            
             var bubble = new Bubble
             {
                 Height = 40,
