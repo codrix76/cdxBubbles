@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using BubbleControlls.Geometry;
+using BubbleControlls.Helpers;
 using BubbleControlls.Models;
 
 namespace BubbleControlls.ControlViews
@@ -16,7 +18,7 @@ namespace BubbleControlls.ControlViews
         private double _scrollTarget = 0.0;
         private Rect _scrollBackHitbox;
         private Rect _scrollForwardHitbox;
-        
+        private List<UIElement> _elements = new();
         /// <summary>
         /// Erstellt eine neue Instanz der <see cref="BubbleRingControl"/>.
         /// </summary>
@@ -281,7 +283,7 @@ namespace BubbleControlls.ControlViews
         /// </summary>
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            _scrollTarget += (e.Delta > 0 ? -1 : +1) * ElementDistance;
+            _scrollTarget -= (e.Delta > 0 ? -1 : +1) * ElementDistance;
             InvalidateVisual(); // später durch Repositionierung ersetzen
         }
 
@@ -421,7 +423,7 @@ namespace BubbleControlls.ControlViews
             // Pfeile zeichnen
             DrawArrow(dc, start, StartAngleRad + RingRotationRad, canScrollBack, true, out _scrollBackHitbox);
             DrawArrow(dc, end, EndAngleRad + RingRotationRad, canScrollForward, false, out _scrollForwardHitbox);
-            _scrollTarget = Math.Clamp(_scrollTarget, 0, GetMaxScrollOffset());
+            _scrollTarget = Math.Clamp(_scrollTarget, GetMinScrollOffset(), GetMaxScrollOffset());
         }
         void DrawArrow(DrawingContext dc, Point center, double angle, bool isVisible, bool isStart, out Rect hitbox)
         {
@@ -476,92 +478,85 @@ namespace BubbleControlls.ControlViews
         }
         protected override Size ArrangeOverride(Size finalSize)
         {
-            double radiusX = RadiusX - PathWidth / 2.0;
-            double radiusY = RadiusY - PathWidth / 2.0;
-            int count = this.Children.Count;
-            if (count == 0)
+            if (Children.Count == 0)
                 return finalSize;
 
-            double visibleSpan = (EndAngleRad - StartAngleRad + 2 * Math.PI) % (2 * Math.PI);
-            double totalPixelSpan = (count - 1) * ElementDistance;
+            // Ellipsenparameter aus Control
+            double radiusX = RadiusX - PathWidth / 2.0;
+            double radiusY = RadiusY - PathWidth / 2.0;
+            Point center = Center;
+            double rotation = RingRotation;
 
-            double startAngle;
-            switch (TrackAlignment)
+            double spacing = ElementDistance;
+
+            var path = new EllipsePath(center, radiusX, radiusY, rotation);
+            var placer = new BubblePlacer(path, spacing);
+
+            var sizes = new List<Size>();
+            foreach (UIElement child in Children)
             {
-                case BubbleTrackAlignment.Center:
-                    startAngle = StartAngleRad + (visibleSpan - totalPixelSpan / radiusY) / 2.0;
-                    break;
-                case BubbleTrackAlignment.Start:
-                    startAngle = StartAngleRad;
-                    break;
-                case BubbleTrackAlignment.End:
-                    startAngle = EndAngleRad - totalPixelSpan / radiusY;
-                    break;
-                default:
-                    startAngle = StartAngleRad;
-                    break;
+                child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                sizes.Add(child.DesiredSize);
             }
 
-            ScrollOffset = Math.Clamp(ScrollOffset, 0, GetMaxScrollOffset());
-
-            var positions = CalculateBubblePositionsWithEqualSpacing(
-                Center,
-                radiusX,
-                radiusY,
-                startAngle - ScrollOffset / radiusY,
-                ElementDistance,
-                count
+            double baseStart = ViewHelper.DegToRad(ScrollOffset); // ← wichtig!
+            var placements = placer.PlaceBubbles(
+                sizes,
+                TrackAlignment,
+                baseStart,
+                baseStart + (EndAngleRad - StartAngleRad)
             ).ToList();
 
-            foreach (var (child, pos) in positions)
+            for (int i = 0; i < placements.Count; i++)
             {
-                if (child == null) continue;
+                var placement = placements[i];
+                var child = Children[i];
+                
+                double angle = NormalizeAngle(placement.AngleRad);
+                double start = NormalizeAngle(StartAngleRad + RingRotationRad);
+                double end = NormalizeAngle(EndAngleRad + RingRotationRad);
+                bool isVisible =
+                    (end > start && angle >= start && angle <= end) ||
+                    (end < start && (angle >= start || angle <= end)); // Bereich über 0 hinaus
 
-                // Berechne Rotation der Position um das Zentrum
-                double dx = pos.X - Center.X;
-                double dy = pos.Y - Center.Y;
-                double x = pos.X;
-                double y = pos.Y;
+                // if (!isVisible)
+                // {
+                //     child.Arrange(new Rect(0, 0, 0, 0));
+                //     continue;
+                // }
 
-                // Sichtbarkeitsprüfung über Winkel
-                double rotatedAngle = Math.Atan2(y - Center.Y, x - Center.X);
-                double visibleStart = StartAngleRad + RingRotationRad;
-                double visibleEnd = EndAngleRad + RingRotationRad;
-                double norm = (rotatedAngle - visibleStart + 2 * Math.PI) % (2 * Math.PI);
-                double range = (visibleEnd - visibleStart + 2 * Math.PI) % (2 * Math.PI);
-                bool isVisible = norm <= range;
-
-                child.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-                if (!isVisible) continue;
-
-                child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                Size desired = child.DesiredSize;
-
-                double left = x - desired.Width / 2;
-                double top = y - desired.Height / 2;
-
-                child.Arrange(new Rect(new Point(left, top), desired));
+                double left = placement.Center.X - placement.Size.Width / 2;
+                double top = placement.Center.Y - placement.Size.Height / 2;
+                child.Arrange(new Rect(new Point(left, top), placement.Size));
             }
 
             return finalSize;
         }
+        
+        
+        
         #endregion
         
         #region Methods
-        
+        // Hilfsmethode innerhalb der Klasse
+        private static double NormalizeAngle(double rad)
+        {
+            while (rad < 0) rad += 2 * Math.PI;
+            while (rad >= 2 * Math.PI) rad -= 2 * Math.PI;
+            return rad;
+        }
         private double GetMaxScrollOffset()
         {
             double totalSpan = (Children.Count - 1) * ElementDistance;
             double visibleSpan = (EndAngleRad - StartAngleRad + 2 * Math.PI) % (2 * Math.PI);
             return Math.Max(0, totalSpan - visibleSpan);
         }
-        bool IsAngleInRange(double angle, double start, double end)
+        private double GetMinScrollOffset()
         {
-            double norm = (angle - start + 2 * Math.PI) % (2 * Math.PI);
-            double range = (end - start + 2 * Math.PI) % (2 * Math.PI);
-            return norm <= range;
+            // z.B. negative Scrollwerte ermöglichen, damit erste Bubble auch wieder sichtbar wird
+            return -Children.Count * ElementDistance; // oder ein anderer sinnvoller Puffer
         }
-        
+
         private void UpdateGlowEffect()
         {
             if (IsGlowActive && RingBorderBrush is SolidColorBrush solid)
@@ -617,11 +612,13 @@ namespace BubbleControlls.ControlViews
             double rotatedStartX = center.X + radiusX * Math.Cos(angle + RingRotationRad);
             double rotatedStartY = center.Y + radiusY * Math.Sin(angle + RingRotationRad);
             Point last = new Point(rotatedStartX, rotatedStartY);
+            if (maxElements <= 1)
+                last = new Point(-distancePx, -distancePx);
+            
             int currentIndex = 0;
 
             for (int i = 0; i < Children.Count && currentIndex < maxElements; )
             {
-                angle += angleStep;
                 double x = center.X + radiusX * Math.Cos(angle + RingRotationRad);
                 double y = center.Y + radiusY * Math.Sin(angle + RingRotationRad);
                 Point current = new Point(x, y);
@@ -635,9 +632,51 @@ namespace BubbleControlls.ControlViews
                     currentIndex++;
                     i++;
                 }
+                angle += angleStep;
             }
 
             return results;
+        }
+        
+        private IEnumerable<(UIElement Element, Point Position)> CalculateBubblePositionsPrecise()
+        {
+            var results = new List<(UIElement, Point)>();
+            if (Children.Count == 0)
+                return results;
+
+            //Ellipsen-Parameter
+            Point center = Center;
+            double radiusX = RadiusX - PathWidth / 2.0;
+            double radiusY = RadiusY - PathWidth / 2.0;
+            double rotation = RingRotationRad;
+            double angle = StartAngleRad; // Startwinkel
+            double spacing = ElementDistance;
+            double angleStep = 0.005;
+            
+            // Punkt auf der Ellipse für Startwinkel
+            double x = center.X + radiusX * Math.Cos(angle + rotation);
+            double y = center.Y + radiusY * Math.Sin(angle + rotation);
+            Point startPoint = new Point(x, y);
+
+            foreach (UIElement child in Children)
+            {
+                Size size = child.DesiredSize;
+                
+                
+            }
+            return results;
+        }
+        
+        public void AddElements(IEnumerable<UIElement> elements)
+        {
+            _elements = elements.ToList();
+            ScrollOffset = 0;
+            Children.Clear();
+
+            foreach (var element in _elements)
+                Children.Add(element);
+
+            InvalidateArrange();
         }
         #endregion
     }

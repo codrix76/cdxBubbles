@@ -1,14 +1,7 @@
-﻿using BubbleControlls.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using BubbleControlls.Models;
 
 namespace BubbleControlls.Helpers
 {
@@ -17,9 +10,9 @@ namespace BubbleControlls.Helpers
         public static double DegToRad(double deg) => deg * Math.PI / 180.0;
         public static double RadToDeg(double rad) => rad * 180.0 / Math.PI;
 
-        public static System.Windows.Shapes.Line DrawLine(Point from, Point to, Brush color, double thickness, bool hitTest)
+        public static Line DrawLine(Point from, Point to, Brush color, double thickness, bool hitTest)
         {
-            var line = new System.Windows.Shapes.Line
+            var line = new Line
             {
                 X1 = from.X,
                 Y1 = from.Y,
@@ -68,7 +61,7 @@ namespace BubbleControlls.Helpers
                 IsHitTestVisible = hitTest
             };
         }
-        public static System.Windows.Shapes.Path DrawArc(Point center, double rx, double ry, Brush stroke, double thickness, bool hitTest
+        public static Path DrawArc(Point center, double rx, double ry, Brush stroke, double thickness, bool hitTest
             , SweepDirection sweepDirection = SweepDirection.Clockwise, bool isLargeArc = false)
         {
             var figure = new PathFigure { StartPoint = new Point(rx, center.Y) };
@@ -84,7 +77,7 @@ namespace BubbleControlls.Helpers
             var geometry = new PathGeometry();
             geometry.Figures.Add(figure);
 
-            var path = new System.Windows.Shapes.Path
+            var path = new Path
             {
                 Stroke = stroke,
                 StrokeThickness = thickness,

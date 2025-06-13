@@ -20,9 +20,10 @@ namespace BubblesDemo
             myBubbleRing.RingRotation = 0.0;
             myBubbleRing.StartAngle = 0.0;
             myBubbleRing.EndAngle = 90.0;
-            myBubbleRing.ElementDistance = 50.0;
+            myBubbleRing.ElementDistance = 10.0;
             myBubbleRing.RingBorderBrush = Brushes.Yellow;
             myBubbleRing.RingBackground = Brushes.Yellow;
+            myBubbleRing.TrackAlignment = BubbleTrackAlignment.Start;
             
             var bubble = new Bubble
             {
@@ -49,12 +50,17 @@ namespace BubblesDemo
             bubbleEnd.RenderStyle = BubbleRenderStyle.Style3D;
             
             myBubbleRing.Children.Add(bubble);
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
-            myBubbleRing.Children.Add(new Bubble { Height = 40 });
+            myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            // myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            // myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            // myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            // myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            // myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            //myBubbleRing.Children.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
             myBubbleRing.Children.Add(bubbleEnd);
             
         }
