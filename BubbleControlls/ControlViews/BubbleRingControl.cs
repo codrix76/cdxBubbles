@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using BubbleControlls.Geometry;
 using BubbleControlls.Helpers;
 using BubbleControlls.Models;
@@ -16,16 +15,16 @@ namespace BubbleControlls.ControlViews
     /// </summary>
     public class BubbleRingControl : Canvas
     {
-        private double _scrollTarget = 0.0;
+        private double _scrollTarget;
         private Rect _scrollBackHitbox;
         private Rect _scrollForwardHitbox;
-        private bool _canScrollBack = false;
-        private bool _canScrollForward = false;
+        private bool _canScrollBack;
+        private bool _canScrollForward;
         private List<UIElement> _elements = new();
         private List<BubblePlacement> _positions = new();
-        private bool _elementsPlaced = false;
-        private double _scrollMin = 0;
-        private double _scrollMax = 0;
+        private bool _elementsPlaced;
+        private double _scrollMin;
+        private double _scrollMax;
         private bool _canScroll = true;
         private EllipsePath _ellipsePath = new EllipsePath(new Point(),0,0,0);
         /// <summary>
@@ -35,9 +34,8 @@ namespace BubbleControlls.ControlViews
         {
             ApplyTheme(BubbleVisualThemes.Standard());
             this.MouseWheel += OnMouseWheel;
-            this.MouseEnter += (s, e) => IsGlowActive = true;
-            this.MouseLeave += (s, e) => IsGlowActive = false;
-            UpdateGlowEffect();
+            this.MouseEnter += (_, _) => IsGlowActive = true;
+            this.MouseLeave += (_, _) => IsGlowActive = false;
             this.MouseDown += OnMouseDown;
             CompositionTarget.Rendering += OnRenderFrame;
         }
@@ -45,12 +43,12 @@ namespace BubbleControlls.ControlViews
         #region Properties
 
         /// <summary>
-        /// Interner Scrollversatz entlang der Laufbahn (in Radiant oder Elementabständen).
+        /// Interner Scroll Versatz entlang der Laufbahn (in Radiant oder Elementabständen).
         /// Wird durch Mausrad gesteuert. Kein DP.
         /// </summary>
-        public double ScrollOffset { get; set; } = 0.0;
+        private double ScrollOffset { get; set; }
         /// <summary>
-        /// Scrollschrittweite
+        /// Scroll Schrittweite
         /// </summary>
         public double ScrollStep { get; set; } = 10.0;
         #endregion
@@ -77,15 +75,9 @@ namespace BubbleControlls.ControlViews
             DependencyProperty.Register(nameof(RingBorderBrush), typeof(Brush), typeof(BubbleRingControl),
                 new FrameworkPropertyMetadata(
                     new SolidColorBrush(Color.FromArgb(80, 100, 149, 237)),
-                    FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnRingBorderBrushChanged
+                    FrameworkPropertyMetadataOptions.AffectsRender
                 ));
         
-        private static void OnRingBorderBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var ctrl = (BubbleRingControl)d;
-            ctrl.UpdateGlowEffect();
-        }
         
         /// <inheritdoc cref="RingBorderBrushProperty"/>
         public Brush RingBorderBrush
@@ -303,7 +295,7 @@ namespace BubbleControlls.ControlViews
 
             _scrollTarget = Math.Clamp(_scrollTarget, _scrollMin, _scrollMax);
             Debug.WriteLine($"OnMouseWheel: ScrollTarget={_scrollTarget:F2}, ScrollOffset={ScrollOffset:F2}");
-            InvalidateArrange(); // optional, wenn du sofort visuelle Reaktion willst
+            InvalidateArrange();
         }
 
         // Klick auf Pfeile erkennen
@@ -406,28 +398,10 @@ namespace BubbleControlls.ControlViews
                 c.A = (byte)Math.Clamp(RingBorderOpacity, 0, 255);
                 borderPen = new Pen(new SolidColorBrush(c), RingBorderThickness);
             }
-            if (IsGlowActive)
-            {
-                // Transparenz anheben
-                if (fillBrush is SolidColorBrush f)
-                {
-                    var c = f.Color;
-                    c.A = (byte)Math.Min(255, c.A + 50);
-                    fillBrush = new SolidColorBrush(c);
-                }
-
-                if (borderPen.Brush is SolidColorBrush b)
-                {
-                    var c = b.Color;
-                    c.A = (byte)Math.Min(255, c.A + 50);
-                    borderPen = new Pen(new SolidColorBrush(c), RingBorderThickness + 1);
-                }
-            }
-            
             dc.DrawGeometry(fillBrush, borderPen, ringGeometry);
+            DrawRingHighlight(dc);
             
-            
-            // Zeichenlogik für Scrollpfeile + Klickflächen (ersetze im OnRender)
+            // Zeichenlogik für Scroll Pfeile + Klickflächen (ersetze im OnRender)
             _scrollBackHitbox = Rect.Empty;
             _scrollForwardHitbox = Rect.Empty;
 
@@ -447,8 +421,6 @@ namespace BubbleControlls.ControlViews
             Rect hitbox = new Rect(0,0,1,1) ;
             if (!isVisible) return hitbox;
 
-            Vector dir = new Vector(Math.Cos(angle), Math.Sin(angle));
-            Vector ortho = new Vector(-dir.Y, dir.X);
             double height = 10;
             
             Point p1 = new Point(
@@ -541,13 +513,74 @@ namespace BubbleControlls.ControlViews
                 double top = placement.Center.Y - placement.Size.Height / 2;
                 child.Arrange(new Rect(new Point(left, top), placement.Size));
             }
-
             return finalSize;
         }
         
         #endregion
         
         #region Methods
+        private void DrawRingHighlight(DrawingContext dc)
+        {
+            if (!IsGlowActive)
+                return;
+            double thickness = 2;
+            double innerRx = RadiusX - PathWidth;
+            double innerRy = RadiusY - PathWidth;
+            double outerRx = RadiusX;
+            double outerRy = RadiusY;
+            
+            var opacity1 = (byte)Math.Clamp(RingOpacity, 0, 255);
+            var opacity2 = (byte)Math.Clamp(RingOpacity + 50, 0, 255);
+            var opacity3 = (byte)Math.Clamp(RingOpacity + 150, 0, 255);
+            
+            var innerPath1 = CreateRingArcPath(innerRx + thickness * 2, innerRy+ thickness * 2);
+            var innerPath2 = CreateRingArcPath(innerRx + thickness, innerRy + thickness);
+            var innerPath3 = CreateRingArcPath(innerRx, innerRy);
+            var outerPath1 = CreateRingArcPath(outerRx - thickness * 2, outerRy - thickness * 2);
+            var outerPath2 = CreateRingArcPath(outerRx - thickness, outerRy - thickness);
+            var outerPath3 = CreateRingArcPath(outerRx, outerRy);
+            
+            // Farben wie in deinem Experiment, aber optional angepasst
+            var baseColor = (RingBackground as SolidColorBrush)?.Color ?? Colors.CornflowerBlue;
+
+            var innerBrush = new SolidColorBrush(Color.FromArgb(opacity1, baseColor.R, baseColor.G, baseColor.B));
+            var midBrush   = new SolidColorBrush(Color.FromArgb(opacity2, baseColor.R, baseColor.G, baseColor.B));
+            var outerBrush = new SolidColorBrush(Color.FromArgb(opacity3, baseColor.R, baseColor.G, baseColor.B));
+            
+            // Innerer Pfad (Glow von innen nach Mitte)
+            dc.DrawGeometry(null, new Pen(innerBrush, thickness * 0.8), innerPath1);
+            dc.DrawGeometry(null, new Pen(midBrush,   thickness), innerPath2);
+            dc.DrawGeometry(null, new Pen(outerBrush, thickness * 1.2), innerPath3);
+            //
+            // // Äußerer Pfad (Glow von außen nach Mitte)
+            dc.DrawGeometry(null, new Pen(innerBrush, thickness * 0.8), outerPath1);
+            dc.DrawGeometry(null, new Pen(midBrush,   thickness), outerPath2);
+            dc.DrawGeometry(null, new Pen(outerBrush, thickness * 1.2), outerPath3);
+
+        }
+        private System.Windows.Media.Geometry CreateRingArcPath(double rx, double ry)
+        {
+            var geo = new StreamGeometry();
+            using (var ctx = geo.Open())
+            {
+                Point start = new Point(
+                    Center.X + rx * Math.Cos(StartAngleRad + RingRotationRad),
+                    Center.Y + ry * Math.Sin(StartAngleRad + RingRotationRad));
+
+                Point end = new Point(
+                    Center.X + rx * Math.Cos(EndAngleRad + RingRotationRad),
+                    Center.Y + ry * Math.Sin(EndAngleRad + RingRotationRad));
+
+                double sweep = EndAngleRad - StartAngleRad;
+                bool isLargeArc = Math.Abs(sweep) > Math.PI;
+
+                ctx.BeginFigure(start, false, false);
+                ctx.ArcTo(end, new Size(rx, ry), 0, isLargeArc, SweepDirection.Clockwise, true, false);
+            }
+            geo.Freeze();
+            return geo;
+        }
+        
         // Hilfsmethode innerhalb der Klasse
         double NormalizeAngle(double rad)
         {
@@ -555,38 +588,9 @@ namespace BubbleControlls.ControlViews
             while (rad >= 2 * Math.PI) rad -= 2 * Math.PI;
             return rad;
         }
-        private double GetMaxScrollOffset()
-        {
-            double totalSpan = (Children.Count - 1) * ElementDistance;
-            double visibleSpan = (EndAngleRad - StartAngleRad + 2 * Math.PI) % (2 * Math.PI);
-            return Math.Max(0, totalSpan - visibleSpan);
-        }
-        private double GetMinScrollOffset()
-        {
-            // z.B. negative Scrollwerte ermöglichen, damit erste Bubble auch wieder sichtbar wird
-            return -Children.Count * ElementDistance; // oder ein anderer sinnvoller Puffer
-        }
-
-        private void UpdateGlowEffect()
-        {
-            if (IsGlowActive && RingBorderBrush is SolidColorBrush solid)
-            {
-                this.Effect = new DropShadowEffect
-                {
-                    Color = solid.Color,
-                    BlurRadius = 200,
-                    ShadowDepth = 0,
-                    Opacity = 0.8
-                };
-            }
-            else
-            {
-                this.Effect = null;
-            }
-        }
         
         // Scrollen animieren
-        private void OnRenderFrame(object sender, EventArgs e)
+        private void OnRenderFrame(object? sender, EventArgs e)
         {
             if (_elementsPlaced)
             {
@@ -622,8 +626,7 @@ namespace BubbleControlls.ControlViews
         /// Gibt die RingRotation in Radiant zurück.
         /// </summary>
         private double RingRotationRad => RingRotation * Math.PI / 180.0;
-        
-        private double Lerp(double a, double b, double t) => a + (b - a) * t;
+
         public void AddElements(IEnumerable<UIElement> elements)
         {
             _elementsPlaced = false;
@@ -636,7 +639,6 @@ namespace BubbleControlls.ControlViews
                 Children.Add(el);
 
             _elementsPlaced = true;
-            // Alle Children Angelegt nun Measure
             InvalidateMeasure();
         }
 
@@ -668,13 +670,7 @@ namespace BubbleControlls.ControlViews
                 baseStart + (EndAngleRad - StartAngleRad),
                 ScrollOffset
             ).ToList();
-            foreach (var p in  _positions )
-            {
-                //Debug.WriteLine(p.ToString());
-            }
-            Debug.WriteLine("----------------------------------------------------");
         }
-        
         private void UpdateScrollLimits()
         {
             if (_positions.Count == 0 || _elements.Count == 0)
@@ -712,6 +708,10 @@ namespace BubbleControlls.ControlViews
             Debug.WriteLine($"[ScrollLimit] min: {_scrollMin:F2}, max: {_scrollMax:F2}, scrollable: {_canScroll}");
         }
         
+        /// <summary>
+        /// setzt ein gewünschtes Theme für das Objekt
+        /// </summary>
+        /// <param name="style">BubbleVisualTheme</param>
         public void ApplyTheme(BubbleVisualTheme style)
         {
             RingBackground = style.RingBackground;
@@ -720,10 +720,7 @@ namespace BubbleControlls.ControlViews
             RingBorderOpacity = style.RingBorderOpacity;
             RingBorderThickness = style.RingBorderThickness;
             ScrollArrowHeight = style.ScrollArrowHeight;
-            
         }
-
-        
         #endregion
     }
 }

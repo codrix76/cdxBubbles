@@ -18,9 +18,10 @@ namespace BubblesDemo
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            myBubbleRing.ScrollStep = 6;
             myBubbleRing.RingRotation = 0.0;
-            myBubbleRing.StartAngle = 30.0;
-            myBubbleRing.EndAngle = 120.0;
+            myBubbleRing.StartAngle = 0.0;
+            myBubbleRing.EndAngle = 90.0;
             myBubbleRing.ElementDistance = 10.0;
             myBubbleRing.TrackAlignment = BubbleTrackAlignment.Start;
             myBubbleRing.AddElements(GetElements());
