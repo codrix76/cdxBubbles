@@ -37,7 +37,13 @@ namespace BubbleControlls.ControlViews
             this.MouseEnter += (_, _) => IsGlowActive = true;
             this.MouseLeave += (_, _) => IsGlowActive = false;
             this.MouseDown += OnMouseDown;
-            CompositionTarget.Rendering += OnRenderFrame;
+            this.IsVisibleChanged += (_, _)  =>
+            {
+                if (this.IsVisible)
+                    CompositionTarget.Rendering += OnRenderFrame;
+                else
+                    CompositionTarget.Rendering -= OnRenderFrame;
+            };
         }
 
         #region Properties
@@ -592,6 +598,8 @@ namespace BubbleControlls.ControlViews
         // Scrollen animieren
         private void OnRenderFrame(object? sender, EventArgs e)
         {
+            if (!IsVisible) return;
+            
             if (_elementsPlaced)
             {
                 AdjustPlacement();
