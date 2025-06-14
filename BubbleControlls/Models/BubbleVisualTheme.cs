@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Media;
-using System.Windows;
 
 namespace BubbleControlls.Models
 {
@@ -31,5 +26,20 @@ namespace BubbleControlls.Models
         public Thickness OuterBorderThickness { get; set; }
 
         public bool Use3DGradient { get; set; }
+        
+        // Ergänzung für BubbleRingControl:
+
+        // Farben
+        public Brush RingBackground { get; set; }
+        public Brush RingBorderBrush { get; set; }
+
+        // Transparenzen (0–255)
+        public int RingOpacity { get; set; } = 50;
+        public int RingBorderOpacity { get; set; } = 80;
+
+        // Stärke
+        public int RingBorderThickness { get; set; } = 2;
+        // Dimensionen
+        public double ScrollArrowHeight { get; set; } = 8.0;
     }
 }

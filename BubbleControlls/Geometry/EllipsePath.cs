@@ -73,7 +73,9 @@ namespace BubbleControlls.Geometry
 
         public double GetAngleAtArcLength(double arcLength)
         {
-            arcLength = Math.Min(arcLength, _totalArcLength);
+            arcLength %= _totalArcLength;
+            if (arcLength < 0)
+                arcLength += _totalArcLength;
             for (int i = 1; i < _lookupTable.Count; i++)
             {
                 if (_lookupTable[i].arcLength >= arcLength)
@@ -88,7 +90,25 @@ namespace BubbleControlls.Geometry
             }
             return _lookupTable[^1].angle;
         }
+        public double GetArcLengthBetween(double startRad, double endRad)
+        {
+            double arcLength = 0;
+            int steps = 100; // Feinheit
+            double angleStep = (endRad - startRad) / steps;
 
+            for (int i = 0; i < steps; i++)
+            {
+                double a1 = startRad + i * angleStep;
+                double a2 = startRad + (i + 1) * angleStep;
+
+                Point p1 = GetPoint(a1);
+                Point p2 = GetPoint(a2);
+
+                arcLength += (p2 - p1).Length;
+            }
+
+            return arcLength;
+        }
         // --- Hilfsmethoden ---
 
         private Point GetPointInternal(double angleRad)

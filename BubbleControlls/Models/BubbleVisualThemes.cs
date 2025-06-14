@@ -38,7 +38,15 @@ namespace BubbleControlls.Models
                 OuterBorderThickness = new Thickness(2.5),
 
                 // Layout
-                Use3DGradient = true
+                Use3DGradient = true,
+                
+                // Ring
+                RingBackground = new SolidColorBrush(Color.FromArgb(50, 100, 149, 237)),
+                RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 100, 149, 237)),
+                RingOpacity = 50,
+                RingBorderOpacity = 80,
+                RingBorderThickness = 1,
+                ScrollArrowHeight = 12.0
             };
 
         }
@@ -67,7 +75,14 @@ namespace BubbleControlls.Models
                 BorderThickness = new Thickness(1),
                 OuterBorderThickness = new Thickness(1.5),
 
-                Use3DGradient = true
+                Use3DGradient = true,
+                // Ring
+                RingBackground = new SolidColorBrush(Color.FromArgb(50, 60, 60, 60)),
+                RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 90, 90, 90)),
+                RingOpacity = 50,
+                RingBorderOpacity = 80,
+                RingBorderThickness = 1,
+                ScrollArrowHeight = 12.0
             };
         }
 
@@ -96,7 +111,15 @@ namespace BubbleControlls.Models
                 BorderThickness = new Thickness(1.3),
                 OuterBorderThickness = new Thickness(2.0),
 
-                Use3DGradient = true
+                Use3DGradient = true,
+                
+                // Ring
+                RingBackground = new SolidColorBrush(Color.FromArgb(50, 20, 40, 60)),
+                RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 40, 80, 140)),
+                RingOpacity = 50,
+                RingBorderOpacity = 80,
+                RingBorderThickness = 1,
+                ScrollArrowHeight = 12.0
             };
         }
         public static BubbleVisualTheme NeonEdge()
@@ -127,7 +150,15 @@ namespace BubbleControlls.Models
                 BorderThickness = new Thickness(1.8),
                 OuterBorderThickness = new Thickness(2.2),
 
-                Use3DGradient = true
+                Use3DGradient = true,
+                
+                // Ring
+                RingBackground = new SolidColorBrush(Color.FromArgb(50, 20, 10, 30)),
+                RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 0, 255, 255)),
+                RingOpacity = 60,
+                RingBorderOpacity = 90,
+                RingBorderThickness = 3,
+                ScrollArrowHeight = 10.0
             };
         }
         public static BubbleVisualTheme Standard()
@@ -156,7 +187,15 @@ namespace BubbleControlls.Models
                 BorderThickness = new Thickness(1),
                 OuterBorderThickness = new Thickness(1.5),
 
-                Use3DGradient = false
+                Use3DGradient = false,
+                
+                // Ring
+                RingBackground = new SolidColorBrush(Color.FromArgb(50, 200, 200, 200)),
+                RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 160, 160, 160)),
+                RingOpacity = 50,
+                RingBorderOpacity = 80,
+                RingBorderThickness = 1,
+                ScrollArrowHeight = 12.0
             };
         }
 
