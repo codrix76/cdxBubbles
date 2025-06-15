@@ -28,6 +28,7 @@ namespace BubbleControlls.ControlViews
         private double _scrollStepLarge = 0.5;
         private double _scrollElementFactor = 0.6;
         private EllipsePath _ellipsePath = new EllipsePath(new Point(),0,0,0);
+        private BubbleRingRenderData? _bubbleRingRenderData;
         /// <summary>
         /// Erstellt eine neue Instanz der <see cref="BubbleRingControl"/>.
         /// </summary>
@@ -336,94 +337,34 @@ namespace BubbleControlls.ControlViews
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
+            if (_bubbleRingRenderData == null || !_bubbleRingRenderData.initialized) return;
+            BubbleRingRenderer.DrawRing(dc, _bubbleRingRenderData);
 
-            double outerRx = RadiusX;
-            double outerRy = RadiusY;
-            double innerRx = RadiusX - PathWidth;
-            double innerRy = RadiusY - PathWidth;
+            if (_bubbleRingRenderData.IsGlowActive)
+                BubbleRingRenderer.DrawGlow(dc, _bubbleRingRenderData);
 
-            if (innerRx < 0 || innerRy < 0) return;
+            double startAngleRad = GeometryHelper.DegToRad(_bubbleRingRenderData.StartAngleDeg + _bubbleRingRenderData.RotationDeg);
+            double endAngleRad   = GeometryHelper.DegToRad(_bubbleRingRenderData.EndAngleDeg + _bubbleRingRenderData.RotationDeg);
 
-            // Erzeuge Geometrie für Ring (Zwischenraum zwischen zwei Ellipsen)
-            StreamGeometry ringGeometry = new StreamGeometry();
-            using (StreamGeometryContext ctx = ringGeometry.Open())
-            {
-                // Berechne Punkte
-                Point outerStart = new Point(
-                    Center.X + outerRx * Math.Cos(StartAngleRad + RingRotationRad),
-                    Center.Y + outerRy * Math.Sin(StartAngleRad + RingRotationRad));
+            _scrollBackHitbox = BubbleRingRenderer.DrawArrow(
+                dc,
+                GeometryHelper.EllipticalPoint(_bubbleRingRenderData.Center, _bubbleRingRenderData.RadiusX, _bubbleRingRenderData.RadiusY, startAngleRad),
+                startAngleRad,
+                true,
+                _bubbleRingRenderData.Border,
+                _bubbleRingRenderData.PathWidth,
+                ScrollArrowHeight
+            );
 
-                Point outerEnd = new Point(
-                    Center.X + outerRx * Math.Cos(EndAngleRad + RingRotationRad),
-                    Center.Y + outerRy * Math.Sin(EndAngleRad + RingRotationRad));
-
-                Point innerEnd = new Point(
-                    Center.X + innerRx * Math.Cos(EndAngleRad + RingRotationRad),
-                    Center.Y + innerRy * Math.Sin(EndAngleRad + RingRotationRad));
-
-                Point innerStart = new Point(
-                    Center.X + innerRx * Math.Cos(StartAngleRad + RingRotationRad),
-                    Center.Y + innerRy * Math.Sin(StartAngleRad + RingRotationRad));
-
-                // Winkeldifferenz
-                double sweep = EndAngleRad - StartAngleRad;
-                if (sweep <= 0)
-                    sweep += 2 * Math.PI;
-                bool isLargeArc = Math.Abs(sweep) > Math.PI;
-                var sweepDir = SweepDirection.Clockwise;
-
-                ctx.BeginFigure(outerStart, true, true);
-
-                // Äußerer Bogen
-                ctx.ArcTo(outerEnd, new Size(outerRx, outerRy), 0, isLargeArc, 
-                    sweepDir, true, false);
-
-                // Verbindungslinie zu innerem Ende
-                ctx.LineTo(innerEnd, true, false);
-
-                // Innerer Bogen (gegenläufig)
-                ctx.ArcTo(innerStart, new Size(innerRx, innerRy), 0, isLargeArc, 
-                    SweepDirection.Counterclockwise, true, false);
-
-                // Verbindung zurück zum Anfang (implizit durch isClosed = true)
-            }
-
-            ringGeometry.Freeze();
-
-            // Füll- und Strichfarbe
-            Brush fillBrush = RingBackground.Clone();
-            if (fillBrush is SolidColorBrush scb1)
-            {
-                var c = scb1.Color;
-                c.A = (byte)Math.Clamp(RingOpacity, 0, 255);
-                fillBrush = new SolidColorBrush(c);
-            }
-            
-            Pen borderPen = new Pen(RingBorderBrush.Clone(), RingBorderThickness);
-            if (borderPen.Brush is SolidColorBrush p1)
-            {
-                var c = p1.Color;
-                c.A = (byte)Math.Clamp(RingBorderOpacity, 0, 255);
-                borderPen = new Pen(new SolidColorBrush(c), RingBorderThickness);
-            }
-            dc.DrawGeometry(fillBrush, borderPen, ringGeometry);
-            DrawRingHighlight(dc);
-            
-            // Zeichenlogik für Scroll Pfeile + Klickflächen (ersetze im OnRender)
-            _scrollBackHitbox = Rect.Empty;
-            _scrollForwardHitbox = Rect.Empty;
-
-            Point start = new Point(
-                Center.X + RadiusX * Math.Cos(StartAngleRad + RingRotationRad),
-                Center.Y + RadiusY * Math.Sin(StartAngleRad + RingRotationRad));
-            Point end = new Point(
-                Center.X + RadiusX * Math.Cos(EndAngleRad + RingRotationRad),
-                Center.Y + RadiusY * Math.Sin(EndAngleRad + RingRotationRad));
-
-            // Pfeile zeichnen
-            _scrollBackHitbox = DrawArrow(dc, start, StartAngleRad + RingRotationRad, true);
-            _scrollForwardHitbox = DrawArrow(dc, end, EndAngleRad + RingRotationRad, false);
-
+            _scrollForwardHitbox = BubbleRingRenderer.DrawArrow(
+                dc,
+                GeometryHelper.EllipticalPoint(_bubbleRingRenderData.Center, _bubbleRingRenderData.RadiusX, _bubbleRingRenderData.RadiusY, endAngleRad),
+                endAngleRad,
+                false,
+                _bubbleRingRenderData.Border,
+                _bubbleRingRenderData.PathWidth,
+                ScrollArrowHeight
+            );
         }
         Rect DrawArrow(DrawingContext dc, Point center, double angle, bool isLeft)
         {
@@ -516,9 +457,9 @@ namespace BubbleControlls.ControlViews
                 var placement = _positions[i];
                 var child = Children[i];
                 
-                // double angle = NormalizeAngle(placement.AngleRad);
-                // double start = NormalizeAngle(StartAngleRad + RingRotationRad);
-                // double end = NormalizeAngle(EndAngleRad + RingRotationRad);
+                // double angle = NormalizeRad(placement.AngleRad);
+                // double start = NormalizeRad(StartAngleRad + RingRotationRad);
+                // double end = NormalizeRad(EndAngleRad + RingRotationRad);
                 // bool isVisible =
                 //     (end > start && angle >= start && angle <= end) ||
                 //     (end < start && (angle >= start || angle <= end)); // Bereich über 0 hinaus
@@ -604,14 +545,6 @@ namespace BubbleControlls.ControlViews
             return geo;
         }
         
-        // Hilfsmethode innerhalb der Klasse
-        double NormalizeAngle(double rad)
-        {
-            while (rad < 0) rad += 2 * Math.PI;
-            while (rad >= 2 * Math.PI) rad -= 2 * Math.PI;
-            return rad;
-        }
-        
         // Scrollen animieren
         private void OnRenderFrame(object? sender, EventArgs e)
         {
@@ -622,7 +555,9 @@ namespace BubbleControlls.ControlViews
                 AdjustPlacement();
                 UpdateScrollLimits();
                 InvalidateArrange();
-                _elementsPlaced = false; // <- einmalig
+                _elementsPlaced = false;
+                _bubbleRingRenderData = CreateRenderData();
+                InvalidateVisual();
             }
             if (Math.Abs(ScrollOffset - _scrollTarget) > 0.01)
             {
@@ -697,8 +632,8 @@ namespace BubbleControlls.ControlViews
                 sizes.Add(child.DesiredSize);
             }
             
-            //double baseStart = NormalizeAngle(StartAngleRad + RingRotationRad - ViewHelper.DegToRad(ScrollOffset));
-            double baseStart = NormalizeAngle(StartAngleRad + RingRotationRad - ScrollOffset);
+            //double baseStart = NormalizeRad(StartAngleRad + RingRotationRad - ViewHelper.DegToRad(ScrollOffset));
+            double baseStart = GeometryHelper.NormalizeRad(StartAngleRad + RingRotationRad - ScrollOffset);
             double sweep = EndAngleRad - StartAngleRad;
             if (sweep <= 0)
                 sweep += 2 * Math.PI;
@@ -780,6 +715,29 @@ namespace BubbleControlls.ControlViews
             else
                 return angle >= start || angle < end; // Bereich geht über 0
         }
+        
+        private BubbleRingRenderData CreateRenderData()
+        {
+            return new BubbleRingRenderData
+            {
+                initialized = true,
+                Center = Center,
+                RadiusX = RadiusX,
+                RadiusY = RadiusY,
+                PathWidth = PathWidth,
+                StartAngleDeg = StartAngle,
+                EndAngleDeg = EndAngle,
+                RotationDeg = RingRotation,
+                Fill = RingBackground.Clone(),
+                Border = RingBorderBrush.Clone(),
+                FillOpacity = RingOpacity,
+                BorderOpacity = RingBorderOpacity,
+                BorderThickness = RingBorderThickness,
+                IsGlowActive = IsGlowActive,
+                Placements = _positions.ToList()
+            };
+        }
+        
         #endregion
     }
 }

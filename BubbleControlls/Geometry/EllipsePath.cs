@@ -55,7 +55,7 @@ namespace BubbleControlls.Geometry
 
         public double GetArcLength(double angleRad)
         {
-            angleRad = NormalizeAngle(angleRad);
+            angleRad = GeometryHelper.NormalizeRad(angleRad);
             for (int i = 1; i < _lookupTable.Count; i++)
             {
                 if (_lookupTable[i].angle >= angleRad)
@@ -143,13 +143,6 @@ namespace BubbleControlls.Geometry
             double cos = Math.Cos(angleRad);
             double sin = Math.Sin(angleRad);
             return new Vector(v.X * cos - v.Y * sin, v.X * sin + v.Y * cos);
-        }
-
-        private static double NormalizeAngle(double angleRad)
-        {
-            while (angleRad < 0) angleRad += 2 * Math.PI;
-            while (angleRad >= 2 * Math.PI) angleRad -= 2 * Math.PI;
-            return angleRad;
         }
     }
 }

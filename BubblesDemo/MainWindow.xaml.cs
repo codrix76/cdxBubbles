@@ -15,8 +15,8 @@ namespace BubblesDemo
             
             this.Loaded += (s, e) =>
             {
-                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.Free;
-                BubbleMenu.Background = Brushes.DarkSlateBlue;
+                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.TopEdge;
+                //BubbleMenu.Background = Brushes.DarkSlateBlue;
                 BubbleMenu.DistributionAlignment = DistributionAlignmentType.From;
                 BubbleMenu.BubbleMainMenuSize = 80.0;
                 BubbleMenu.BubbleMenuBigSize = 55.0;
