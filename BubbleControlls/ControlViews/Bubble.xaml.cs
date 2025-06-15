@@ -9,13 +9,13 @@ using BubbleControlls.ViewModels;
 
 namespace BubbleControlls.ControlViews
 {
-    public partial class Bubble : UserControl
+    public partial class Bubble
     {
         public Bubble()
         {
             InitializeComponent();
             ApplyTheme(BubbleVisualThemes.Standard());
-            this.Loaded += (s, e) => {
+            this.Loaded += (_, _)  => {
                 if (this.DataContext == null)
                 {
                     this.DataContext = new BubbleViewModel();
@@ -31,13 +31,13 @@ namespace BubbleControlls.ControlViews
             InnerBorder.MouseLeave += InnerBorder_MouseLeave;
             InnerBorder.MouseLeftButtonDown += OnMouseDown;
             InnerBorder.MouseLeftButtonUp += OnMouseUp;
-            this.MouseLeftButtonDown += (s, e) =>
+            InnerBorder.MouseRightButtonDown += OnMouseRightDown;
+            InnerBorder.MouseRightButtonUp += OnMouseRightUp;
+            this.MouseLeftButtonDown += (_, _)  =>
             {
                 this.Focus(); // Fokus setzen
             };
             InnerBorder.IsHitTestVisible = true;
-            //this.GotFocus += (s, e) => { ActivateGlow(); };
-            //this.LostFocus += (s, e) => { DeactivateGlow(); };
             this.FocusVisualStyle = null;
         }
 
@@ -69,10 +69,23 @@ namespace BubbleControlls.ControlViews
         {
             InnerBorder.RenderTransform = null;
         }
-        private void OnMouseLeaveCancelClickEffect(object sender, MouseEventArgs e)
+        
+        private void OnMouseRightDown(object sender, MouseButtonEventArgs e)
+        {
+            InnerBorder.RenderTransform = new ScaleTransform(
+                0.95, 0.95,
+                InnerBorder.ActualWidth / 2,
+                InnerBorder.ActualHeight / 2);
+        }
+
+        private void OnMouseRightUp(object sender, MouseButtonEventArgs e)
         {
             InnerBorder.RenderTransform = null;
         }
+        // private void OnMouseLeaveCancelClickEffect(object sender, MouseEventArgs e)
+        // {
+        //     InnerBorder.RenderTransform = null;
+        // }
         protected override void OnGotFocus(RoutedEventArgs e)
         {
             base.OnGotFocus(e);
@@ -256,7 +269,6 @@ namespace BubbleControlls.ControlViews
                         {
                             new GradientStop(b.BackgroundHighlightColor, 0.0),
                             new GradientStop(b.BackgroundBrush is SolidColorBrush sb ? sb.Color : Colors.SteelBlue, 0.6),
-                            //new GradientStop(Color.Multiply(b.BackgroundDarkColor, 0.7f), 1.0)
                             new GradientStop(Darken(b.BackgroundDarkColor, 0.4f), 1.0)
                         }
                     };
@@ -386,7 +398,7 @@ namespace BubbleControlls.ControlViews
             DependencyProperty.Register(nameof(Text), typeof(string), typeof(Bubble),
                 new PropertyMetadata(string.Empty , OnTextOrIconChanged));
 
-        public ImageSource Icon
+        public ImageSource? Icon
         {
             get => (ImageSource)GetValue(IconProperty);
             set => SetValue(IconProperty, value);
@@ -444,13 +456,6 @@ namespace BubbleControlls.ControlViews
                         Grid.SetRow(b.BubbleText, 1);
                         Grid.SetColumn(b.BubbleText,1);
 
-                        if(b.InnerBorder.ActualHeight != 0)
-                        {
-                            double rowHeight = b.InnerBorder.ActualHeight * 0.3;
-                            //b.IconImage.MaxHeight = rowHeight;
-                            //b.FontSizeValue = rowHeight * 0.9; // optisch anpassen
-                        }
-
                         double leftPadding = Math.Max(6, b.InnerBorder.ActualWidth * 0.04);
                         b.IconImage.Margin = new Thickness(leftPadding, 0, 6, 0);
 
@@ -486,8 +491,8 @@ namespace BubbleControlls.ControlViews
                 b.ContentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.1, GridUnitType.Star) });
                 Grid.SetRow(b.IconImage, 1);
                 b.BubbleText.Visibility = Visibility.Collapsed;
-                double leftmarge = -6;
-                b.IconImage.Margin = new Thickness(leftmarge, 0, leftmarge, 0);
+                double leftMarge = -6;
+                b.IconImage.Margin = new Thickness(leftMarge, 0, leftMarge, 0);
             }
             else if (hasText)
             {
@@ -502,9 +507,9 @@ namespace BubbleControlls.ControlViews
         public void ApplyTheme(BubbleVisualTheme style)
         {
             // Farben
-            BackgroundBrush = style.Background;
-            OuterBorderBrush = style.OuterBorderColor;
-            BorderBrushInner = style.Border;
+            BackgroundBrush = style.Background!;
+            OuterBorderBrush = style.OuterBorderColor!;
+            BorderBrushInner = style.Border!;
 
             BackgroundHighlightColor = style.HighlightColor;
             BackgroundDarkColor = style.BackgroundDarkColor;
@@ -527,6 +532,5 @@ namespace BubbleControlls.ControlViews
             // Layout-Stil
             RenderStyle = style.Use3DGradient ? BubbleRenderStyle.Style3D : BubbleRenderStyle.StylePlane;
         }
-
     }
 }

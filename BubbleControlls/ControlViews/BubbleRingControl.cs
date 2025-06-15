@@ -18,14 +18,15 @@ namespace BubbleControlls.ControlViews
         private double _scrollTarget;
         private Rect _scrollBackHitbox;
         private Rect _scrollForwardHitbox;
-        private bool _canScrollBack;
-        private bool _canScrollForward;
         private List<UIElement> _elements = new();
         private List<BubblePlacement> _positions = new();
         private bool _elementsPlaced;
         private double _scrollMin;
         private double _scrollMax;
         private bool _canScroll = true;
+        private double _scrollStepSmall = 0.1;
+        private double _scrollStepLarge = 0.5;
+        private double _scrollElementFactor = 0.6;
         private EllipsePath _ellipsePath = new EllipsePath(new Point(),0,0,0);
         /// <summary>
         /// Erstellt eine neue Instanz der <see cref="BubbleRingControl"/>.
@@ -54,9 +55,13 @@ namespace BubbleControlls.ControlViews
         /// </summary>
         private double ScrollOffset { get; set; }
         /// <summary>
-        /// Scroll Schrittweite
+        /// gibt an, ob das Menu zentriert ausgerichtet werden soll
         /// </summary>
-        public double ScrollStep { get; set; } = 10.0;
+        public bool IsCentered { get; set; } = false;
+        /// <summary>
+        /// gibt an, ob die Reihenfolge invertiert werden soll
+        /// </summary>
+        public bool IsInverted { get; set; } = false;
         #endregion
 
         #region Dependency Properties
@@ -261,19 +266,6 @@ namespace BubbleControlls.ControlViews
             set => SetValue(ElementDistanceProperty, value);
         }
 
-        /// <summary>
-        /// Aktuelle Ausrichtung der Laufbahn.
-        /// </summary>
-        public static readonly DependencyProperty TrackAlignmentProperty =
-            DependencyProperty.Register(nameof(TrackAlignment), typeof(BubbleTrackAlignment), typeof(BubbleRingControl),
-                new FrameworkPropertyMetadata(BubbleTrackAlignment.Center, FrameworkPropertyMetadataOptions.AffectsArrange));
-
-        /// <inheritdoc cref="TrackAlignmentProperty"/>
-        public BubbleTrackAlignment TrackAlignment
-        {
-            get => (BubbleTrackAlignment)GetValue(TrackAlignmentProperty);
-            set => SetValue(TrackAlignmentProperty, value);
-        }
         public static readonly DependencyProperty ScrollArrowHeightProperty =
             DependencyProperty.Register(nameof(ScrollArrowHeight), typeof(double), typeof(BubbleRingControl),
                 new FrameworkPropertyMetadata(8.0, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -288,25 +280,32 @@ namespace BubbleControlls.ControlViews
 
         #region Event Handlers
 
+        private double MouseDeltaToRad(int delta)
+        {
+            return (delta / 120.0) * _scrollStepSmall;
+        }
         /// <summary>
         /// Reagiert auf Mausradbewegung und verändert, um die Kinder neu zu positionieren.
         /// </summary>
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Debug.WriteLine($"OnMouseWheel: _canScroll{_canScroll}");
+            Debug.WriteLine($"OnMouseWheel: _canScroll: {_canScroll}");
             if (!_canScroll)
                 return;
+            double deltaRad = MouseDeltaToRad(e.Delta);
             // Maus ↓ → Inhalt ↑ → ScrollOffset steigt
-            _scrollTarget += (e.Delta < 0 ? +ScrollStep : -ScrollStep);
-
+            //_scrollTarget += IsInverted ? +deltaRad : -deltaRad;
+            _scrollTarget += -deltaRad;
+            Debug.WriteLine($"OnMouseWheel: ScrollTarget change: {_scrollTarget}");
             _scrollTarget = Math.Clamp(_scrollTarget, _scrollMin, _scrollMax);
-            Debug.WriteLine($"OnMouseWheel: ScrollTarget={_scrollTarget:F2}, ScrollOffset={ScrollOffset:F2}");
+            Debug.WriteLine($"OnMouseWheel: ScrollTarget: {_scrollTarget:F2}, ScrollOffset: {ScrollOffset:F2}, max: {_scrollMax}");
             InvalidateArrange();
         }
 
         // Klick auf Pfeile erkennen
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
+            double direction = IsInverted ? -1 : 1;
             Debug.WriteLine($"OnMouseDown: _canScroll{_canScroll}");
             if (!_canScroll)
                 return;
@@ -315,16 +314,17 @@ namespace BubbleControlls.ControlViews
 
             if (_scrollBackHitbox.Contains(pos))
             {
-                _scrollTarget = Math.Max(_scrollTarget - ScrollStep, _scrollMin);
+                _scrollTarget = Math.Max(_scrollTarget - (direction * _scrollStepLarge), _scrollMin);
                 Debug.WriteLine($"OnMouseDown: _scrollBackHitbox - _scrollTarget{_scrollTarget}, _scrollMin {_scrollMin}");
                 e.Handled = true;
             }
             else if (_scrollForwardHitbox.Contains(pos))
             {
-                _scrollTarget = Math.Min(_scrollTarget + ScrollStep, _scrollMax);
+                _scrollTarget = Math.Min(_scrollTarget + (direction * _scrollStepLarge), _scrollMax);
                 Debug.WriteLine($"OnMouseDown: _scrollForwardHitbox - _scrollTarget{_scrollTarget}, _scrollMax {_scrollMax}");
                 e.Handled = true;
             }
+            _scrollTarget = Math.Clamp(_scrollTarget, _scrollMin, _scrollMax);
             InvalidateArrange(); 
         }
         #endregion
@@ -366,8 +366,10 @@ namespace BubbleControlls.ControlViews
                     Center.Y + innerRy * Math.Sin(StartAngleRad + RingRotationRad));
 
                 // Winkeldifferenz
-                double sweepAngle = EndAngleRad - StartAngleRad;
-                bool isLargeArc = Math.Abs(sweepAngle) > Math.PI;
+                double sweep = EndAngleRad - StartAngleRad;
+                if (sweep <= 0)
+                    sweep += 2 * Math.PI;
+                bool isLargeArc = Math.Abs(sweep) > Math.PI;
                 var sweepDir = SweepDirection.Clockwise;
 
                 ctx.BeginFigure(outerStart, true, true);
@@ -419,13 +421,25 @@ namespace BubbleControlls.ControlViews
                 Center.Y + RadiusY * Math.Sin(EndAngleRad + RingRotationRad));
 
             // Pfeile zeichnen
-            _scrollBackHitbox = DrawArrow(dc, start, StartAngleRad + RingRotationRad, _canScrollBack, true);
-            _scrollForwardHitbox = DrawArrow(dc, end, EndAngleRad + RingRotationRad, _canScrollForward, false);
+            _scrollBackHitbox = DrawArrow(dc, start, StartAngleRad + RingRotationRad, true);
+            _scrollForwardHitbox = DrawArrow(dc, end, EndAngleRad + RingRotationRad, false);
+
         }
-        Rect DrawArrow(DrawingContext dc, Point center, double angle, bool isVisible, bool isStart)
+        Rect DrawArrow(DrawingContext dc, Point center, double angle, bool isLeft)
         {
             Rect hitbox = new Rect(0,0,1,1) ;
-            if (!isVisible) return hitbox;
+            if (_positions.Count == 0) return hitbox;
+            
+            if (isLeft)
+            {
+                if (IsAngleInRangeCircular(_positions.First().AngleRad, StartAngleRad, EndAngleRad))
+                    return hitbox;
+            }
+            else
+            {
+                if (IsAngleInRangeCircular(_positions.Last().AngleRad, StartAngleRad, EndAngleRad))
+                    return hitbox;
+            }
 
             double height = 10;
             
@@ -439,7 +453,7 @@ namespace BubbleControlls.ControlViews
                 (p1.X + p2.X) / 2,
                 (p1.Y + p2.Y) / 2);
             Vector tangent = new Vector(-Math.Sin(angle), Math.Cos(angle));
-            if (isStart)
+            if (isLeft)
                 tangent *= -1;
             
             Point p3 = new Point(
@@ -490,7 +504,7 @@ namespace BubbleControlls.ControlViews
                 }
             }
 
-            if (rePosition)
+            if (rePosition )
             {
                 _positions = new List<BubblePlacement>();
                 AdjustPlacement();
@@ -502,22 +516,23 @@ namespace BubbleControlls.ControlViews
                 var placement = _positions[i];
                 var child = Children[i];
                 
-                double angle = NormalizeAngle(placement.AngleRad);
-                double start = NormalizeAngle(StartAngleRad + RingRotationRad);
-                double end = NormalizeAngle(EndAngleRad + RingRotationRad);
-                bool isVisible =
-                    (end > start && angle >= start && angle <= end) ||
-                    (end < start && (angle >= start || angle <= end)); // Bereich über 0 hinaus
+                // double angle = NormalizeAngle(placement.AngleRad);
+                // double start = NormalizeAngle(StartAngleRad + RingRotationRad);
+                // double end = NormalizeAngle(EndAngleRad + RingRotationRad);
+                // bool isVisible =
+                //     (end > start && angle >= start && angle <= end) ||
+                //     (end < start && (angle >= start || angle <= end)); // Bereich über 0 hinaus
 
-                if (!isVisible)
-                {
-                    child.Arrange(new Rect(0, 0, 0, 0));
-                    continue;
-                }
+                //if (!isVisible)
+                //{
+                //    child.Arrange(new Rect(0, 0, 0, 0));
+                //    continue;
+                //}
 
                 double left = placement.Center.X - placement.Size.Width / 2;
                 double top = placement.Center.Y - placement.Size.Height / 2;
                 child.Arrange(new Rect(new Point(left, top), placement.Size));
+                //Debug.WriteLine($"ArrangeOverride| Left:{left}, Top:{top}, Placement:{placement}");
             }
             return finalSize;
         }
@@ -578,6 +593,8 @@ namespace BubbleControlls.ControlViews
                     Center.Y + ry * Math.Sin(EndAngleRad + RingRotationRad));
 
                 double sweep = EndAngleRad - StartAngleRad;
+                if (sweep <= 0)
+                    sweep += 2 * Math.PI;
                 bool isLargeArc = Math.Abs(sweep) > Math.PI;
 
                 ctx.BeginFigure(start, false, false);
@@ -609,9 +626,8 @@ namespace BubbleControlls.ControlViews
             }
             if (Math.Abs(ScrollOffset - _scrollTarget) > 0.01)
             {
-                ScrollOffset += (_scrollTarget - ScrollOffset) * 0.8; 
+                ScrollOffset += (_scrollTarget - ScrollOffset) * 0.25;
                 AdjustPlacement();
-                UpdateScrollLimits();
                 InvalidateArrange();
             }
             else
@@ -639,17 +655,29 @@ namespace BubbleControlls.ControlViews
         {
             _elementsPlaced = false;
             _elements = new List<UIElement>(elements);
+            List<UIElement> sorted = IsInverted ? _elements.Reverse<UIElement>().ToList() : _elements;
             _positions = new List<BubblePlacement>();
             ScrollOffset = 0;
-
+            
             Children.Clear();
-            foreach (var el in _elements)
+            foreach (var el in sorted)
                 Children.Add(el);
 
             _elementsPlaced = true;
             InvalidateMeasure();
         }
 
+        public void RemoveElements()
+        {
+            _elementsPlaced = false;
+            _elements = new List<UIElement>();
+            _positions = new List<BubblePlacement>();
+            ScrollOffset = 0;
+
+            Children.Clear();
+
+            InvalidateMeasure();
+        }
         private void AdjustPlacement()
         {
             // Ellipsenparameter aus Control
@@ -660,7 +688,7 @@ namespace BubbleControlls.ControlViews
 
             double spacing = ElementDistance;
             
-            _ellipsePath = new EllipsePath(center, radiusX, radiusY, rotation);
+            _ellipsePath = new EllipsePath(center, radiusX, radiusY, 0);
             var placer = new BubblePlacer(_ellipsePath, spacing);
             var sizes = new List<Size>();
             foreach (UIElement child in Children)
@@ -669,51 +697,61 @@ namespace BubbleControlls.ControlViews
                 sizes.Add(child.DesiredSize);
             }
             
-            double baseStart = NormalizeAngle(StartAngleRad + RingRotationRad - ViewHelper.DegToRad(ScrollOffset));
-            Debug.WriteLine($"ScrollOffset{ScrollOffset}, baseStart: {baseStart}, endAngleRad = {baseStart + (EndAngleRad - StartAngleRad)}");
+            //double baseStart = NormalizeAngle(StartAngleRad + RingRotationRad - ViewHelper.DegToRad(ScrollOffset));
+            double baseStart = NormalizeAngle(StartAngleRad + RingRotationRad - ScrollOffset);
+            double sweep = EndAngleRad - StartAngleRad;
+            if (sweep <= 0)
+                sweep += 2 * Math.PI;
+
+            double baseEnd = baseStart + sweep;
             _positions = placer.PlaceBubbles(
                 sizes,
-                TrackAlignment,
                 baseStart,
-                baseStart + (EndAngleRad - StartAngleRad),
-                ScrollOffset
+                baseEnd,
+                ScrollOffset,
+                IsCentered
             ).ToList();
+            // foreach (var pos in _positions)
+            // {
+            //     Debug.WriteLine($"AdjustPlacement Positions| {pos}");
+            // }
+            // Debug.WriteLine("-------------------------------------");
         }
         private void UpdateScrollLimits()
         {
+            //if (!_elementsPlaced) return;
+            
             if (_positions.Count == 0 || _elements.Count == 0)
             {
                 _canScroll = false;
-                _canScrollBack = false;
-                _canScrollForward = false;
-                _scrollMin = _scrollMax = 0;
+                _scrollMin = 0;
+                _scrollMax = 0;
                 return;
             }
-
-            // Schritt 1: Gesamtlänge aller Elemente berechnen
-            double totalLength = 0;
-            foreach (var el in _elements)
-            {
-                Size size = el.DesiredSize;
-                Vector tangent = new Vector(1, 0); // Approximation, da wir keinen realen Pfadpunkt haben
-                double r = BubblePlacer.ComputeProjectedRadius(size, tangent);
-                totalLength += 2 * r;
-            }
-
-            // Schritt 2: Platz, der entlang der Bahn maximal darstellbar ist (sichtbare Arc-Länge)
-            double visibleLength = _ellipsePath.GetArcLengthBetween(StartAngleRad, EndAngleRad);
-
-            // Schritt 3: Entscheidung
-            Debug.WriteLine($"[ScrollLimit] totalLength: {totalLength:F2}, visibleLength: {visibleLength:F2}");
-            _canScroll = totalLength > visibleLength;
-            _scrollMin = 0.0;
-            _scrollMax = Math.Max(0, totalLength - visibleLength);
+            // Gesamt-Radion der Elemente
+            double startRad = _positions.First().AngleRad;
+            double endRad = _positions.Last().AngleRad;
+            //double contentRad = endRad - startRad;
+            double contentRad = GeometryHelper.GetArcBetween(startRad, endRad);
+            // Radion des sichtbaren Bereichs
+            double visibleRad = GeometryHelper.GetArcBetween(StartAngleRad, EndAngleRad);
             
-            const double epsilon = 0.01;
-            _canScrollBack = _canScroll && ScrollOffset > _scrollMin + epsilon;
-            _canScrollForward = _canScroll && ScrollOffset < _scrollMax - epsilon;
+            // Radian Abstand zwischen Elementen
+            double elementRad = contentRad / _positions.Count;
+            _scrollStepSmall = elementRad * _scrollElementFactor;
+            _scrollStepLarge = elementRad;
+            
+            // Werte setzen
+            _canScroll = contentRad > visibleRad;
+            _scrollMin = 0.0;
+            _scrollMax = Math.Max(0, contentRad - visibleRad + elementRad / 2);
+            _scrollTarget = IsInverted ? _scrollMax : _scrollMin;
+            ScrollOffset = IsInverted ? _scrollMax * 0.95 : _scrollMin;
             // Debug
-            Debug.WriteLine($"[ScrollLimit] min: {_scrollMin:F2}, max: {_scrollMax:F2}, scrollable: {_canScroll}");
+            Debug.WriteLine($"[UpdateScrollLimits] visibleRad: {visibleRad:F2}, contentRad: {contentRad:F2}," +
+                            $" min: {_scrollMin:F2}, max: {_scrollMax:F2}, scrollable: {_canScroll}" +
+                            $" ScrollOffset: {ScrollOffset}, scrollTarget: {_scrollTarget}");
+            //[UpdateScrollLimits] visibleRad: 1,57, contentRad: 2,12, min: 0,00, max: 0,70, scrollable: True ScrollOffset: 0, scrollTarget: 0
         }
         
         /// <summary>
@@ -722,12 +760,25 @@ namespace BubbleControlls.ControlViews
         /// <param name="style">BubbleVisualTheme</param>
         public void ApplyTheme(BubbleVisualTheme style)
         {
-            RingBackground = style.RingBackground;
-            RingBorderBrush = style.RingBorderBrush;
+            RingBackground = style.RingBackground!;
+            RingBorderBrush = style.RingBorderBrush!;
             RingOpacity = style.RingOpacity;
             RingBorderOpacity = style.RingBorderOpacity;
             RingBorderThickness = style.RingBorderThickness;
             ScrollArrowHeight = style.ScrollArrowHeight;
+        }
+        
+        public static bool IsAngleInRangeCircular(double angle, double start, double end)
+        {
+            // Normiere alle Winkel in [0, 2π)
+            angle = GeometryHelper.NormalizeRad(angle);
+            start = GeometryHelper.NormalizeRad(start);
+            end = GeometryHelper.NormalizeRad(end);
+
+            if (start < end)
+                return angle >= start && angle < end;
+            else
+                return angle >= start || angle < end; // Bereich geht über 0
         }
         #endregion
     }

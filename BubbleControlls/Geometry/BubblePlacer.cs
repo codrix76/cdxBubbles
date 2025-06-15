@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using BubbleControlls.Models;
 
 namespace BubbleControlls.Geometry
 {
@@ -17,52 +13,45 @@ namespace BubbleControlls.Geometry
             _spacing = spacing;
         }
 
-        public IEnumerable<BubblePlacement> PlaceBubbles(IEnumerable<Size> sizes, BubbleTrackAlignment alignment, double startAngleRad, double endAngleRad, double scrollOffset)
+        public IEnumerable<BubblePlacement> PlaceBubbles(IEnumerable<Size> sizes, 
+            double startAngleRad, double endAngleRad, double scrollOffset,
+            bool isCentered)
         {
             var sizeList = sizes.ToList();
             if (sizeList.Count == 0)
                 yield break;
 
-            switch (alignment)
+            if (!isCentered)
             {
-                case BubbleTrackAlignment.Start:
-                    foreach (var p in PlaceForward(sizeList, startAngleRad, scrollOffset))
-                        yield return p;
-                    break;
-                case BubbleTrackAlignment.End:
-                    foreach (var p in PlaceBackward(sizeList, endAngleRad, scrollOffset))
-                        yield return p;
-                    break;
-                case BubbleTrackAlignment.Center:
-                    foreach (var p in PlaceCentered(sizeList, startAngleRad, endAngleRad, scrollOffset))
-                        yield return p;
-                    break;
+                foreach (var p in PlaceForward(sizeList, startAngleRad, scrollOffset))
+                    yield return p;
+            }
+            else
+            {
+                foreach (var p in PlaceCentered(sizeList, startAngleRad, endAngleRad, scrollOffset))
+                    yield return p;
             }
         }
 
-        private IEnumerable<BubblePlacement> PlaceForward(IList<Size> sizes, double startAngleRad, double scrollOffset)
+        private IEnumerable<BubblePlacement> PlaceForward(IList<Size> sizes, double startAngleRad, 
+            double scrollOffset)
         {
-            Size firstSize = sizes[0];
-            Vector initialTangent = _path.GetTangent(startAngleRad);
-            double initialProjectedRadius = ComputeProjectedRadius(firstSize, initialTangent);
-
-            double initialArc = _path.GetArcLength(startAngleRad) + scrollOffset + initialProjectedRadius;
-            double currentAngle = _path.GetAngleAtArcLength(initialArc);
-            double currentArc = _path.GetArcLength(currentAngle);
-
-            yield return new BubblePlacement
-            {
-                Center = _path.GetPoint(currentAngle),
-                AngleRad = currentAngle,
-                Size = firstSize
-            };
-
-            for (int i = 1; i < sizes.Count; i++)
+            double currentArc = _path.GetArcLength(startAngleRad  - scrollOffset);
+            double currentAngle = _path.GetAngleAtArcLength(currentArc);
+            double stepLength = 0;
+            for (int i = 0; i < sizes.Count; i++)
             {
                 Size size = sizes[i];
                 Vector tangent = _path.GetTangent(currentAngle);
                 double projectedRadius = ComputeProjectedRadius(size, tangent);
-                double stepLength = 2 * projectedRadius + _spacing;
+                if (i == 0)
+                {
+                    stepLength = projectedRadius + _spacing;
+                }
+                else
+                {
+                    stepLength = 2 * projectedRadius + _spacing;
+                }
 
                 currentArc += stepLength;
                 currentAngle = _path.GetAngleAtArcLength(currentArc);
@@ -75,51 +64,31 @@ namespace BubbleControlls.Geometry
                 };
             }
         }
-
-        private IEnumerable<BubblePlacement> PlaceBackward(IList<Size> sizes, double endAngleRad, double scrollOffset)
+        
+        private IEnumerable<BubblePlacement> PlaceCentered(IList<Size> sizes, double startAngleRad, double endAngleRad,
+            double scrollOffset)
         {
-            Size firstSize = sizes[0];
-            Vector initialTangent = _path.GetTangent(endAngleRad);
-            double initialProjectedRadius = ComputeProjectedRadius(firstSize, initialTangent);
 
-            double initialArc = _path.GetArcLength(endAngleRad) - scrollOffset - initialProjectedRadius;
-            double currentAngle = _path.GetAngleAtArcLength(initialArc);
-            double currentArc = _path.GetArcLength(currentAngle);
-
-            yield return new BubblePlacement
+            double totalLength = 0;
+            foreach (var size in sizes)
             {
-                Center = _path.GetPoint(currentAngle),
-                AngleRad = currentAngle,
-                Size = firstSize
-            };
-
-            for (int i = 1; i < sizes.Count; i++)
-            {
-                Size size = sizes[i];
-                Vector tangent = _path.GetTangent(currentAngle);
-                double projectedRadius = ComputeProjectedRadius(size, tangent);
-                double stepLength = 2 * projectedRadius + _spacing;
-
-                currentArc -= stepLength;
-                currentAngle = _path.GetAngleAtArcLength(currentArc);
-
-                yield return new BubblePlacement
-                {
-                    Center = _path.GetPoint(currentAngle),
-                    AngleRad = currentAngle,
-                    Size = size
-                };
+                Vector tangent = new Vector(1, 0); // Approximation, da wir keinen realen Pfadpunkt haben
+                double r = ComputeProjectedRadius(size, tangent);
+                totalLength += 2 * r + (_spacing);
             }
-        }
+            double visibleLength = _path.GetArcLengthBetween(startAngleRad, endAngleRad);
+            if (totalLength > visibleLength)
+            {
+                return PlaceForward(sizes, startAngleRad, scrollOffset);
+            }
 
-        private IEnumerable<BubblePlacement> PlaceCentered(IList<Size> sizes, double startAngleRad, double endAngleRad, double scrollOffset)
-        {
+            if (endAngleRad < startAngleRad)
+                endAngleRad += 2 * Math.PI;
             double centerAngle = (startAngleRad + endAngleRad) / 2.0;
+        
+            var placements = PlaceForward(sizes, centerAngle, scrollOffset).ToList();
+            double centerOffset = (ComputeTotalArcLength(placements) / 2.0);
 
-            var forward = PlaceForward(sizes, centerAngle, scrollOffset).ToList();
-            double centerOffset = ComputeTotalArcLength(forward) / 2.0;
-
-            // Shift zurück um die Hälfte der Gesamtlänge
             return PlaceForward(sizes, centerAngle, scrollOffset - centerOffset);
         }
 
@@ -139,7 +108,7 @@ namespace BubbleControlls.Geometry
             foreach (var p in placements)
             {
                 double r = ComputeProjectedRadius(p.Size, _path.GetTangent(p.AngleRad));
-                total += 2 * r + _spacing;
+                total += 2 * r + (_spacing);
             }
             return total;
         }

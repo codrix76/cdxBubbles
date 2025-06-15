@@ -1,10 +1,4 @@
 ﻿using BubbleControlls.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace BubbleControlls.Models
 {
@@ -24,10 +18,15 @@ namespace BubbleControlls.Models
         public BubbleMenuItem MainMenu { get => _mainMenu; set => _mainMenu = value; }
         public List<BubbleMenuItem> MenuPath { get => _menuPath; }
         public List<BubbleMenuItem> SelectableMenus { get => _selectableMenus; }
-        public List<BubbleMenuItem> GuiItemsToRemove { get => _guiItemsToRemove; set => _guiItemsToRemove = value; }
 
         #endregion
 
+        /// <summary>
+        /// Adding a new Menu, with optional parent
+        /// </summary>
+        /// <param name="menuItem">menuItem to add</param>
+        /// <param name="parentMenu">parentMenu for menuItem</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void AddMenu(BubbleMenuItem menuItem, BubbleMenuItem? parentMenu = null)
         {
             if (menuItem == null)
@@ -45,6 +44,11 @@ namespace BubbleControlls.Models
                 menuItem.Parent = parentMenu;
             }
         }
+        /// <summary>
+        /// removing given BubbleMenuItem menuItem
+        /// </summary>
+        /// <param name="menuItem"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void RemoveMenu(BubbleMenuItem menuItem)
         {
             if (menuItem == null)
@@ -61,6 +65,11 @@ namespace BubbleControlls.Models
                 _mainMenu.SubItems.Remove(menuItem);
             }
         }
+        /// <summary>
+        /// find Menu by Name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>BubbleMenuItem</returns>
         public BubbleMenuItem? FindMenu(string name)
         {
             if (_mainMenu.Name == name)
@@ -69,6 +78,10 @@ namespace BubbleControlls.Models
             return _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
         }
 
+        /// <summary>
+        /// Liefert die MenüTiefe
+        /// </summary>
+        /// <returns>int count</returns>
         public int GetMaxDepth()
         {
             return GetDepthRecursive(_mainMenu);
@@ -76,7 +89,7 @@ namespace BubbleControlls.Models
 
         private int GetDepthRecursive(BubbleMenuItem item)
         {
-            if (item.SubItems == null || item.SubItems.Count == 0)
+            if (item.SubItems.Count == 0)
                 return 1;
 
             int max = 0;
@@ -89,6 +102,10 @@ namespace BubbleControlls.Models
 
             return max + 1;
         }
+        /// <summary>
+        ///  liefert Anzahl aller SubItems 
+        /// </summary>
+        /// <returns>count</returns>
         public int GetMaxSubItemCount()
         {
             return GetMaxSubItemCountRecursive(_mainMenu);
@@ -111,6 +128,10 @@ namespace BubbleControlls.Models
 
             return Math.Max(currentCount, maxInChildren);
         }
+        /// <summary>
+        /// liefert ein Tupel mit level und max Anzahl Subitems
+        /// </summary>
+        /// <returns>(int itemLevel, int itemCount)</returns>
         public (int itemLevel, int itemCount) GetLevelWithMaxSubItemCount()
         {
             return GetLevelRecursive(_mainMenu, 1);
@@ -138,6 +159,10 @@ namespace BubbleControlls.Models
             return (maxLevel, maxCount);
         }
 
+        /// <summary>
+        /// Handles Menu submenu building
+        /// </summary>
+        /// <param name="name">menuName</param>
         public void HandleClick(string name)
         {
             BubbleMenuItem? selected = FindMenu(name);
@@ -211,7 +236,7 @@ namespace BubbleControlls.Models
                     Traverse(child);
             }
 
-            if (MainMenu != null)
+            if (MainMenu.SubItems.Count == 0)
                 Traverse(MainMenu);
 
             return result;
@@ -219,11 +244,6 @@ namespace BubbleControlls.Models
 
         public void ResetDeleted()
         {
-            //var toRemoveItems = FindAllItemsWithLevel(BubbleMenuLevel.Deleted);
-            //foreach (var item in toRemoveItems)
-            //{
-            //    item.Level = BubbleMenuLevel.Neutral;
-            //}
             _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Neutral);
             _guiItemsToRemove.Clear();
         }

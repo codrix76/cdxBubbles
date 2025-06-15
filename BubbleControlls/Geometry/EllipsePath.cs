@@ -92,6 +92,8 @@ namespace BubbleControlls.Geometry
         }
         public double GetArcLengthBetween(double startRad, double endRad)
         {
+            if (endRad < startRad)
+                endRad += 2 * Math.PI;
             double arcLength = 0;
             int steps = 100; // Feinheit
             double angleStep = (endRad - startRad) / steps;

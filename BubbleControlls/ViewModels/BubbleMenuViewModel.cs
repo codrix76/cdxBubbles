@@ -1,76 +1,121 @@
-﻿using BubbleControlls.ControlViews;
-using BubbleControlls.Helpers;
+﻿using System.Windows;
 using BubbleControlls.Models;
-using System;
-using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
-using System.Windows;
 
 namespace BubbleControlls.ViewModels
 {
-    public class BubbleMenuViewModel : INotifyPropertyChanged
+    public class BubbleMenuViewModel
     {
         #region Variablen
         private BubbleMenuHandler _bubbleMenuHandler = new BubbleMenuHandler();
-        private List<BubbleMenuItem> _currentMenuPath = new List<BubbleMenuItem>();
-        private List<BubbleMenuItem> _currentMenuSelection = new List<BubbleMenuItem>();
-        private MenuLevelDefinition[] _menuLevelSizes = new MenuLevelDefinition[4];
         #endregion
 
         #region Properties
         public BubbleMenuHandler BubbleMenuHandler { get => _bubbleMenuHandler; }
         public int MenuDepth => _bubbleMenuHandler.GetMaxDepth();
-        public int MaxMenuLevels { get; } = 4;
-        public Point MenuAreaFrom { get; set; } = new Point(0, 0);
-        public Point MenuAreaTo { get; set; } = new Point(0, 0);
-        public double MenuAreaFromRadian { get; set; } = 0.0;
-        public double MenuAreaToRadian { get; set; } = 0.0;
-        public double DistributionRadian { get; set; } = 0;
-        public double GetMenuLevelLenght { get; private set; } = 0;
+        public double GetMenuLevelLenght { get; private set; }
         public DistributionAlignmentType DistributionAlignment { get; set; } = DistributionAlignmentType.Center;
-        public List<BubbleMenuItem> CurrentMenuPath { get => _currentMenuPath; }
-        public List<BubbleMenuItem> CurrentMenuSelection { get => _currentMenuSelection; }
-        public MenuLevelDefinition[] MenuLevelSizes { get => _menuLevelSizes; }
+        public List<BubbleMenuItem> CurrentMenuPath { get; } = new List<BubbleMenuItem>();
+        public List<BubbleMenuItem> CurrentMenuSelection { get; } = new List<BubbleMenuItem>();
+        public MenuLevelDefinition[] MenuLevelSizes { get; private set; } = new MenuLevelDefinition[0];
+
         #endregion
-        public BubbleMenuViewModel()
-        {
-        }
 
         #region Methods
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string name) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-        public void SetDistributionRadian(BubbleMenuAlignmentType menuAlignment)
+        public void SetMenuLevelSizes(double[] sizes, double spacing)
         {
-            DistributionRadian = (menuAlignment, DistributionAlignment) switch
+            MenuLevelSizes = new MenuLevelDefinition[sizes.Length];
+            for (int i = 0; i < sizes.Length; i++)
             {
-                // TopEdge
-                (BubbleMenuAlignmentType.TopEdge, DistributionAlignmentType.Center) => Math.PI / 2,          // 90°
-                (BubbleMenuAlignmentType.TopEdge, DistributionAlignmentType.From) => 0,                    // 0°
-                (BubbleMenuAlignmentType.TopEdge, DistributionAlignmentType.To) => Math.PI,              // 180°
-
-                // TopLeftCorner
-                (BubbleMenuAlignmentType.TopLeftCorner, DistributionAlignmentType.Center) => Math.PI / 4,    // 45°
-                (BubbleMenuAlignmentType.TopLeftCorner, DistributionAlignmentType.From) => 0,              // 0°
-                (BubbleMenuAlignmentType.TopLeftCorner, DistributionAlignmentType.To) => Math.PI / 2,    // 90°
-
-                // LeftEdge
-                (BubbleMenuAlignmentType.LeftEdge, DistributionAlignmentType.Center) => 0,                   // 0°
-                (BubbleMenuAlignmentType.LeftEdge, DistributionAlignmentType.From) => 3 * Math.PI / 2,     // 270°
-                (BubbleMenuAlignmentType.LeftEdge, DistributionAlignmentType.To) => Math.PI,
-
-                // Fallback
-                _ => throw new ArgumentOutOfRangeException(nameof(menuAlignment), "Unsupported alignment/type combination")
-            };
+                MenuLevelSizes[i] = new MenuLevelDefinition();
+                if (i == 0)
+                {
+                    MenuLevelSizes[i].Start = 0;
+                }
+                else
+                {
+                    MenuLevelSizes[i].Start = MenuLevelSizes[i-1].End;
+                }
+                MenuLevelSizes[i].End = MenuLevelSizes[i].Start + sizes[i] + spacing;
+                MenuLevelSizes[i].Center = (MenuLevelSizes[i].Start + MenuLevelSizes[i].End) / 2;
+            }
+            
+            GetMenuLevelLenght = MenuLevelSizes[sizes.Length-1].End;
         }
-        public void SetMenuLevelSizes(double big, double small, double spacing)
+
+        public BubbleAlignmentValues UpdateAlignmentValues(BubbleMenuAlignmentType alignmentType,
+            double minHeight, double minLength, double menuHeight, double menuWidth, double mainMenuSize)
         {
-            _menuLevelSizes[0] = new MenuLevelDefinition(0, big / 2, big + spacing / 2); // Zentrum für Hauptmenu
-            _menuLevelSizes[1] = new MenuLevelDefinition(_menuLevelSizes[0].End, _menuLevelSizes[0].End + small/2, _menuLevelSizes[0].End + small + spacing /2);
-            _menuLevelSizes[2] = new MenuLevelDefinition(_menuLevelSizes[1].End, _menuLevelSizes[1].End + big / 2, _menuLevelSizes[1].End + big + spacing / 2);
-            _menuLevelSizes[3] = new MenuLevelDefinition(_menuLevelSizes[2].End, _menuLevelSizes[2].End + big / 2, _menuLevelSizes[2].End + big + spacing / 2);
-            GetMenuLevelLenght = _menuLevelSizes[3].End;
+            double screenWidth = SystemParameters.PrimaryScreenWidth;
+            double screenHeight = SystemParameters.WorkArea.Height;//SystemParameters.PrimaryScreenHeight;
+            
+            BubbleAlignmentValues values = new BubbleAlignmentValues();
+            if (alignmentType == BubbleMenuAlignmentType.TopLeftCorner)
+            {
+                values.MenuHeight = menuHeight;
+                values.MenuWidth = menuWidth;
+                values.WindowTop = 0;
+                values.WindowLeft = 0;
+                values.MenuCenter = new Point(mainMenuSize / 2, mainMenuSize / 2);
+                values.RingCenter = new Point(0, 0);
+                values.StartAngle = 0;
+                values.EndAngle = 90;
+            }
+            if (alignmentType == BubbleMenuAlignmentType.TopEdge)
+            {
+                values.MenuWidth = menuWidth * 2;
+                values.MenuHeight = menuHeight;
+                values.WindowTop = 0;
+                values.WindowLeft = (screenWidth - values.MenuWidth) / 2;
+                values.MenuCenter = new Point(values.MenuWidth / 2, mainMenuSize / 2);
+                values.RingCenter = new Point(values.MenuWidth / 2, 0);
+                values.StartAngle = 0;
+                values.EndAngle = 180;
+            }
+            if (alignmentType == BubbleMenuAlignmentType.LeftEdge)
+            {
+                values.MenuHeight = menuHeight * 2;
+                values.MenuWidth = menuWidth;
+                values.WindowTop = (screenHeight - values.MenuHeight) / 2;
+                values.WindowLeft = 0;
+                values.MenuCenter = new Point(mainMenuSize / 2, values.MenuHeight / 2);
+                values.RingCenter = new Point(0, values.MenuHeight  / 2);
+                values.StartAngle = 270;
+                values.EndAngle = 90;
+            }
+            if (alignmentType == BubbleMenuAlignmentType.RightEdge)
+            {
+                values.MenuHeight = menuHeight * 2;
+                values.MenuWidth = menuWidth;
+                values.WindowTop = (screenHeight - values.MenuHeight) / 2;
+                values.WindowLeft = (screenWidth - menuWidth);
+                values.MenuCenter = new Point(menuWidth - (mainMenuSize / 2), values.MenuHeight / 2);
+                values.RingCenter = new Point(menuWidth, values.MenuHeight / 2);
+                values.StartAngle = 90;
+                values.EndAngle = 270;
+            }
+            if (alignmentType == BubbleMenuAlignmentType.BottomEdge)
+            {
+                values.MenuHeight = menuHeight;
+                values.MenuWidth = menuWidth * 2;
+                values.WindowTop = screenHeight - menuHeight;
+                values.WindowLeft = (screenWidth - values.MenuWidth) / 2;
+                values.MenuCenter = new Point(values.MenuWidth / 2, menuHeight - (mainMenuSize / 2));
+                values.RingCenter = new Point(values.MenuWidth / 2, menuHeight);
+                values.StartAngle = 180;
+                values.EndAngle = 0;
+            }
+            if (alignmentType == BubbleMenuAlignmentType.Free)
+            {
+                values.MenuHeight = menuHeight * 2;
+                values.MenuWidth = menuWidth * 2;
+                values.WindowTop = (screenHeight - values.MenuHeight) / 2;
+                values.WindowLeft = (screenWidth - values.MenuWidth) / 2;
+                values.MenuCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
+                values.RingCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
+                values.StartAngle = 0;
+                values.EndAngle = 359.9;
+            }
+            return values;
         }
         #endregion
 
@@ -80,5 +125,17 @@ namespace BubbleControlls.ViewModels
             _bubbleMenuHandler.HandleClick(id);
         }
         #endregion
+    }
+
+    public class BubbleAlignmentValues
+    {
+        public double WindowTop { get; set; }
+        public double WindowLeft { get; set; }
+        public double StartAngle { get; set; }
+        public double EndAngle { get; set; }
+        public double MenuHeight { get; set; }
+        public double MenuWidth { get; set; }
+        public Point MenuCenter { get; set; }
+        public Point RingCenter { get; set; }
     }
 }

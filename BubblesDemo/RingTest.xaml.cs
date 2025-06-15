@@ -18,12 +18,16 @@ namespace BubblesDemo
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            myBubbleRing.ScrollStep = 6;
+            myBubbleRing.PathWidth = 50;
+            myBubbleRing.RingOpacity = 20;
+            myBubbleRing.RingBorderThickness = 0;
             myBubbleRing.RingRotation = 0.0;
             myBubbleRing.StartAngle = 0.0;
             myBubbleRing.EndAngle = 90.0;
             myBubbleRing.ElementDistance = 10.0;
-            myBubbleRing.TrackAlignment = BubbleTrackAlignment.Start;
+            myBubbleRing.ScrollArrowHeight = 20;
+            myBubbleRing.IsCentered = false;
+            myBubbleRing.IsInverted = false;
             myBubbleRing.AddElements(GetElements());
         }
 
@@ -33,6 +37,7 @@ namespace BubblesDemo
             var bubble = new Bubble
             {
                 Height = 40,
+                Width = 40,
                 Text = "",
                 ToolTipText = "",
                 FontSizeValue = 10,
@@ -45,6 +50,7 @@ namespace BubblesDemo
             var bubbleEnd = new Bubble
             {
                 Height = 40,
+                Width = 40,
                 Text = "",
                 ToolTipText = "",
                 FontSizeValue = 10,
@@ -54,11 +60,11 @@ namespace BubblesDemo
             bubbleEnd.BackgroundBrush = new SolidColorBrush(Colors.Blue);
             bubbleEnd.RenderStyle = BubbleRenderStyle.Style3D;
             
-            elements.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
-            elements.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
-            elements.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
-            elements.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
-            elements.Add(new Bubble { Height = 40,RenderStyle = BubbleRenderStyle.Style3D });
+            elements.Add(new Bubble { Height = 40, Width = 40, RenderStyle = BubbleRenderStyle.Style3D });
+            elements.Add(new Bubble { Height = 40, Width = 40, RenderStyle = BubbleRenderStyle.Style3D });
+            elements.Add(new Bubble { Height = 40, Width = 40, RenderStyle = BubbleRenderStyle.Style3D });
+            elements.Add(new Bubble { Height = 40, Width = 40, RenderStyle = BubbleRenderStyle.Style3D });
+            elements.Add(new Bubble { Height = 40, Width = 40, RenderStyle = BubbleRenderStyle.Style3D });
             
             elements.Add(bubbleEnd);
             return elements;

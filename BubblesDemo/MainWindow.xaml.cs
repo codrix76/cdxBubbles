@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using BubbleControlls.Models;
 
 namespace BubblesDemo
@@ -14,11 +15,12 @@ namespace BubblesDemo
             
             this.Loaded += (s, e) =>
             {
-                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.TopEdge;
-                //BubbleMenu.Background = Brushes.DarkSlateBlue;
+                BubbleMenu.BubbleMenuAlignment = BubbleMenuAlignmentType.Free;
+                BubbleMenu.Background = Brushes.DarkSlateBlue;
                 BubbleMenu.DistributionAlignment = DistributionAlignmentType.From;
-                BubbleMenu.BubbleMenuBigSize = 80.0;
-                BubbleMenu.BubbleMenuSmallSize = 45.0;
+                BubbleMenu.BubbleMainMenuSize = 80.0;
+                BubbleMenu.BubbleMenuBigSize = 55.0;
+                BubbleMenu.BubbleMenuSmallSize = 40.0;
                 BubbleMenu.MainMenu = BuildMenu();
             };
         }
@@ -122,6 +124,8 @@ namespace BubblesDemo
                     MessageBox.Show($"Aktion ausgelöst von: {item.Text}");
                 }
             };
+            mainMenu.AddSubItem(subItem);
+            mainMenu.AddSubItem(subItem);
             mainMenu.AddSubItem(subItem);
             subItem = new BubbleMenuItem()
             {
