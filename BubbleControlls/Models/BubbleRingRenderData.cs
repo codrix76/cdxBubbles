@@ -18,7 +18,10 @@ public class BubbleRingRenderData
     public Brush Border { get; set; }
     public int BorderOpacity { get; set; }
     public int FillOpacity { get; set; }
+    public int RingOpacity { get; set; }
     public int BorderThickness { get; set; }
-    public bool IsGlowActive { get; set; }
+    public double StartAngleRad  { get; set; }
+    public double EndAngleRad  { get; set; }
+    public double RingRotationRad  { get; set; }
     public List<BubblePlacement> Placements { get; set; } = new();
 }

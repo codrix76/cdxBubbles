@@ -46,34 +46,65 @@ public static class BubbleRingRenderer
 
     public static void DrawGlow(DrawingContext dc, BubbleRingRenderData data)
     {
-        if (!data.IsGlowActive) return;
-        double t = 2.0;
-        byte o1 = (byte)Math.Clamp(data.FillOpacity, 0, 255);
-        byte o2 = (byte)Math.Clamp(data.FillOpacity + 50, 0, 255);
-        byte o3 = (byte)Math.Clamp(data.FillOpacity + 150, 0, 255);
+        double thickness = 2;
+        double innerRx = data.RadiusX - data.PathWidth;
+        double innerRy = data.RadiusY - data.PathWidth;
+        double outerRx = data.RadiusX;
+        double outerRy = data.RadiusY;
+        
+        byte opacity1 = (byte)Math.Clamp(data.RingOpacity, 0, 255);
+        byte opacity2 = (byte)Math.Clamp(data.RingOpacity + 50, 0, 255);
+        byte opacity3 = (byte)Math.Clamp(data.RingOpacity + 150, 0, 255);
 
         Color baseColor = (data.Fill as SolidColorBrush)?.Color ?? Colors.CornflowerBlue;
 
-        SolidColorBrush c1 = new(Color.FromArgb(o1, baseColor.R, baseColor.G, baseColor.B));
-        SolidColorBrush c2 = new(Color.FromArgb(o2, baseColor.R, baseColor.G, baseColor.B));
-        SolidColorBrush c3 = new(Color.FromArgb(o3, baseColor.R, baseColor.G, baseColor.B));
+        SolidColorBrush innerBrush = new(Color.FromArgb(opacity1, baseColor.R, baseColor.G, baseColor.B));
+        SolidColorBrush midBrush = new(Color.FromArgb(opacity2, baseColor.R, baseColor.G, baseColor.B));
+        SolidColorBrush outerBrush = new(Color.FromArgb(opacity3, baseColor.R, baseColor.G, baseColor.B));
 
-        foreach (var scale in new[] { t * 2, t, 0 })
-        {
-            double innerRx = data.RadiusX - data.PathWidth + scale;
-            double innerRy = data.RadiusY - data.PathWidth + scale;
-            double outerRx = data.RadiusX - scale;
-            double outerRy = data.RadiusY - scale;
+        var innerPath1 = CreateRingArcPath(innerRx + thickness * 2, innerRy+ thickness * 2, data);
+        var innerPath2 = CreateRingArcPath(innerRx + thickness, innerRy + thickness, data);
+        var innerPath3 = CreateRingArcPath(innerRx, innerRy, data);
+        var outerPath1 = CreateRingArcPath(outerRx - thickness * 2, outerRy - thickness * 2, data);
+        var outerPath2 = CreateRingArcPath(outerRx - thickness, outerRy - thickness, data);
+        var outerPath3 = CreateRingArcPath(outerRx, outerRy, data);
+        
+        // Innerer Pfad (Glow von innen nach Mitte)
+        dc.DrawGeometry(null, new Pen(innerBrush, thickness * 0.8), innerPath1);
+        dc.DrawGeometry(null, new Pen(midBrush,   thickness), innerPath2);
+        dc.DrawGeometry(null, new Pen(outerBrush, thickness * 1.2), innerPath3);
+        //
+        // // Äußerer Pfad (Glow von außen nach Mitte)
+        dc.DrawGeometry(null, new Pen(innerBrush, thickness * 0.8), outerPath1);
+        dc.DrawGeometry(null, new Pen(midBrush,   thickness), outerPath2);
+        dc.DrawGeometry(null, new Pen(outerBrush, thickness * 1.2), outerPath3);
 
-            var innerPath = GeometryHelper.CreateArc(data.Center, innerRx, innerRy, data.StartAngleDeg + data.RotationDeg, data.EndAngleDeg + data.RotationDeg);
-            var outerPath = GeometryHelper.CreateArc(data.Center, outerRx, outerRy, data.StartAngleDeg + data.RotationDeg, data.EndAngleDeg + data.RotationDeg);
-
-            dc.DrawGeometry(null, new Pen(c1, t * 0.8), innerPath);
-            dc.DrawGeometry(null, new Pen(c2, t), outerPath);
-            dc.DrawGeometry(null, new Pen(c3, t * 1.2), outerPath);
-        }
+        
     }
+    private static System.Windows.Media.Geometry CreateRingArcPath(double rx, double ry, BubbleRingRenderData data)
+    {
+        var geo = new StreamGeometry();
+        using (var ctx = geo.Open())
+        {
+            Point start = new Point(
+                data.Center.X + rx * Math.Cos(data.StartAngleRad + data.RingRotationRad),
+                data.Center.Y + ry * Math.Sin(data.StartAngleRad + data.RingRotationRad));
 
+            Point end = new Point(
+                data.Center.X + rx * Math.Cos(data.EndAngleRad + data.RingRotationRad),
+                data.Center.Y + ry * Math.Sin(data.EndAngleRad + data.RingRotationRad));
+
+            double sweep = data.EndAngleRad - data.StartAngleRad;
+            if (sweep <= 0)
+                sweep += 2 * Math.PI;
+            bool isLargeArc = Math.Abs(sweep) > Math.PI;
+
+            ctx.BeginFigure(start, false, false);
+            ctx.ArcTo(end, new Size(rx, ry), 0, isLargeArc, SweepDirection.Clockwise, true, false);
+        }
+        geo.Freeze();
+        return geo;
+    }
     public static Rect DrawArrow(DrawingContext dc, Point center, double angleRad, bool isLeft, Brush brush, double pathWidth, double height)
     {
         Point p1 = new(
