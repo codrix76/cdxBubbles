@@ -16,7 +16,6 @@
         Background="Transparent"
         >
     <Grid>
-        <ctrls:BubbleMenu x:Name="BubbleMenu"
-                          />
+        <ctrls:BubbleMenu x:Name="BubbleMenu"/>
     </Grid>
 </Window>

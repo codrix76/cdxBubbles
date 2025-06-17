@@ -7,24 +7,35 @@ namespace BubbleControlls.ViewModels
     {
         #region Variablen
         private BubbleMenuHandler _bubbleMenuHandler = new BubbleMenuHandler();
+        private double[] _sizes = new double[0];
+        private double _spacing = 10;
+        private BubbleAlignmentValues _viewValues = new BubbleAlignmentValues();
         #endregion
 
         #region Properties
         public BubbleMenuHandler BubbleMenuHandler { get => _bubbleMenuHandler; }
+        public BubbleAlignmentValues ViewValues { get => _viewValues; }
         public int MenuDepth => _bubbleMenuHandler.GetMaxDepth();
         public double GetMenuLevelLenght { get; private set; }
         public DistributionAlignmentType DistributionAlignment { get; set; } = DistributionAlignmentType.Center;
         public List<BubbleMenuItem> CurrentMenuPath { get; } = new List<BubbleMenuItem>();
         public List<BubbleMenuItem> CurrentMenuSelection { get; } = new List<BubbleMenuItem>();
         public MenuLevelDefinition[] MenuLevelSizes { get; private set; } = new MenuLevelDefinition[0];
-
+        
         #endregion
 
         #region Methods
         public void SetMenuLevelSizes(double[] sizes, double spacing)
         {
-            MenuLevelSizes = new MenuLevelDefinition[sizes.Length];
-            for (int i = 0; i < sizes.Length; i++)
+            _sizes = sizes;
+            _spacing = spacing;
+            ResizeRings();
+        }
+
+        public void ResizeRings()
+        {
+            MenuLevelSizes = new MenuLevelDefinition[_sizes.Length];
+            for (int i = 0; i < _sizes.Length; i++)
             {
                 MenuLevelSizes[i] = new MenuLevelDefinition();
                 if (i == 0)
@@ -35,13 +46,12 @@ namespace BubbleControlls.ViewModels
                 {
                     MenuLevelSizes[i].Start = MenuLevelSizes[i-1].End;
                 }
-                MenuLevelSizes[i].End = MenuLevelSizes[i].Start + sizes[i] + spacing;
+                MenuLevelSizes[i].End = MenuLevelSizes[i].Start + _sizes[i] + _spacing;
                 MenuLevelSizes[i].Center = (MenuLevelSizes[i].Start + MenuLevelSizes[i].End) / 2;
             }
             
-            GetMenuLevelLenght = MenuLevelSizes[sizes.Length-1].End;
+            GetMenuLevelLenght = MenuLevelSizes[_sizes.Length-1].End;
         }
-
         public BubbleAlignmentValues UpdateAlignmentValues(BubbleMenuAlignmentType alignmentType,
             double minHeight, double minLength, double menuHeight, double menuWidth, double mainMenuSize)
         {
@@ -122,11 +132,13 @@ namespace BubbleControlls.ViewModels
                 values.WindowLeft = (screenWidth - values.MenuWidth) / 2;
                 values.MenuCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
                 values.RingCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
-                values.StartAngle = 0;
-                values.EndAngle = 359.9;
+                values.StartAngle = 270;
+                values.EndAngle = 269.9;
                 values.IsCentered = false;
                 values.IsInverted = false;
             }
+
+            _viewValues = values;
             return values;
         }
         #endregion

@@ -49,6 +49,7 @@ namespace BubbleControlls.ControlViews
         }
 
         #region Properties
+        public bool ForceRefresh { get; set; } = false;
         private double BubbleOffset { get; set; }
         /// <summary>
         /// Interner Scroll Versatz entlang der Laufbahn (in Radiant oder Elementabständen).
@@ -347,46 +348,46 @@ namespace BubbleControlls.ControlViews
             double startAngleRad = GeometryHelper.DegToRad(_bubbleRingRenderData.StartAngleDeg + _bubbleRingRenderData.RotationDeg);
             double endAngleRad   = GeometryHelper.DegToRad(_bubbleRingRenderData.EndAngleDeg + _bubbleRingRenderData.RotationDeg);
 
-            var scrollOffsetstart = GeometryHelper.EllipticalPoint(
-                _bubbleRingRenderData.Center,
-                _bubbleRingRenderData.RadiusX,
-                _bubbleRingRenderData.RadiusY,
-                StartAngleRad
-            );
-            dc.DrawLine(new Pen(Brushes.Green, 1), _bubbleRingRenderData.Center, scrollOffsetstart);
-
-            var scrollOffset = GeometryHelper.EllipticalPoint(
-                _bubbleRingRenderData.Center,
-                _bubbleRingRenderData.RadiusX,
-                _bubbleRingRenderData.RadiusY,
-                ScrollOffset
-            );
-            dc.DrawLine(new Pen(Brushes.OrangeRed, 1), _bubbleRingRenderData.Center, scrollOffset);
-            
-            var scrollOffsetEnd = GeometryHelper.EllipticalPoint(
-                _bubbleRingRenderData.Center,
-                _bubbleRingRenderData.RadiusX,
-                _bubbleRingRenderData.RadiusY,
-                EndAngleRad
-            );
-            dc.DrawLine(new Pen(Brushes.Yellow, 1), _bubbleRingRenderData.Center, scrollOffsetEnd);
-
-            var scrolltarget = GeometryHelper.EllipticalPoint(
-                _bubbleRingRenderData.Center,
-                _bubbleRingRenderData.RadiusX,
-                _bubbleRingRenderData.RadiusY,
-                _scrollTarget
-            );
-            dc.DrawLine(new Pen(Brushes.LightSkyBlue, 1), _bubbleRingRenderData.Center, scrolltarget);
-            
-            var scrollmid = GeometryHelper.EllipticalPoint(
-                _bubbleRingRenderData.Center,
-                _bubbleRingRenderData.RadiusX,
-                _bubbleRingRenderData.RadiusY,
-                GeometryHelper.NormalizeRad(EndAngleRad /2)
-            );
-            dc.DrawLine(new Pen(Brushes.Blue, 1), _bubbleRingRenderData.Center, scrollmid);
-            
+            // var scrollOffsetstart = GeometryHelper.EllipticalPoint(
+            //     _bubbleRingRenderData.Center,
+            //     _bubbleRingRenderData.RadiusX,
+            //     _bubbleRingRenderData.RadiusY,
+            //     StartAngleRad
+            // );
+            // dc.DrawLine(new Pen(Brushes.Green, 1), _bubbleRingRenderData.Center, scrollOffsetstart);
+            //
+            // var scrollOffset = GeometryHelper.EllipticalPoint(
+            //     _bubbleRingRenderData.Center,
+            //     _bubbleRingRenderData.RadiusX,
+            //     _bubbleRingRenderData.RadiusY,
+            //     ScrollOffset
+            // );
+            // dc.DrawLine(new Pen(Brushes.OrangeRed, 1), _bubbleRingRenderData.Center, scrollOffset);
+            //
+            // var scrollOffsetEnd = GeometryHelper.EllipticalPoint(
+            //     _bubbleRingRenderData.Center,
+            //     _bubbleRingRenderData.RadiusX,
+            //     _bubbleRingRenderData.RadiusY,
+            //     EndAngleRad
+            // );
+            // dc.DrawLine(new Pen(Brushes.Yellow, 1), _bubbleRingRenderData.Center, scrollOffsetEnd);
+            //
+            // var scrolltarget = GeometryHelper.EllipticalPoint(
+            //     _bubbleRingRenderData.Center,
+            //     _bubbleRingRenderData.RadiusX,
+            //     _bubbleRingRenderData.RadiusY,
+            //     _scrollTarget
+            // );
+            // dc.DrawLine(new Pen(Brushes.LightSkyBlue, 1), _bubbleRingRenderData.Center, scrolltarget);
+            //
+            // var scrollmid = GeometryHelper.EllipticalPoint(
+            //     _bubbleRingRenderData.Center,
+            //     _bubbleRingRenderData.RadiusX,
+            //     _bubbleRingRenderData.RadiusY,
+            //     GeometryHelper.NormalizeRad(EndAngleRad /2)
+            // );
+            // dc.DrawLine(new Pen(Brushes.Blue, 1), _bubbleRingRenderData.Center, scrollmid);
+            //
             _scrollBackHitbox = BubbleRingRenderer.DrawArrow(
                 
                 dc,
@@ -476,7 +477,7 @@ namespace BubbleControlls.ControlViews
         {
             if (!IsVisible) return;
             
-            if (_elementsPlaced)
+            if (_elementsPlaced || ForceRefresh)
             {
                 AdjustPlacement();
                 UpdateScrollLimits();
@@ -484,6 +485,7 @@ namespace BubbleControlls.ControlViews
                 _elementsPlaced = false;
                 _bubbleRingRenderData = CreateRenderData();
                 InvalidateVisual();
+                ForceRefresh = false;
             }
             if (Math.Abs(ScrollOffset - _scrollTarget) > 0.001)
             {
@@ -539,7 +541,7 @@ namespace BubbleControlls.ControlViews
 
             InvalidateMeasure();
         }
-        private void AdjustPlacement()
+        public void AdjustPlacement()
         {
             // Ellipsenparameter aus Control
             double radiusX = RadiusX - PathWidth / 2.0;
@@ -568,7 +570,7 @@ namespace BubbleControlls.ControlViews
             }
             Debug.WriteLine("----------------------------------------");
         }
-        private void UpdateScrollLimits()
+        public void UpdateScrollLimits()
         {
             if (_positions.Count == 0 || _elements.Count == 0)
             {
@@ -662,6 +664,11 @@ namespace BubbleControlls.ControlViews
                 RingOpacity = RingOpacity,
                 Placements = _positions.ToList()
             };
+        }
+
+        public void Refresh()
+        {
+            ForceRefresh = true;
         }
         
         #endregion

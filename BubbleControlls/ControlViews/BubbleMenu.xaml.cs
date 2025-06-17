@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -26,6 +27,9 @@ namespace BubbleControlls.ControlViews
         #endregion
 
         #region Properties
+
+        public double MenuRadius => _viewModel.GetMenuLevelLenght;
+        public BubbleAlignmentValues ViewValues { get => _viewModel.ViewValues; }
         public double MenuHideSeconds { get; set; } = 3;
         public BubbleVisualTheme MenuStyleTheme { get; set; } = BubbleVisualThemes.Standard();
         public BubbleMenuAlignmentType BubbleMenuAlignment
@@ -163,7 +167,7 @@ namespace BubbleControlls.ControlViews
             _additionalMenuRing.EndAngle = _alignmentValues.EndAngle;
 
             ShowMainMenu();
-            BuildMenuRings();
+            BuildMenuRings(null, null);
         }
         /// <summary>
         /// Positioniert das MainWindow entsprechend des MenuAlignmentProperties
@@ -190,59 +194,29 @@ namespace BubbleControlls.ControlViews
                 Text = mnu.Text,
                 ToolTipText = mnu.Tooltip,
                 Height = BubbleMainMenuSize,
+                Width = BubbleMainMenuSize,
                 TextIconLayout = TextIconLayout.IconLeftOfText,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                BorderDistance = 6,
-                RenderStyle = BubbleRenderStyle.Style3D
-                
+                BorderDistance = 6
             };
+            mainMenu.ApplyTheme(MenuStyleTheme);
             if(mnu.IconPath != null) mainMenu.Icon = new BitmapImage(new Uri(mnu.IconPath));
             mainMenu.MouseLeftButtonDown += Bubble_Clicked;
-
-            mainMenu.ApplyTheme(MenuStyleTheme);
+            mainMenu.RenderStyle = BubbleRenderStyle.Style3D;
             Canvas.SetTop(mainMenu, _menuCenter.Y - BubbleMainMenuSize / 2);
             Canvas.SetLeft(mainMenu, _menuCenter.X - BubbleMainMenuSize / 2);
             
             MenuCanvas.Children.Add(mainMenu);
         }
-        private void BuildMenuRings()
+        public void BuildMenuRings(double? startAngl, double? endAngl)
         {
-            Point ringCenter = _alignmentValues.RingCenter;
-
-            _pathMenuRing.ApplyTheme(MenuStyleTheme);
-            _pathMenuRing.Center = ringCenter;
-            _pathMenuRing.RadiusX = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
-            _pathMenuRing.RadiusY = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
-            _pathMenuRing.PathWidth = BubbleMenuSmallSize + 10;
-            _pathMenuRing.ElementDistance = 5;
-            _pathMenuRing.IsCentered = _alignmentValues.IsCentered;
-            _pathMenuRing.IsInverted = _alignmentValues.IsInverted;
-            
             Canvas.SetTop(_pathMenuRing, 0);
             Canvas.SetLeft(_pathMenuRing, 0);
             MenuCanvas.Children.Add(_pathMenuRing);
 
-            _selectedMenuRing.ApplyTheme(MenuStyleTheme);
-            _selectedMenuRing.Center = ringCenter;
-            _selectedMenuRing.RadiusX = _pathMenuRing.RadiusX + BubbleMenuBigSize + BubbleMenuSpacing;
-            _selectedMenuRing.RadiusY = _pathMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
-            _selectedMenuRing.PathWidth = BubbleMenuBigSize + 10;
-            _selectedMenuRing.ElementDistance = 10;
-            _selectedMenuRing.IsCentered = _alignmentValues.IsCentered;
-            _selectedMenuRing.IsInverted = _alignmentValues.IsInverted;
-
             Canvas.SetTop(_selectedMenuRing, 0);
             Canvas.SetLeft(_selectedMenuRing, 0);
             MenuCanvas.Children.Add(_selectedMenuRing);
-
-            _additionalMenuRing.ApplyTheme(MenuStyleTheme);
-            _additionalMenuRing.Center = ringCenter;
-            _additionalMenuRing.RadiusX = _selectedMenuRing.RadiusX + BubbleMenuBigSize + BubbleMenuSpacing;
-            _additionalMenuRing.RadiusY = _selectedMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
-            _additionalMenuRing.PathWidth = BubbleMenuBigSize + 10;
-            _additionalMenuRing.ElementDistance = 10;
-            _additionalMenuRing.IsCentered = _alignmentValues.IsCentered;
-            _additionalMenuRing.IsInverted = _alignmentValues.IsInverted;
 
             Canvas.SetTop(_additionalMenuRing, 0);
             Canvas.SetLeft(_additionalMenuRing, 0);
@@ -251,6 +225,56 @@ namespace BubbleControlls.ControlViews
             //_pathMenuRing.Visibility = Visibility.Collapsed;
             //_selectedMenuRing.Visibility = Visibility.Collapsed;
             _additionalMenuRing.Visibility = Visibility.Collapsed;
+
+            InvalidateMenu(startAngl, endAngl);
+        }
+
+        public void InvalidateMenu(double? startAngl, double? endAngl)
+        {
+            Point ringCenter = _alignmentValues.RingCenter;
+            
+            _pathMenuRing.ApplyTheme(MenuStyleTheme);
+            _pathMenuRing.Center = ringCenter;
+            _pathMenuRing.RadiusX = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
+            _pathMenuRing.RadiusY = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
+            _pathMenuRing.PathWidth = BubbleMenuSmallSize + 10;
+            _pathMenuRing.ElementDistance = 5;
+            _pathMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _pathMenuRing.IsInverted = _alignmentValues.IsInverted;
+            if (startAngl != null) _pathMenuRing.StartAngle = startAngl.Value;
+            if (endAngl != null) _pathMenuRing.EndAngle = endAngl.Value;
+            
+            _selectedMenuRing.ApplyTheme(MenuStyleTheme);
+            _selectedMenuRing.Center = ringCenter;
+            _selectedMenuRing.RadiusX = _pathMenuRing.RadiusX + BubbleMenuBigSize + BubbleMenuSpacing;
+            _selectedMenuRing.RadiusY = _pathMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
+            _selectedMenuRing.PathWidth = BubbleMenuBigSize + 10;
+            _selectedMenuRing.ElementDistance = 10;
+            _selectedMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _selectedMenuRing.IsInverted = _alignmentValues.IsInverted;
+            if (startAngl != null) _selectedMenuRing.StartAngle = startAngl.Value;
+            if (endAngl != null) _selectedMenuRing.EndAngle = endAngl.Value;
+            
+            _additionalMenuRing.ApplyTheme(MenuStyleTheme);
+            _additionalMenuRing.Center = ringCenter;
+            _additionalMenuRing.RadiusX = _selectedMenuRing.RadiusX + BubbleMenuBigSize + BubbleMenuSpacing;
+            _additionalMenuRing.RadiusY = _selectedMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
+            _additionalMenuRing.PathWidth = BubbleMenuBigSize + 10;
+            _additionalMenuRing.ElementDistance = 10;
+            _additionalMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _additionalMenuRing.IsInverted = _alignmentValues.IsInverted;
+            if (startAngl != null) _additionalMenuRing.StartAngle = startAngl.Value;
+            if (endAngl != null) _additionalMenuRing.EndAngle = endAngl.Value;
+            
+            if (startAngl != null || endAngl != null)
+            {
+                Debug.WriteLine("invalidate aufgerufen");
+                
+                _pathMenuRing.Refresh();
+                _selectedMenuRing.Refresh();
+                _additionalMenuRing.Refresh();
+            }
+
         }
         private void UpdateMenu()
         {
