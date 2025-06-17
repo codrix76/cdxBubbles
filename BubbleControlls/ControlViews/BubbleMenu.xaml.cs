@@ -28,8 +28,6 @@ namespace BubbleControlls.ControlViews
         #region Properties
         public double MenuHideSeconds { get; set; } = 3;
         public BubbleVisualTheme MenuStyleTheme { get; set; } = BubbleVisualThemes.Standard();
-        public DistributionAlignmentType DistributionAlignment { get => _viewModel.DistributionAlignment;
-            set => _viewModel.DistributionAlignment = value; }
         public BubbleMenuAlignmentType BubbleMenuAlignment
         {
             get => (BubbleMenuAlignmentType)GetValue(BubbleMenuAlignmentProperty);
@@ -217,7 +215,9 @@ namespace BubbleControlls.ControlViews
             _pathMenuRing.RadiusY = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
             _pathMenuRing.PathWidth = BubbleMenuSmallSize + 10;
             _pathMenuRing.ElementDistance = 5;
-
+            _pathMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _pathMenuRing.IsInverted = _alignmentValues.IsInverted;
+            
             Canvas.SetTop(_pathMenuRing, 0);
             Canvas.SetLeft(_pathMenuRing, 0);
             MenuCanvas.Children.Add(_pathMenuRing);
@@ -228,6 +228,8 @@ namespace BubbleControlls.ControlViews
             _selectedMenuRing.RadiusY = _pathMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
             _selectedMenuRing.PathWidth = BubbleMenuBigSize + 10;
             _selectedMenuRing.ElementDistance = 10;
+            _selectedMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _selectedMenuRing.IsInverted = _alignmentValues.IsInverted;
 
             Canvas.SetTop(_selectedMenuRing, 0);
             Canvas.SetLeft(_selectedMenuRing, 0);
@@ -239,6 +241,8 @@ namespace BubbleControlls.ControlViews
             _additionalMenuRing.RadiusY = _selectedMenuRing.RadiusY + BubbleMenuBigSize + BubbleMenuSpacing;
             _additionalMenuRing.PathWidth = BubbleMenuBigSize + 10;
             _additionalMenuRing.ElementDistance = 10;
+            _additionalMenuRing.IsCentered = _alignmentValues.IsCentered;
+            _additionalMenuRing.IsInverted = _alignmentValues.IsInverted;
 
             Canvas.SetTop(_additionalMenuRing, 0);
             Canvas.SetLeft(_additionalMenuRing, 0);
@@ -272,6 +276,7 @@ namespace BubbleControlls.ControlViews
                     Text = item.Text,
                     ToolTipText = item.Tooltip,
                     Height = BubbleMenuSmallSize,
+                    Width = BubbleMenuSmallSize,
                     DataContext = item,
                     BorderDistance = 5,
                     RenderStyle = BubbleRenderStyle.Style3D
@@ -296,6 +301,7 @@ namespace BubbleControlls.ControlViews
                     Text = item.Text,
                     ToolTipText = item.Tooltip,
                     Height = BubbleMenuBigSize,
+                    Width = BubbleMenuBigSize,
                     DataContext = item,
                     BorderDistance = 5,
                     RenderStyle = BubbleRenderStyle.Style3D

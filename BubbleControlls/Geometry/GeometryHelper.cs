@@ -70,4 +70,25 @@ public static class GeometryHelper
         }
         return new SolidColorBrush(Color.FromArgb((byte)Math.Clamp(opacity, 0, 255), 100, 149, 237)); // fallback CornflowerBlue
     }
+    
+    public static double GetAngleAfterDistance(EllipsePath path, double startRad, double distancePx)
+    {
+        double startArc = path.GetArcLength(startRad);
+        double targetArc = startArc + distancePx;
+        return path.GetAngleAtArcLength(targetArc);
+    }
+    
+    public static double ComputeElementArcLength(BubblePlacement placement, double radiusX, double radiusY)
+    {
+        double angle = placement.AngleRad;
+        double ds = Math.Sqrt(Math.Pow(radiusX * Math.Sin(angle), 2) + Math.Pow(radiusY * Math.Cos(angle), 2));
+        double arcLength = placement.Size.Width; // Breite entlang der Bahn
+        return arcLength; // optional: ds * dTheta falls dTheta gebraucht wird
+    }
+    public static double ComputeDeltaTheta(BubblePlacement placement, double radiusX, double radiusY)
+    {
+        double angle = placement.AngleRad;
+        double ds = Math.Sqrt(Math.Pow(radiusX * Math.Sin(angle), 2) + Math.Pow(radiusY * Math.Cos(angle), 2));
+        return placement.Size.Width / ds;
+    }
 }

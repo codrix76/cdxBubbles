@@ -21,7 +21,7 @@ namespace BubbleControlls.ControlViews
         private List<UIElement> _elements = new();
         private List<BubblePlacement> _positions = new();
         private bool _elementsPlaced;
-        private double _scrollMin;
+        private const double ScrollMin = 0;
         private double _scrollMax;
         private bool _canScroll = true;
         private double _scrollStepSmall;
@@ -49,7 +49,7 @@ namespace BubbleControlls.ControlViews
         }
 
         #region Properties
-
+        private double BubbleOffset { get; set; }
         /// <summary>
         /// Interner Scroll Versatz entlang der Laufbahn (in Radiant oder Elementabständen).
         /// Wird durch Mausrad gesteuert. Kein DP.
@@ -298,7 +298,7 @@ namespace BubbleControlls.ControlViews
             //_scrollTarget += IsInverted ? +deltaRad : -deltaRad;
             _scrollTarget += -deltaRad;
             Debug.WriteLine($"OnMouseWheel: ScrollTarget change: {_scrollTarget}");
-            _scrollTarget = Math.Clamp(_scrollTarget, _scrollMin, _scrollMax);
+            _scrollTarget = Math.Clamp(_scrollTarget, ScrollMin, _scrollMax);
             Debug.WriteLine($"OnMouseWheel: ScrollTarget: {_scrollTarget:F2}, ScrollOffset: {ScrollOffset:F2}, max: {_scrollMax}");
             InvalidateArrange();
         }
@@ -315,8 +315,8 @@ namespace BubbleControlls.ControlViews
 
             if (_scrollBackHitbox.Contains(pos))
             {
-                _scrollTarget = Math.Max(_scrollTarget - (direction * _scrollStepLarge), _scrollMin);
-                Debug.WriteLine($"OnMouseDown: _scrollBackHitbox - _scrollTarget{_scrollTarget}, _scrollMin {_scrollMin}");
+                _scrollTarget = Math.Max(_scrollTarget - (direction * _scrollStepLarge), ScrollMin);
+                Debug.WriteLine($"OnMouseDown: _scrollBackHitbox - _scrollTarget{_scrollTarget}, _scrollMin {ScrollMin}");
                 e.Handled = true;
             }
             else if (_scrollForwardHitbox.Contains(pos))
@@ -325,7 +325,7 @@ namespace BubbleControlls.ControlViews
                 Debug.WriteLine($"OnMouseDown: _scrollForwardHitbox - _scrollTarget{_scrollTarget}, _scrollMax {_scrollMax}");
                 e.Handled = true;
             }
-            _scrollTarget = Math.Clamp(_scrollTarget, _scrollMin, _scrollMax);
+            _scrollTarget = Math.Clamp(_scrollTarget, ScrollMin, _scrollMax);
             InvalidateArrange(); 
         }
         #endregion
@@ -347,7 +347,48 @@ namespace BubbleControlls.ControlViews
             double startAngleRad = GeometryHelper.DegToRad(_bubbleRingRenderData.StartAngleDeg + _bubbleRingRenderData.RotationDeg);
             double endAngleRad   = GeometryHelper.DegToRad(_bubbleRingRenderData.EndAngleDeg + _bubbleRingRenderData.RotationDeg);
 
+            var scrollOffsetstart = GeometryHelper.EllipticalPoint(
+                _bubbleRingRenderData.Center,
+                _bubbleRingRenderData.RadiusX,
+                _bubbleRingRenderData.RadiusY,
+                StartAngleRad
+            );
+            dc.DrawLine(new Pen(Brushes.Green, 1), _bubbleRingRenderData.Center, scrollOffsetstart);
+
+            var scrollOffset = GeometryHelper.EllipticalPoint(
+                _bubbleRingRenderData.Center,
+                _bubbleRingRenderData.RadiusX,
+                _bubbleRingRenderData.RadiusY,
+                ScrollOffset
+            );
+            dc.DrawLine(new Pen(Brushes.OrangeRed, 1), _bubbleRingRenderData.Center, scrollOffset);
+            
+            var scrollOffsetEnd = GeometryHelper.EllipticalPoint(
+                _bubbleRingRenderData.Center,
+                _bubbleRingRenderData.RadiusX,
+                _bubbleRingRenderData.RadiusY,
+                EndAngleRad
+            );
+            dc.DrawLine(new Pen(Brushes.Yellow, 1), _bubbleRingRenderData.Center, scrollOffsetEnd);
+
+            var scrolltarget = GeometryHelper.EllipticalPoint(
+                _bubbleRingRenderData.Center,
+                _bubbleRingRenderData.RadiusX,
+                _bubbleRingRenderData.RadiusY,
+                _scrollTarget
+            );
+            dc.DrawLine(new Pen(Brushes.LightSkyBlue, 1), _bubbleRingRenderData.Center, scrolltarget);
+            
+            var scrollmid = GeometryHelper.EllipticalPoint(
+                _bubbleRingRenderData.Center,
+                _bubbleRingRenderData.RadiusX,
+                _bubbleRingRenderData.RadiusY,
+                GeometryHelper.NormalizeRad(EndAngleRad /2)
+            );
+            dc.DrawLine(new Pen(Brushes.Blue, 1), _bubbleRingRenderData.Center, scrollmid);
+            
             _scrollBackHitbox = BubbleRingRenderer.DrawArrow(
+                
                 dc,
                 GeometryHelper.EllipticalPoint(_bubbleRingRenderData.Center, _bubbleRingRenderData.RadiusX, _bubbleRingRenderData.RadiusY, startAngleRad),
                 startAngleRad,
@@ -444,7 +485,7 @@ namespace BubbleControlls.ControlViews
                 _bubbleRingRenderData = CreateRenderData();
                 InvalidateVisual();
             }
-            if (Math.Abs(ScrollOffset - _scrollTarget) > 0.01)
+            if (Math.Abs(ScrollOffset - _scrollTarget) > 0.001)
             {
                 ScrollOffset += (_scrollTarget - ScrollOffset) * 0.25;
                 AdjustPlacement();
@@ -515,51 +556,72 @@ namespace BubbleControlls.ControlViews
                 sizes.Add(child.DesiredSize);
             }
             
-            double baseStart = GeometryHelper.NormalizeRad(StartAngleRad + RingRotationRad - ScrollOffset);
-            double sweep = EndAngleRad - StartAngleRad;
-            if (sweep <= 0)
-                sweep += 2 * Math.PI;
-
-            double baseEnd = baseStart + sweep;
+            double baseStart = GeometryHelper.NormalizeRad(StartAngleRad  + BubbleOffset - ScrollOffset);
+            
             _positions = placer.PlaceBubbles(
                 sizes,
-                baseStart,
-                baseEnd,
-                ScrollOffset,
-                IsCentered
+                baseStart
             ).ToList();
+            foreach (var pos in _positions)
+            {
+                Debug.WriteLine($"AdjustPlacement : {pos}");
+            }
+            Debug.WriteLine("----------------------------------------");
         }
         private void UpdateScrollLimits()
         {
             if (_positions.Count == 0 || _elements.Count == 0)
             {
                 _canScroll = false;
-                _scrollMin = 0;
                 _scrollMax = 0;
                 return;
             }
+            
             // Gesamt-Radion der Elemente
             double startRad = _positions.First().AngleRad;
             double endRad = _positions.Last().AngleRad;
-            //double contentRad = endRad - startRad;
             double contentRad = GeometryHelper.GetArcBetween(startRad, endRad);
             // Radion des sichtbaren Bereichs
             double visibleRad = GeometryHelper.GetArcBetween(StartAngleRad, EndAngleRad);
+            double rawSpacingRad = GeometryHelper.GetAngleAfterDistance(_ellipsePath, StartAngleRad, ElementDistance);
+            double spacingrad = GeometryHelper.NormalizeRad(rawSpacingRad - StartAngleRad);
             
             // Radian Abstand zwischen Elementen
-            double elementRad = contentRad / _positions.Count;
+            double elementRad = GeometryHelper.ComputeDeltaTheta(_positions.First(), RadiusX, RadiusY);
             _scrollStepSmall = elementRad * ScrollElementFactor;
             _scrollStepLarge = elementRad;
             
             // Werte setzen
             _canScroll = contentRad > visibleRad;
-            _scrollMin = 0.0;
-            _scrollMax = Math.Max(0, contentRad - visibleRad + elementRad / 2);
-            _scrollTarget = IsInverted ? _scrollMax : _scrollMin;
-            ScrollOffset = IsInverted ? _scrollMax * 0.95 : _scrollMin;
+            if (_canScroll)
+            {
+                _scrollMax = Math.Abs(visibleRad - endRad - (elementRad ));
+                _scrollTarget = IsInverted ? _scrollMax : ScrollMin;
+                ScrollOffset = IsInverted ? _scrollMax - 0.002: ScrollMin;
+                BubbleOffset = ScrollMin;
+            }
+            else
+            {
+                _scrollTarget = ScrollMin;
+                _scrollMax = ScrollMin;
+                ScrollOffset = 0.002;   // triggert einmal die einen mini scrolling in OnRenderFrame
+                if (IsCentered)
+                {
+                    double contMid = contentRad == 0 ? elementRad / 2 : contentRad;
+                    
+                    BubbleOffset = (visibleRad - contMid - elementRad - spacingrad) / 2 ;
+                }
+                else
+                {
+                    double diff = Math.Abs(visibleRad - endRad - (elementRad + spacingrad) / 2);
+                    BubbleOffset = IsInverted ? diff : ScrollMin;
+                }
+            }
+
+
             // Debug
             Debug.WriteLine($"[UpdateScrollLimits] visibleRad: {visibleRad:F2}, contentRad: {contentRad:F2}," +
-                            $" min: {_scrollMin:F2}, max: {_scrollMax:F2}, scrollable: {_canScroll}" +
+                            $" min: {ScrollMin:F2}, max: {_scrollMax:F2}, scrollable: {_canScroll}" +
                             $" ScrollOffset: {ScrollOffset}, scrollTarget: {_scrollTarget}");
         }
         
@@ -575,19 +637,6 @@ namespace BubbleControlls.ControlViews
             RingBorderOpacity = style.RingBorderOpacity;
             RingBorderThickness = style.RingBorderThickness;
             ScrollArrowHeight = style.ScrollArrowHeight;
-        }
-        
-        public static bool IsAngleInRangeCircular(double angle, double start, double end)
-        {
-            // Normiere alle Winkel in [0, 2π)
-            angle = GeometryHelper.NormalizeRad(angle);
-            start = GeometryHelper.NormalizeRad(start);
-            end = GeometryHelper.NormalizeRad(end);
-
-            if (start < end)
-                return angle >= start && angle < end;
-            else
-                return angle >= start || angle < end; // Bereich geht über 0
         }
         
         private BubbleRingRenderData CreateRenderData()

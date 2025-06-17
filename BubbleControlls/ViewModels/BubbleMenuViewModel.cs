@@ -59,6 +59,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(0, 0);
                 values.StartAngle = 0;
                 values.EndAngle = 90;
+                values.IsCentered = true;
+                values.IsInverted = false;
             }
             if (alignmentType == BubbleMenuAlignmentType.TopEdge)
             {
@@ -70,6 +72,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(values.MenuWidth / 2, 0);
                 values.StartAngle = 0;
                 values.EndAngle = 180;
+                values.IsCentered = true;
+                values.IsInverted = true;
             }
             if (alignmentType == BubbleMenuAlignmentType.LeftEdge)
             {
@@ -81,6 +85,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(0, values.MenuHeight  / 2);
                 values.StartAngle = 270;
                 values.EndAngle = 90;
+                values.IsCentered = true;
+                values.IsInverted = false;
             }
             if (alignmentType == BubbleMenuAlignmentType.RightEdge)
             {
@@ -92,6 +98,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(menuWidth, values.MenuHeight / 2);
                 values.StartAngle = 90;
                 values.EndAngle = 270;
+                values.IsCentered = true;
+                values.IsInverted = true;
             }
             if (alignmentType == BubbleMenuAlignmentType.BottomEdge)
             {
@@ -103,6 +111,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(values.MenuWidth / 2, menuHeight);
                 values.StartAngle = 180;
                 values.EndAngle = 0;
+                values.IsCentered = true;
+                values.IsInverted = false;
             }
             if (alignmentType == BubbleMenuAlignmentType.Free)
             {
@@ -114,6 +124,8 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
                 values.StartAngle = 0;
                 values.EndAngle = 359.9;
+                values.IsCentered = false;
+                values.IsInverted = false;
             }
             return values;
         }
@@ -137,5 +149,7 @@ namespace BubbleControlls.ViewModels
         public double MenuWidth { get; set; }
         public Point MenuCenter { get; set; }
         public Point RingCenter { get; set; }
+        public bool IsCentered { get; set; }
+        public bool IsInverted { get; set; }
     }
 }
