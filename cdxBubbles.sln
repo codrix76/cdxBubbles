@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BubblesDemo", "BubblesDemo\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BubbleControlls", "BubbleControlls\BubbleControlls.csproj", "{52F1779C-1D9D-4C0D-84AD-438F5F31BBF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BubbleTools", "BubbleTools\BubbleTools.csproj", "{76C7BA55-5A49-4E0C-BF69-421AA9440EB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{52F1779C-1D9D-4C0D-84AD-438F5F31BBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52F1779C-1D9D-4C0D-84AD-438F5F31BBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52F1779C-1D9D-4C0D-84AD-438F5F31BBF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76C7BA55-5A49-4E0C-BF69-421AA9440EB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76C7BA55-5A49-4E0C-BF69-421AA9440EB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76C7BA55-5A49-4E0C-BF69-421AA9440EB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76C7BA55-5A49-4E0C-BF69-421AA9440EB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
