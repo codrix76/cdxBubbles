@@ -5,7 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using BubbleControlls.Models;
-using BubbleControlls.ViewModels;
 
 namespace BubbleControlls.ControlViews
 {
@@ -18,7 +17,7 @@ namespace BubbleControlls.ControlViews
             this.Loaded += (_, _)  => {
                 if (this.DataContext == null)
                 {
-                    this.DataContext = new BubbleViewModel();
+                    this.DataContext = this;
                     var current = this.TextIconLayout;
                     OnTextIconLayoutChanged(this, new DependencyPropertyChangedEventArgs(
                         TextIconLayoutProperty,

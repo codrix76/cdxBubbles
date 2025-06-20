@@ -3,49 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ctrls="clr-namespace:BubbleControlls.ControlViews"
         mc:Ignorable="d"
         Title="InfoBox"
         WindowStyle="None"
         AllowsTransparency="True"
         ShowInTaskbar="False"
         ResizeMode="NoResize"
-        Background="Transparent"
-        SizeToContent="{Binding BoxSizeToContent, RelativeSource={RelativeSource AncestorType=Window}}">
-
+        Background="Transparent">
     <Grid>
-        <!-- Klickbare Fläche (falls später nötig) -->
-        <Rectangle Fill="Transparent" />
-
-        <!-- Outer Border mit Bindings -->
-        <Border x:Name="OuterBorder"
-                BorderThickness="{Binding BorderThicknessOuter, RelativeSource={RelativeSource AncestorType=Window}}"
-                CornerRadius="30"
-                BorderBrush="{Binding OuterBorderBrush, RelativeSource={RelativeSource AncestorType=Window}}"
-                Background="Transparent"
-                IsHitTestVisible="True">
-
-            <!-- Inner Border mit Offset (per Code gesetzt) -->
-            <Border x:Name="InnerBorder"
-                    BorderThickness="{Binding BorderThicknessInner, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CornerRadius="25"
-                    BorderBrush="{Binding InnerBorderBrush, RelativeSource={RelativeSource AncestorType=Window}}"
-                    Background="{Binding BackgroundBrush, RelativeSource={RelativeSource AncestorType=Window}}"
-                    Opacity="{Binding BackgroundOpacity, RelativeSource={RelativeSource AncestorType=Window}}"
-                    IsHitTestVisible="True">
-
-                    <!-- Textanzeige -->
-                <TextBlock x:Name="TextDisplay"
-                               Text="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=Window}}"
-                               Margin="{Binding TextMargin, RelativeSource={RelativeSource AncestorType=Window}}"
-                               Background="Transparent"
-                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Window}}"
-                               FontFamily="{Binding FontFamily, RelativeSource={RelativeSource AncestorType=Window}}"
-                               FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=Window}}"
-                               FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=Window}}"
-                               FontStyle="{Binding FontStyle, RelativeSource={RelativeSource AncestorType=Window}}"
-                               TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource AncestorType=Window}}"
-                               TextWrapping="Wrap" />
-            </Border>
-        </Border>
+        <ctrls:BubbleInfoControl x:Name="InfoContent"/>
     </Grid>
 </Window>
