@@ -26,6 +26,7 @@ namespace BubbleTools
     {
         private BubbleVisualTheme _currentTheme = BubbleVisualThemes.Standard();
         private BubbleMenu PreviewBubble = new BubbleMenu();
+        private BubbleInfoControl PreviewInfoControl = new BubbleInfoControl();
         public BubbleThemeEditorWindow()
         {
             InitializeComponent();
@@ -56,13 +57,21 @@ namespace BubbleTools
         {
             PreviewPanel.Children.Clear();
             PreviewBubble = new BubbleMenu();
-            PreviewBubble.Width = 200;
-            PreviewBubble.Height = 200;
+            PreviewBubble.Width = 180;
+            PreviewBubble.Height = 180;
             PreviewBubble.VerticalAlignment = VerticalAlignment.Top;
             PreviewBubble.HorizontalAlignment = HorizontalAlignment.Left;
             PreviewBubble.MenuStyleTheme = currentTheme;
 
             PreviewPanel.Children.Add(PreviewBubble);
+            
+            PreviewInfoControl = new  BubbleInfoControl();
+            PreviewInfoControl.Width = 200;
+            PreviewInfoControl.Height = 100;
+            PreviewInfoControl.DisplayText = "Demo Text";
+            PreviewInfoControl.ApplyTheme(currentTheme);
+            
+            PreviewPanel.Children.Add(PreviewInfoControl);
         }
 
         private Window CreateCodeWindow(string code)

@@ -12,7 +12,7 @@ namespace BubbleTools
 {
     public static class ThemeEditorBuilder
     {
-        public static void Build(StackPanel panel, BubbleVisualTheme theme, Action onChanged)
+        public static void Build1(StackPanel panel, BubbleVisualTheme theme, Action onChanged)
         {
             panel.Children.Clear();
 
@@ -42,7 +42,47 @@ namespace BubbleTools
             }
         }
 
-        private static FrameworkElement? CreateEditor(PropertyInfo prop, BubbleVisualTheme theme, Action onChanged)
+        public static void Build(StackPanel panel, BubbleVisualTheme theme, Action onChanged)
+        {
+            panel.Children.Clear();
+            BuildRecursive(panel, theme, onChanged);
+        }
+        private static void BuildRecursive(StackPanel panel, object obj, Action onChanged)
+        {
+            var props = obj.GetType().GetProperties();
+
+            foreach (var prop in props)
+            {
+                var display = prop.GetCustomAttribute<DisplayAttribute>();
+                string name = display?.Name ?? prop.Name;
+                string desc = display?.Description ?? "";
+
+                var container = new StackPanel { Margin = new Thickness(0, 5, 0, 5) };
+                var label = new TextBlock
+                {
+                    Text = name,
+                    ToolTip = string.IsNullOrWhiteSpace(desc) ? null : desc,
+                    FontWeight = FontWeights.SemiBold
+                };
+                container.Children.Add(label);
+
+                var value = prop.GetValue(obj);
+
+                if (value != null && !prop.PropertyType.IsPrimitive && prop.PropertyType.Namespace == "BubbleControlls.Models")
+                {
+                    BuildRecursive(container, value, onChanged); // Rekursion
+                }
+                else
+                {
+                    FrameworkElement? editor = CreateEditor(prop, obj, onChanged);
+                    if (editor != null)
+                        container.Children.Add(editor);
+                }
+
+                panel.Children.Add(container);
+            }
+        }
+        private static FrameworkElement? CreateEditor(PropertyInfo prop, object theme, Action onChanged)
         {
             var type = prop.PropertyType;
 
