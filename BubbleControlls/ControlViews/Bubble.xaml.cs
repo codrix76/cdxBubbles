@@ -507,30 +507,30 @@ namespace BubbleControlls.ControlViews
         public void ApplyTheme(BubbleVisualTheme style)
         {
             // Farben
-            BackgroundBrush = style.Background!;
-            OuterBorderBrush = style.OuterBorderColor!;
-            BorderBrushInner = style.Border!;
+            BackgroundBrush = style.BubbleVisuals.Background!;
+            OuterBorderBrush = style.BubbleVisuals.OuterBorderColor!;
+            BorderBrushInner = style.BubbleVisuals.Border!;
 
-            BackgroundHighlightColor = style.HighlightColor;
-            BackgroundDarkColor = style.BackgroundDarkColor;
-            OuterBorderHighlightColor = style.OuterBorderHighlightColor;
-            OuterBorderDarkColor = style.OuterBorderDarkColor;
-            InnerBorderHighlightColor = style.InnerBorderHighlightColor;
-            InnerBorderDarkColor = style.InnerBorderDarkColor;
+            BackgroundHighlightColor = style.BubbleVisuals.HighlightColor;
+            BackgroundDarkColor = style.BubbleVisuals.BackgroundDarkColor;
+            OuterBorderHighlightColor = style.BubbleVisuals.OuterBorderHighlightColor;
+            OuterBorderDarkColor = style.BubbleVisuals.OuterBorderDarkColor;
+            InnerBorderHighlightColor = style.BubbleVisuals.InnerBorderHighlightColor;
+            InnerBorderDarkColor = style.BubbleVisuals.InnerBorderDarkColor;
 
             // Font
-            BubbleText.Foreground = style.Foreground ?? Brushes.White;
-            FontFamilyName = style.FontFamily?.Source ?? "Segoe UI";
-            FontSizeValue = style.FontSize;
-            FontWeightValue = style.FontWeight;
-            FontStyleValue = style.FontStyle;
+            BubbleText.Foreground = style.BubbleVisuals.Foreground ?? Brushes.White;
+            FontFamilyName = style.BubbleVisuals.FontFamily?.Source ?? "Segoe UI";
+            FontSizeValue = style.BubbleVisuals.FontSize;
+            FontWeightValue = style.BubbleVisuals.FontWeight;
+            FontStyleValue = style.BubbleVisuals.FontStyle;
 
             // Ränder
-            OuterBorderThickness = style.OuterBorderThickness;
-            InnerBorderThickness = style.BorderThickness;
+            OuterBorderThickness = style.BubbleVisuals.OuterBorderThickness;
+            InnerBorderThickness = style.BubbleVisuals.BorderThickness;
 
             // Layout-Stil
-            RenderStyle = style.Use3DGradient ? BubbleRenderStyle.Style3D : BubbleRenderStyle.StylePlane;
+            RenderStyle = style.BubbleVisuals.Use3DGradient ? BubbleRenderStyle.Style3D : BubbleRenderStyle.StylePlane;
         }
     }
 }
