@@ -6,6 +6,9 @@ namespace BubbleControlls.Models
 {
     public class BubbleVisualTheme
     {
+        [Display(Name = "Allgemeine Einstellungen", Description = "Allgemeine Einstellungen für Bubble Controls")]
+        public BubbleVisualBase BubbleBaseVisuals { get; set; } = new BubbleVisualBase();
+
         [Display(Name = "Bubble Einstellungen", Description = "Alle Einstellungen für das Bubble Control")]
         public BubbleVisualsBubble BubbleVisuals { get; set; } = new BubbleVisualsBubble();
         // Ring-spezifisch
@@ -17,6 +20,18 @@ namespace BubbleControlls.Models
         [Display(Name = "BubbleInfo Einstellungen", Description = "Alle Einstellungen für das BubbleInfo Control")]
         public BubbleVisualInfoBox BubbleInfoBoxVisuals { get; set; } = new BubbleVisualInfoBox();
 
+
+    }
+    public class BubbleVisualBase
+    {
+        [Display(Name = "Hintergrund", Description = "Allgemeine Hintergrundfarbe")]
+        public Brush? Background { get; set; }
+
+        [Display(Name = "Textfarbe", Description = "Farbe des angezeigten Textes")]
+        public Brush? Foreground { get; set; }
+
+        [Display(Name = "Titelfarbe", Description = "Farbe der Titelzeile")]
+        public Brush? TitleBackground { get; set; }
 
     }
     public class BubbleVisualsBubble

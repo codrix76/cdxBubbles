@@ -10,7 +10,8 @@
         AllowsTransparency="True"
         ShowInTaskbar="False"
         ResizeMode="NoResize"
-        Background="Transparent">
+        Background="Transparent"
+        MaxHeight="480" MaxWidth="600">
     <Grid>
         <ctrls:BubbleInfoControl x:Name="InfoContent"/>
     </Grid>

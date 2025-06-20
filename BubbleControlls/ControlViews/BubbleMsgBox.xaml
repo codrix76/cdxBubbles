@@ -1,0 +1,44 @@
+﻿<Window x:Class="BubbleControlls.ControlViews.BubbleMsgBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BubbleControlls.ControlViews"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        SizeToContent="WidthAndHeight"
+        Topmost="True"
+        MinHeight="200" MinWidth="200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Info-Content -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Titel -->
+        <Grid Grid.Row="0" MouseDown="TitleBar_MouseDown">
+            <Border Background="LightGray"
+                    CornerRadius="5">
+                <TextBlock x:Name="InfoTitle" Text="{Binding Caption}" Padding="10"
+                Foreground="White" FontWeight="Bold" />
+            </Border>
+        </Grid>
+
+        <!-- Inhalt -->
+        <Grid Grid.Row="1" Margin="5">
+            <local:BubbleInfoControl x:Name="InfoBox"/>
+        </Grid>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" x:Name="ButtonPanel"
+            Orientation="Horizontal"
+            Margin="0" HorizontalAlignment="Right"/>
+    </Grid>
+</Window>

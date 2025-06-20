@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BubbleControlls.ControlViews"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             MaxHeight="320" MaxWidth="480">
+
     <Grid>
         <!-- Klickbare Fläche (falls später nötig) -->
         <Rectangle Fill="Transparent" />
@@ -26,19 +28,32 @@
             Background="{Binding BackgroundBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
             Opacity="{Binding BackgroundOpacity, RelativeSource={RelativeSource AncestorType=UserControl}}"
             IsHitTestVisible="True">
+                <Grid Margin="{Binding TextMargin, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                <!-- Textanzeige -->
-                <TextBlock x:Name="TextDisplay"
-                       Text="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       Margin="{Binding TextMargin, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       Background="Transparent"
-                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       FontFamily="{Binding FontFamily, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       FontStyle="{Binding FontStyle, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                       TextWrapping="Wrap" />
+                    <Image x:Name="InfoDisplayIcon" Grid.Column="0"
+                           Source="{Binding DisplayIcon, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           MaxHeight="64" MaxWidth="64"
+                           Visibility="Collapsed"/>
+
+                    <!-- Textanzeige -->
+                    <TextBlock x:Name="TextDisplay" Grid.Column="1"
+                           Text="{Binding DisplayText, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           Margin="{Binding TextMargin, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           Background="Transparent"
+                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           FontFamily="{Binding FontFamily, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           FontStyle="{Binding FontStyle, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           TextWrapping="Wrap"/>
+                </Grid>
             </Border>
         </Border>
     </Grid>

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using BubbleControlls.ControlViews;
+using BubbleControlls.Models;
 
 namespace BubblesDemo
 {
@@ -17,8 +18,33 @@ namespace BubblesDemo
             DemoBtn.MouseEnter += DemoBtn_MouseEnter;
             DemoBtn.MouseLeave += DemoBtn_MouseLeave;
             DemoBtn.MouseMove += DemoBtn_MouseMove;
+            DemoBtn.Click += DemoBtn_Click;
             infoBox.ShowInTaskbar = false;
             infoBox.Topmost = true;
+        }
+
+        private void DemoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var result = BubbleMsgBox.Show(
+            "Möchten Sie das Projekt wirklich schließen?\nEine Adaption der klassischen chinesischen Geschichte „Die Reise nach Westen“,\ndie die Abenteuer des Affenkönigs Sun Wukong erzählt. Mit beeindruckenden Spezialeffekten und einer epischen Handlung bietet der Film ein visuelles Spektakel.",
+            "Projekt schließen",
+            MessageBoxButton.YesNoCancel,
+            MessageBoxImage.Warning,null,
+            BubbleVisualThemes.Dark()
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                BubbleMsgBox.Show("yes");
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                BubbleMsgBox.Show("No", "will nicht");
+            }
+            else
+            {
+                // Abbrechen oder Fenster geschlossen
+            }
         }
 
         private void DemoBtn_MouseMove(object sender, MouseEventArgs e)
@@ -43,11 +69,11 @@ namespace BubblesDemo
 
         private void DemoBtn_MouseEnter(object sender, MouseEventArgs e)
         {
-            GetInfo();
-
-            infoBox.Height = 100;
+            infoBox.Height = 250;
             infoBox.Width = 350;
+            infoBox.DisplayText = GetInfo();
 
+            
             // Bildschirmposition der Maus holen
             Point mousePos = PointToScreen(Mouse.GetPosition(this));
             infoBox.Left = mousePos.X + 5;  // leichter Versatz
@@ -56,10 +82,12 @@ namespace BubblesDemo
             infoBox.Show();
         }
 
-        private void GetInfo()
+        private string GetInfo()
         {
-            string text = "Eine Adaption der klassischen chinesischen Geschichte „Die Reise nach Westen“, die die Abenteuer des Affenkönigs Sun Wukong erzählt. Mit beeindruckenden Spezialeffekten und einer epischen Handlung bietet der Film ein visuelles Spektakel.";
-            infoBox.DisplayText = text;
+            string text = "Eine Adaption der klassischen chinesischen Geschichte „Die Reise nach Westen“,\n" +
+                "die die Abenteuer des Affenkönigs Sun Wukong erzählt. Mit beeindruckenden Spezialeffekten\n" +
+                "und einer epischen Handlung bietet der Film ein visuelles Spektakel.";
+            return text;
         }
     }
 }

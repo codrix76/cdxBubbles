@@ -388,6 +388,25 @@ namespace BubbleControlls.ControlViews
         }
         #endregion
 
+        #region Common
+        public static readonly DependencyProperty DisplayIconProperty =
+            DependencyProperty.Register(nameof(DisplayIcon), typeof(ImageSource), typeof(BubbleInfoControl),
+        new FrameworkPropertyMetadata(null, OnDisplayIconChanged));
+
+        public ImageSource DisplayIcon
+        {
+            get => (ImageSource)GetValue(DisplayIconProperty);
+            set => SetValue(DisplayIconProperty, value);
+        }
+        private static void OnDisplayIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is BubbleInfoControl control && control.InfoDisplayIcon != null)
+            {
+                control.InfoDisplayIcon.Visibility = e.NewValue is ImageSource ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        #endregion
         private static void OnVisualBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not BubbleInfoControl box)
