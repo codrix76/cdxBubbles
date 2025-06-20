@@ -20,6 +20,17 @@ public static class GeometryHelper
         double diff = Math.Abs(startRad - endRad);
         return Math.Min(diff, 2 * Math.PI - diff);
     }
+    public static double GetArcClockwise(double startRad, double endRad)
+    {
+        startRad = NormalizeRad(startRad);
+        endRad = NormalizeRad(endRad);
+
+        double arc = endRad - startRad;
+        if (arc < 0)
+            arc += 2 * Math.PI;
+
+        return arc;
+    }
     public static double DegToRad(double degree)
     {
         return degree * Math.PI / 180.0;

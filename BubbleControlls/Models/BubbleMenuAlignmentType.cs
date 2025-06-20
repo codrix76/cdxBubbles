@@ -7,6 +7,7 @@
         LeftEdge,
         RightEdge,
         BottomEdge,
-        Free
+        Free,
+        Custom
     }
 }

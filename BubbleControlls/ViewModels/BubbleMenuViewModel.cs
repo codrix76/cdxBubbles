@@ -134,19 +134,18 @@ namespace BubbleControlls.ViewModels
                 values.RingCenter = new Point(values.MenuWidth / 2, values.MenuHeight / 2);
                 values.StartAngle = 270;
                 values.EndAngle = 269.9;
-                values.IsCentered = false;
+                values.IsCentered = true;
                 values.IsInverted = false;
             }
-
             _viewValues = values;
             return values;
         }
         #endregion
 
         #region EventHandling
-        public void BubbleClicked(string id)
+        public void BubbleClicked(string id, bool isContext = false)
         {
-            _bubbleMenuHandler.HandleClick(id);
+            _bubbleMenuHandler.HandleClick(id, isContext);
         }
         #endregion
     }

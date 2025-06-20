@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using BubbleControlls.ControlViews;
 using BubbleControlls.Models;
 
 namespace BubblesDemo
@@ -26,10 +27,12 @@ namespace BubblesDemo
                 BubbleMenu.BubbleMenuBigSize = 55.0;
                 BubbleMenu.BubbleMenuSmallSize = 40.0;
                 BubbleMenu.MainMenu = BuildMenu();
+                
             };
             BubbleMenu.MouseLeftButtonDown += OnMainMenuMouseDown;
             BubbleMenu.MouseMove += OnMainMenuMouseMove;
             BubbleMenu.MouseLeftButtonUp  += OnMainMenuMouseUp;
+
         }
 
         private void OnMainMenuMouseDown(object sender, MouseButtonEventArgs e)
@@ -241,9 +244,9 @@ namespace BubblesDemo
                     MessageBox.Show($"Aktion ausgelöst von: {item.Text}");
                 }
             };
-            mainMenu.AddSubItem(subItem);
-            mainMenu.AddSubItem(subItem);
-            mainMenu.AddSubItem(subItem);
+            mainMenu.AddContextItem(subItem);
+            mainMenu.AddContextItem(subItem);
+            mainMenu.AddContextItem(subItem);
             subItem = new BubbleMenuItem()
             {
                 Name = "CloseMenu",

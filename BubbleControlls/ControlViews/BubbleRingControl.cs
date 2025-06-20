@@ -348,46 +348,46 @@ namespace BubbleControlls.ControlViews
             double startAngleRad = GeometryHelper.DegToRad(_bubbleRingRenderData.StartAngleDeg + _bubbleRingRenderData.RotationDeg);
             double endAngleRad   = GeometryHelper.DegToRad(_bubbleRingRenderData.EndAngleDeg + _bubbleRingRenderData.RotationDeg);
 
-            // var scrollOffsetstart = GeometryHelper.EllipticalPoint(
-            //     _bubbleRingRenderData.Center,
-            //     _bubbleRingRenderData.RadiusX,
-            //     _bubbleRingRenderData.RadiusY,
-            //     StartAngleRad
-            // );
-            // dc.DrawLine(new Pen(Brushes.Green, 1), _bubbleRingRenderData.Center, scrollOffsetstart);
-            //
-            // var scrollOffset = GeometryHelper.EllipticalPoint(
-            //     _bubbleRingRenderData.Center,
-            //     _bubbleRingRenderData.RadiusX,
-            //     _bubbleRingRenderData.RadiusY,
-            //     ScrollOffset
-            // );
-            // dc.DrawLine(new Pen(Brushes.OrangeRed, 1), _bubbleRingRenderData.Center, scrollOffset);
-            //
-            // var scrollOffsetEnd = GeometryHelper.EllipticalPoint(
-            //     _bubbleRingRenderData.Center,
-            //     _bubbleRingRenderData.RadiusX,
-            //     _bubbleRingRenderData.RadiusY,
-            //     EndAngleRad
-            // );
-            // dc.DrawLine(new Pen(Brushes.Yellow, 1), _bubbleRingRenderData.Center, scrollOffsetEnd);
-            //
-            // var scrolltarget = GeometryHelper.EllipticalPoint(
-            //     _bubbleRingRenderData.Center,
-            //     _bubbleRingRenderData.RadiusX,
-            //     _bubbleRingRenderData.RadiusY,
-            //     _scrollTarget
-            // );
-            // dc.DrawLine(new Pen(Brushes.LightSkyBlue, 1), _bubbleRingRenderData.Center, scrolltarget);
-            //
-            // var scrollmid = GeometryHelper.EllipticalPoint(
-            //     _bubbleRingRenderData.Center,
-            //     _bubbleRingRenderData.RadiusX,
-            //     _bubbleRingRenderData.RadiusY,
-            //     GeometryHelper.NormalizeRad(EndAngleRad /2)
-            // );
-            // dc.DrawLine(new Pen(Brushes.Blue, 1), _bubbleRingRenderData.Center, scrollmid);
-            //
+            //var scrollOffsetstart = GeometryHelper.EllipticalPoint(
+            //    _bubbleRingRenderData.Center,
+            //    _bubbleRingRenderData.RadiusX,
+            //    _bubbleRingRenderData.RadiusY,
+            //    StartAngleRad
+            //);
+            //dc.DrawLine(new Pen(Brushes.Green, 1), _bubbleRingRenderData.Center, scrollOffsetstart);
+
+            //var scrollOffset = GeometryHelper.EllipticalPoint(
+            //    _bubbleRingRenderData.Center,
+            //    _bubbleRingRenderData.RadiusX,
+            //    _bubbleRingRenderData.RadiusY,
+            //    ScrollOffset
+            //);
+            //dc.DrawLine(new Pen(Brushes.OrangeRed, 1), _bubbleRingRenderData.Center, scrollOffset);
+
+            //var scrollOffsetEnd = GeometryHelper.EllipticalPoint(
+            //    _bubbleRingRenderData.Center,
+            //    _bubbleRingRenderData.RadiusX,
+            //    _bubbleRingRenderData.RadiusY,
+            //    EndAngleRad
+            //);
+            //dc.DrawLine(new Pen(Brushes.Yellow, 1), _bubbleRingRenderData.Center, scrollOffsetEnd);
+
+            //var scrolltarget = GeometryHelper.EllipticalPoint(
+            //    _bubbleRingRenderData.Center,
+            //    _bubbleRingRenderData.RadiusX,
+            //    _bubbleRingRenderData.RadiusY,
+            //    _scrollTarget
+            //);
+            //dc.DrawLine(new Pen(Brushes.LightSkyBlue, 1), _bubbleRingRenderData.Center, scrolltarget);
+
+            //var scrollmid = GeometryHelper.EllipticalPoint(
+            //    _bubbleRingRenderData.Center,
+            //    _bubbleRingRenderData.RadiusX,
+            //    _bubbleRingRenderData.RadiusY,
+            //    BubbleOffset
+            //);
+            //dc.DrawLine(new Pen(Brushes.Blue, 1), _bubbleRingRenderData.Center, scrollmid);
+
             _scrollBackHitbox = BubbleRingRenderer.DrawArrow(
                 
                 dc,
@@ -564,11 +564,11 @@ namespace BubbleControlls.ControlViews
                 sizes,
                 baseStart
             ).ToList();
-            foreach (var pos in _positions)
-            {
-                Debug.WriteLine($"AdjustPlacement : {pos}");
-            }
-            Debug.WriteLine("----------------------------------------");
+            //foreach (var pos in _positions)
+            //{
+            //    Debug.WriteLine($"AdjustPlacement : {pos}");
+            //}
+            //Debug.WriteLine("----------------------------------------");
         }
         public void UpdateScrollLimits()
         {
@@ -580,11 +580,12 @@ namespace BubbleControlls.ControlViews
             }
             
             // Gesamt-Radion der Elemente
-            double startRad = _positions.First().AngleRad;
+            double startRad = GeometryHelper.NormalizeRad(_positions.First().AngleRad);
             double endRad = _positions.Last().AngleRad;
             double contentRad = GeometryHelper.GetArcBetween(startRad, endRad);
             // Radion des sichtbaren Bereichs
             double visibleRad = GeometryHelper.GetArcBetween(StartAngleRad, EndAngleRad);
+            double visibleRad2 = GeometryHelper.GetArcClockwise(StartAngleRad, EndAngleRad);
             double rawSpacingRad = GeometryHelper.GetAngleAfterDistance(_ellipsePath, StartAngleRad, ElementDistance);
             double spacingrad = GeometryHelper.NormalizeRad(rawSpacingRad - StartAngleRad);
             
@@ -594,7 +595,7 @@ namespace BubbleControlls.ControlViews
             _scrollStepLarge = elementRad;
             
             // Werte setzen
-            _canScroll = contentRad > visibleRad;
+            _canScroll = contentRad > visibleRad2;
             if (_canScroll)
             {
                 _scrollMax = Math.Abs(visibleRad - endRad - (elementRad ));
@@ -611,11 +612,11 @@ namespace BubbleControlls.ControlViews
                 {
                     double contMid = contentRad == 0 ? elementRad / 2 : contentRad;
                     
-                    BubbleOffset = (visibleRad - contMid - elementRad - spacingrad) / 2 ;
+                    BubbleOffset = (visibleRad2 - contMid - elementRad - spacingrad) / 2 ;
                 }
                 else
                 {
-                    double diff = Math.Abs(visibleRad - endRad - (elementRad + spacingrad) / 2);
+                    double diff = Math.Abs(visibleRad2 - contentRad - elementRad * 2);
                     BubbleOffset = IsInverted ? diff : ScrollMin;
                 }
             }

@@ -11,13 +11,15 @@ namespace BubbleControlls.Models
         };
         private List<BubbleMenuItem> _menuPath = new List<BubbleMenuItem>();
         private List<BubbleMenuItem> _selectableMenus = new List<BubbleMenuItem>();
+        private List<BubbleMenuItem> _contextMenus = new List<BubbleMenuItem>();
         private List<BubbleMenuItem> _guiItemsToRemove = new List<BubbleMenuItem>();
         #endregion
 
         #region Properties
         public BubbleMenuItem MainMenu { get => _mainMenu; set => _mainMenu = value; }
-        public List<BubbleMenuItem> MenuPath { get => _menuPath; }
+        public List<BubbleMenuItem> PathMenus { get => _menuPath; }
         public List<BubbleMenuItem> SelectableMenus { get => _selectableMenus; }
+        public List<BubbleMenuItem> ContextMenus { get => _contextMenus; }
 
         #endregion
 
@@ -163,17 +165,25 @@ namespace BubbleControlls.Models
         /// Handles Menu submenu building
         /// </summary>
         /// <param name="name">menuName</param>
-        public void HandleClick(string name)
+        public void HandleClick(string name, bool isContext)
         {
             BubbleMenuItem? selected = FindMenu(name);
             if (selected == null)
                 return;
 
+            if (isContext)
+            {
+                _contextMenus.Clear();
+                _contextMenus.AddRange(selected.ContextItems);
+                return;
+            }
+            _contextMenus.Clear();
             // Klick auf MainMenu (kein Parent)
             if (selected.Parent == null)
             {
                 _guiItemsToRemove.AddRange(_menuPath);
                 _guiItemsToRemove.AddRange(_selectableMenus);
+                _guiItemsToRemove.AddRange(_contextMenus);
                 _guiItemsToRemove.ForEach(item => item.Level = BubbleMenuLevel.Deleted);
                 _menuPath.Clear();
                 _selectableMenus.Clear();

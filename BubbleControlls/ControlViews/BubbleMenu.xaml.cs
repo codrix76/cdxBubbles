@@ -32,6 +32,16 @@ namespace BubbleControlls.ControlViews
         public BubbleAlignmentValues ViewValues { get => _viewModel.ViewValues; }
         public double MenuHideSeconds { get; set; } = 3;
         public BubbleVisualTheme MenuStyleTheme { get; set; } = BubbleVisualThemes.Standard();
+
+        public BubbleRenderStyle BubbleMenuStyle
+        {
+            get => (BubbleRenderStyle)GetValue(BubbleRenderStyleProperty);
+            set => SetValue(BubbleRenderStyleProperty, value);
+        }
+        public static readonly DependencyProperty BubbleRenderStyleProperty =
+            DependencyProperty.Register(nameof(BubbleMenuStyle), typeof(BubbleRenderStyle), typeof(BubbleMenu),
+                new PropertyMetadata(BubbleRenderStyle.Style3D, null));
+
         public BubbleMenuAlignmentType BubbleMenuAlignment
         {
             get => (BubbleMenuAlignmentType)GetValue(BubbleMenuAlignmentProperty);
@@ -129,9 +139,24 @@ namespace BubbleControlls.ControlViews
         {
             if (sender is Bubble clickedBubble)
             {
-                string bubbleId = clickedBubble.Name; // oder eigene ID per Tag, Property etc.
-                _viewModel.BubbleClicked(bubbleId);   // Weiterleitung ins VM
+                if (e.ChangedButton == MouseButton.Left)
+                {
+                    _additionalMenuRing.Visibility = Visibility.Collapsed;
+                    string bubbleId = clickedBubble.Name;
+                    _viewModel.BubbleClicked(bubbleId); 
 
+                }
+                else if (e.ChangedButton == MouseButton.Right)
+                {
+                    string bubbleId = clickedBubble.Name;
+                    _viewModel.BubbleClicked(bubbleId, true);
+                }
+                else if (e.ChangedButton == MouseButton.Middle)
+                {
+                    // Mittlere Maustaste
+                }
+
+                
                 UpdateMenu();
             }
         }
@@ -177,7 +202,7 @@ namespace BubbleControlls.ControlViews
             if (!_isLoaded) { return; }
             
             Window? mainWindow = Window.GetWindow(this);
-            if (mainWindow != null)
+            if (mainWindow != null && BubbleMenuAlignment != BubbleMenuAlignmentType.Free)
             {
                 mainWindow.WindowStartupLocation = WindowStartupLocation.Manual;
                 mainWindow.Top = _alignmentValues.WindowTop;
@@ -202,7 +227,8 @@ namespace BubbleControlls.ControlViews
             mainMenu.ApplyTheme(MenuStyleTheme);
             if(mnu.IconPath != null) mainMenu.Icon = new BitmapImage(new Uri(mnu.IconPath));
             mainMenu.MouseLeftButtonDown += Bubble_Clicked;
-            mainMenu.RenderStyle = BubbleRenderStyle.Style3D;
+            mainMenu.MouseRightButtonDown += Bubble_Clicked;
+            mainMenu.RenderStyle = BubbleMenuStyle;
             Canvas.SetTop(mainMenu, _menuCenter.Y - BubbleMainMenuSize / 2);
             Canvas.SetLeft(mainMenu, _menuCenter.X - BubbleMainMenuSize / 2);
             
@@ -232,11 +258,19 @@ namespace BubbleControlls.ControlViews
         public void InvalidateMenu(double? startAngl, double? endAngl)
         {
             Point ringCenter = _alignmentValues.RingCenter;
-            
+            double rX = _viewModel.MenuLevelSizes[0].End;
+            double rY = _viewModel.MenuLevelSizes[0].End;
+            if (BubbleMenuAlignment != BubbleMenuAlignmentType.Free)
+            {
+                rX = BubbleMainMenuSize + BubbleMenuBigSize;
+                rY = BubbleMainMenuSize + BubbleMenuBigSize;
+            }
             _pathMenuRing.ApplyTheme(MenuStyleTheme);
             _pathMenuRing.Center = ringCenter;
-            _pathMenuRing.RadiusX = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
-            _pathMenuRing.RadiusY = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
+            //_pathMenuRing.RadiusX = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
+            //_pathMenuRing.RadiusY = BubbleMainMenuSize + BubbleMenuBigSize + BubbleMenuSpacing * 2;
+            _pathMenuRing.RadiusX = rX + BubbleMenuSpacing * 2;
+            _pathMenuRing.RadiusY = rY + BubbleMenuSpacing * 2;
             _pathMenuRing.PathWidth = BubbleMenuSmallSize + 10;
             _pathMenuRing.ElementDistance = 5;
             _pathMenuRing.IsCentered = _alignmentValues.IsCentered;
@@ -281,6 +315,7 @@ namespace BubbleControlls.ControlViews
             RemoveMenuElements();
             ShowPathMenu();
             ShowSelectionMenu();
+            ShowContextMenu();
             _viewModel.BubbleMenuHandler.ResetDeleted();
         }
         private void RemoveMenuElements()
@@ -292,7 +327,7 @@ namespace BubbleControlls.ControlViews
         private void ShowPathMenu()
         {
             List<UIElement> pathElements = new List<UIElement>();
-            foreach (var item in _viewModel.BubbleMenuHandler.MenuPath)
+            foreach (var item in _viewModel.BubbleMenuHandler.PathMenus)
             { 
                 Bubble bubble = new Bubble
                 {
@@ -303,7 +338,7 @@ namespace BubbleControlls.ControlViews
                     Width = BubbleMenuSmallSize,
                     DataContext = item,
                     BorderDistance = 5,
-                    RenderStyle = BubbleRenderStyle.Style3D
+                    RenderStyle = BubbleMenuStyle
                 };
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
@@ -328,7 +363,7 @@ namespace BubbleControlls.ControlViews
                     Width = BubbleMenuBigSize,
                     DataContext = item,
                     BorderDistance = 5,
-                    RenderStyle = BubbleRenderStyle.Style3D
+                    RenderStyle = BubbleMenuStyle
                 };
 
                 if (item.IconPath != null)
@@ -338,6 +373,41 @@ namespace BubbleControlls.ControlViews
                 elements.Add(bubble);
             }
             _selectedMenuRing.AddElements(elements);
+        }
+
+        private void ShowContextMenu()
+        {
+            List<UIElement> elements = new List<UIElement>();
+            // Neue Auswahl-Bubbles aus ViewModel
+            foreach (var item in _viewModel.BubbleMenuHandler.ContextMenus)
+            {
+                var bubble = new Bubble
+                {
+                    Name = item.Name,
+                    Text = item.Text,
+                    ToolTipText = item.Tooltip,
+                    Height = BubbleMenuBigSize,
+                    Width = BubbleMenuBigSize,
+                    DataContext = item,
+                    BorderDistance = 5,
+                    RenderStyle = BubbleMenuStyle
+                };
+
+                if (item.IconPath != null)
+                    bubble.Icon = new BitmapImage(new Uri(item.IconPath));
+
+                bubble.MouseLeftButtonDown += Bubble_Clicked;
+                elements.Add(bubble);
+            }
+            _additionalMenuRing.AddElements(elements);
+            if (_viewModel.BubbleMenuHandler.ContextMenus.Count > 0)
+            {
+                _additionalMenuRing.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _additionalMenuRing.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void ShowRings()
