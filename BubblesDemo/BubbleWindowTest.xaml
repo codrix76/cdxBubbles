@@ -1,0 +1,16 @@
+﻿<ctrls:BubbleBaseWindow  xmlns:ctrls="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
+                         x:Class="BubblesDemo.BubbleWindowTest"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:local="clr-namespace:BubblesDemo"
+                        mc:Ignorable="d"
+                        Title="BubbleWindowTest" Height="450" Width="800"
+                         WindowStartupLocation="CenterScreen">
+    <!-- Das landet automatisch in BubbleBaseWindow.BubbleContent -->
+    <StackPanel>
+        <TextBlock Text="Konfiguration" FontSize="20"/>
+        <ctrls:Bubble Text="Start"/>
+    </StackPanel>
+</ctrls:BubbleBaseWindow>
