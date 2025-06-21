@@ -22,26 +22,26 @@ namespace BubbleControlls.ControlViews
             if (theme == null) return;
 
             // Farben
-            BackgroundBrush = theme.BubbleInfoBoxVisuals.BubbleInfoBackground;
-            BackgroundEffectBrush = new SolidColorBrush(theme.BubbleInfoBoxVisuals.BubbleInfoHighlightColor);
+            BackgroundBrush = theme.InfoBoxVisuals.InfoBackground;
+            BackgroundEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoEffectColor1);
 
-            OuterBorderBrush = theme.BubbleInfoBoxVisuals.BubbleInfoOuterBorderColor;
-            OuterBorderEffectBrush = new SolidColorBrush(theme.BubbleInfoBoxVisuals.BubbleInfoOuterBorderHighlightColor);
+            OuterBorderBrush = theme.InfoBoxVisuals.InfoOuterBorderColor;
+            OuterBorderEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoOuterBorderEffectColor1);
 
-            InnerBorderBrush = theme.BubbleInfoBoxVisuals.BubbleInfoBorder;
-            InnerBorderEffectBrush = new SolidColorBrush(theme.BubbleInfoBoxVisuals.BubbleInfoInnerBorderHighlightColor);
+            InnerBorderBrush = theme.InfoBoxVisuals.InfoBorder;
+            InnerBorderEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoInnerBorderEffectColor1);
 
-            Foreground = theme.BubbleInfoBoxVisuals.BubbleInfoForeground;
+            Foreground = theme.InfoBoxVisuals.InfoForeground;
 
             // Schrift
-            FontFamily = theme.BubbleVisuals.FontFamily;
-            FontSize = theme.BubbleVisuals.FontSize;
-            FontWeight = theme.BubbleVisuals.FontWeight;
-            FontStyle = theme.BubbleVisuals.FontStyle;
+            FontFamily = theme.FontFamily;
+            FontSize = theme.FontSize;
+            FontWeight = theme.FontWeight;
+            FontStyle = theme.FontStyle;
 
             // Rahmen
-            BorderThicknessOuter = theme.BubbleInfoBoxVisuals.BubbleInfoOuterBorderThickness;
-            BorderThicknessInner = theme.BubbleInfoBoxVisuals.BubbleInfoBorderThickness;
+            BorderThicknessOuter = theme.InfoBoxVisuals.InfoOuterBorderThickness;
+            BorderThicknessInner = theme.InfoBoxVisuals.InfoBorderThickness;
             BorderOffset = 6.0; // Optional: Theme kann das auch mitliefern
 
             // Layout

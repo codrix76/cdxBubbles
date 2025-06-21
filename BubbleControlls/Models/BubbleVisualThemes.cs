@@ -25,62 +25,56 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
-                BubbleBaseVisuals = new BubbleVisualBase
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(15, 30, 60)),
-                    Foreground = new SolidColorBrush(Colors.WhiteSmoke),
-                    TitleBackground = new SolidColorBrush(Color.FromRgb(40, 80, 130)),
-                },
+                Background = new SolidColorBrush(Color.FromRgb(15, 30, 60)),
+                Foreground = new SolidColorBrush(Colors.WhiteSmoke),
+                TitleBackground = new SolidColorBrush(Color.FromRgb(40, 80, 130)),
+                TitleEffectColor1 = Color.FromRgb(180, 220, 255),
+                TitleEffectColor2 = Color.FromRgb(10, 25, 50),
+            
+                Border = new SolidColorBrush(Color.FromRgb(70, 170, 255)),
+                OuterBorderColor = new SolidColorBrush(Color.FromRgb(20, 110, 190)),
 
-                BubbleVisuals = new BubbleVisualsBubble
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(30, 60, 100)),
-                    Border = new SolidColorBrush(Color.FromRgb(70, 170, 255)),
-                    OuterBorderColor = new SolidColorBrush(Color.FromRgb(20, 110, 190)),
+                EffectColor1 = Color.FromRgb(180, 220, 255),
+                EffectColor2 = Color.FromRgb(10, 25, 50),
+                OuterBorderEffectColor1 = Color.FromRgb(100, 200, 255),
+                OuterBorderEffectColor2 = Color.FromRgb(10, 40, 80),
+                InnerBorderEffectColor1 = Color.FromRgb(130, 200, 255),
+                InnerBorderEffectColor2 = Color.FromRgb(20, 40, 80),
 
-                    HighlightColor = Color.FromRgb(180, 220, 255),
-                    BackgroundDarkColor = Color.FromRgb(10, 25, 50),
-                    OuterBorderHighlightColor = Color.FromRgb(100, 200, 255),
-                    OuterBorderDarkColor = Color.FromRgb(10, 40, 80),
-                    InnerBorderHighlightColor = Color.FromRgb(130, 200, 255),
-                    InnerBorderDarkColor = Color.FromRgb(20, 40, 80),
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 14,
+                FontWeight = FontWeights.SemiBold,
+                FontStyle = FontStyles.Normal,
 
-                    Foreground = new SolidColorBrush(Colors.WhiteSmoke),
-                    FontFamily = new FontFamily("Segoe UI"),
-                    FontSize = 14,
-                    FontWeight = FontWeights.SemiBold,
-                    FontStyle = FontStyles.Normal,
+                BorderThickness = new Thickness(1.5),
+                OuterBorderThickness = new Thickness(2.5),
 
-                    BorderThickness = new Thickness(1.5),
-                    OuterBorderThickness = new Thickness(2.5),
+                Use3DGradient = true,
 
-                    Use3DGradient = true
-                },
-
-                BubbleRingVisuals = new BubbleVisualsRings
+                RingVisuals = new BubbleVisualsRings
                 {
                     RingBackground = new SolidColorBrush(Color.FromArgb(50, 100, 149, 237)),
                     RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 100, 149, 237)),
                     RingOpacity = 50,
                     RingBorderOpacity = 80,
                     RingBorderThickness = 1,
-                    ScrollArrowHeight = 12.0
+                    RingScrollArrowHeight = 12.0
                 },
 
-                BubbleInfoBoxVisuals = new BubbleVisualInfoBox
-                {
-                    BubbleInfoBackground = new SolidColorBrush(Color.FromRgb(30, 60, 100)),
-                    BubbleInfoBorder = new SolidColorBrush(Color.FromRgb(70, 170, 255)),
-                    BubbleInfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(20, 110, 190)),
-
-                    BubbleInfoHighlightColor = Color.FromRgb(180, 220, 255),
-                    BubbleInfoOuterBorderHighlightColor = Color.FromRgb(100, 200, 255),
-                    BubbleInfoInnerBorderHighlightColor = Color.FromRgb(130, 200, 255),
-
-                    BubbleInfoForeground = new SolidColorBrush(Colors.WhiteSmoke),
-                    BubbleInfoBorderThickness = new Thickness(1.5),
-                    BubbleInfoOuterBorderThickness = new Thickness(2.5)
-                }
+                // InfoBoxVisuals = new BubbleVisualInfoBox
+                // {
+                //     InfoBackground = new SolidColorBrush(Color.FromRgb(30, 60, 100)),
+                //     InfoBorder = new SolidColorBrush(Color.FromRgb(70, 170, 255)),
+                //     InfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(20, 110, 190)),
+                //
+                //     InfoEffectColor1 = Color.FromRgb(180, 220, 255),
+                //     InfoOuterBorderEffectColor1 = Color.FromRgb(100, 200, 255),
+                //     InfoInnerBorderEffectColor1 = Color.FromRgb(130, 200, 255),
+                //
+                //     InfoForeground = new SolidColorBrush(Colors.WhiteSmoke),
+                //     InfoBorderThickness = new Thickness(1.5),
+                //     InfoOuterBorderThickness = new Thickness(2.5)
+                // }
             };
 
 
@@ -90,62 +84,57 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
-                BubbleBaseVisuals = new BubbleVisualBase
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
-                    Foreground = new SolidColorBrush(Colors.Gainsboro),
-                    TitleBackground = new SolidColorBrush(Color.FromRgb(50, 50, 50)),
-                },
+                Background = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
+                Foreground = new SolidColorBrush(Colors.Gainsboro),
+                TitleBackground = new SolidColorBrush(Color.FromRgb(50, 50, 50)),
+                TitleEffectColor1 = Color.FromRgb(110, 110, 120),
+                TitleEffectColor2 = Color.FromRgb(25, 25, 25),
+                
+                Border = new SolidColorBrush(Color.FromRgb(90, 90, 90)),
+                OuterBorderColor = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
 
-                BubbleVisuals = new BubbleVisualsBubble
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(45, 45, 48)),
-                    Border = new SolidColorBrush(Color.FromRgb(90, 90, 90)),
-                    OuterBorderColor = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
+                EffectColor1 = Color.FromRgb(110, 110, 120),
+                EffectColor2 = Color.FromRgb(25, 25, 25),
+                OuterBorderEffectColor1 = Color.FromRgb(100, 100, 100),
+                OuterBorderEffectColor2 = Color.FromRgb(20, 20, 20),
+                InnerBorderEffectColor1 = Color.FromRgb(120, 120, 130),
+                InnerBorderEffectColor2 = Color.FromRgb(40, 40, 40),
+                
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 13,
+                FontWeight = FontWeights.Normal,
+                FontStyle = FontStyles.Normal,
 
-                    HighlightColor = Color.FromRgb(110, 110, 120),
-                    BackgroundDarkColor = Color.FromRgb(25, 25, 25),
-                    OuterBorderHighlightColor = Color.FromRgb(100, 100, 100),
-                    OuterBorderDarkColor = Color.FromRgb(20, 20, 20),
-                    InnerBorderHighlightColor = Color.FromRgb(120, 120, 130),
-                    InnerBorderDarkColor = Color.FromRgb(40, 40, 40),
+                BorderThickness = new Thickness(1),
+                OuterBorderThickness = new Thickness(1.5),
 
-                    Foreground = new SolidColorBrush(Colors.Gainsboro),
-                    FontFamily = new FontFamily("Segoe UI"),
-                    FontSize = 13,
-                    FontWeight = FontWeights.Normal,
-                    FontStyle = FontStyles.Normal,
+                Use3DGradient = true,
+                
 
-                    BorderThickness = new Thickness(1),
-                    OuterBorderThickness = new Thickness(1.5),
-
-                    Use3DGradient = true
-                },
-
-                BubbleRingVisuals = new BubbleVisualsRings
+                RingVisuals = new BubbleVisualsRings
                 {
                     RingBackground = new SolidColorBrush(Color.FromArgb(50, 60, 60, 60)),
                     RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 90, 90, 90)),
                     RingOpacity = 50,
                     RingBorderOpacity = 80,
                     RingBorderThickness = 1,
-                    ScrollArrowHeight = 12.0
+                    RingScrollArrowHeight = 12.0
                 },
-
-                BubbleInfoBoxVisuals = new BubbleVisualInfoBox
-                {
-                    BubbleInfoBackground = new SolidColorBrush(Color.FromRgb(45, 45, 48)),
-                    BubbleInfoBorder = new SolidColorBrush(Color.FromRgb(90, 90, 90)),
-                    BubbleInfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
-
-                    BubbleInfoHighlightColor = Color.FromRgb(110, 110, 120),
-                    BubbleInfoOuterBorderHighlightColor = Color.FromRgb(100, 100, 100),
-                    BubbleInfoInnerBorderHighlightColor = Color.FromRgb(120, 120, 130),
-
-                    BubbleInfoForeground = new SolidColorBrush(Colors.Gainsboro),
-                    BubbleInfoBorderThickness = new Thickness(1),
-                    BubbleInfoOuterBorderThickness = new Thickness(1.5)
-                }
+                //
+                // InfoBoxVisuals = new BubbleVisualInfoBox
+                // {
+                //     InfoBackground = new SolidColorBrush(Color.FromRgb(45, 45, 48)),
+                //     InfoBorder = new SolidColorBrush(Color.FromRgb(90, 90, 90)),
+                //     InfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
+                //
+                //     InfoEffectColor1 = Color.FromRgb(110, 110, 120),
+                //     InfoOuterBorderEffectColor1 = Color.FromRgb(100, 100, 100),
+                //     InfoInnerBorderEffectColor1 = Color.FromRgb(120, 120, 130),
+                //
+                //     InfoForeground = new SolidColorBrush(Colors.Gainsboro),
+                //     InfoBorderThickness = new Thickness(1),
+                //     InfoOuterBorderThickness = new Thickness(1.5)
+                // }
             };
         }
 
@@ -153,61 +142,57 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
-                BubbleBaseVisuals = new BubbleVisualBase
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
-                    TitleBackground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
-                },
-                BubbleVisuals = new BubbleVisualsBubble
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    Border = new SolidColorBrush(Color.FromRgb(173, 173, 173)),
-                    OuterBorderColor = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
+                TitleBackground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                TitleEffectColor1 = Color.FromRgb(255, 255, 255),
+                TitleEffectColor2 = Color.FromRgb(200, 200, 200),
+                
+                Border = new SolidColorBrush(Color.FromRgb(173, 173, 173)),
+                OuterBorderColor = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
 
-                    HighlightColor = Color.FromRgb(255, 255, 255),
-                    BackgroundDarkColor = Color.FromRgb(200, 200, 200),
-                    OuterBorderHighlightColor = Color.FromRgb(255, 255, 255),
-                    OuterBorderDarkColor = Color.FromRgb(160, 160, 160),
-                    InnerBorderHighlightColor = Color.FromRgb(255, 255, 255),
-                    InnerBorderDarkColor = Color.FromRgb(180, 180, 180),
+                EffectColor1 = Color.FromRgb(255, 255, 255),
+                EffectColor2 = Color.FromRgb(200, 200, 200),
+                OuterBorderEffectColor1 = Color.FromRgb(255, 255, 255),
+                OuterBorderEffectColor2 = Color.FromRgb(160, 160, 160),
+                InnerBorderEffectColor1 = Color.FromRgb(255, 255, 255),
+                InnerBorderEffectColor2 = Color.FromRgb(180, 180, 180),
 
-                    Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
-                    FontFamily = new FontFamily("Segoe UI"),
-                    FontSize = 14,
-                    FontWeight = FontWeights.Normal,
-                    FontStyle = FontStyles.Normal,
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 14,
+                FontWeight = FontWeights.Normal,
+                FontStyle = FontStyles.Normal,
 
-                    BorderThickness = new Thickness(1),
-                    OuterBorderThickness = new Thickness(1.5),
+                BorderThickness = new Thickness(1),
+                OuterBorderThickness = new Thickness(1.5),
 
-                    Use3DGradient = false
-                },
+                Use3DGradient = false,
+                
 
-                BubbleRingVisuals = new BubbleVisualsRings
+                RingVisuals = new BubbleVisualsRings
                 {
                     RingBackground = new SolidColorBrush(Color.FromArgb(50, 200, 200, 200)),
                     RingBorderBrush = new SolidColorBrush(Color.FromArgb(80, 160, 160, 160)),
                     RingOpacity = 50,
                     RingBorderOpacity = 80,
                     RingBorderThickness = 1,
-                    ScrollArrowHeight = 12.0
+                    RingScrollArrowHeight = 12.0
                 },
 
-                BubbleInfoBoxVisuals = new BubbleVisualInfoBox
-                {
-                    BubbleInfoBackground = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
-                    BubbleInfoBorder = new SolidColorBrush(Color.FromRgb(173, 173, 173)),
-                    BubbleInfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
-
-                    BubbleInfoHighlightColor = Color.FromRgb(255, 255, 255),
-                    BubbleInfoOuterBorderHighlightColor = Color.FromRgb(255, 255, 255),
-                    BubbleInfoInnerBorderHighlightColor = Color.FromRgb(255, 255, 255),
-
-                    BubbleInfoForeground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
-                    BubbleInfoBorderThickness = new Thickness(1),
-                    BubbleInfoOuterBorderThickness = new Thickness(1.5)
-                }
+                // InfoBoxVisuals = new BubbleVisualInfoBox
+                // {
+                //     InfoBackground = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                //     InfoBorder = new SolidColorBrush(Color.FromRgb(173, 173, 173)),
+                //     InfoOuterBorderColor = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                //
+                //     InfoEffectColor1 = Color.FromRgb(255, 255, 255),
+                //     InfoOuterBorderEffectColor1 = Color.FromRgb(255, 255, 255),
+                //     InfoInnerBorderEffectColor1 = Color.FromRgb(255, 255, 255),
+                //
+                //     InfoForeground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
+                //     InfoBorderThickness = new Thickness(1),
+                //     InfoOuterBorderThickness = new Thickness(1.5)
+                // }
             };
         }
 

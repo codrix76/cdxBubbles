@@ -634,12 +634,12 @@ namespace BubbleControlls.ControlViews
         /// <param name="style">BubbleVisualTheme</param>
         public void ApplyTheme(BubbleVisualTheme style)
         {
-            RingBackground = style.BubbleRingVisuals.RingBackground!;
-            RingBorderBrush = style.BubbleRingVisuals.RingBorderBrush!;
-            RingOpacity = style.BubbleRingVisuals.RingOpacity;
-            RingBorderOpacity = style.BubbleRingVisuals.RingBorderOpacity;
-            RingBorderThickness = style.BubbleRingVisuals.RingBorderThickness;
-            ScrollArrowHeight = style.BubbleRingVisuals.ScrollArrowHeight;
+            RingBackground = style.RingVisuals.RingBackground!;
+            RingBorderBrush = style.RingVisuals.RingBorderBrush!;
+            RingOpacity = style.RingVisuals.RingOpacity;
+            RingBorderOpacity = style.RingVisuals.RingBorderOpacity;
+            RingBorderThickness = style.RingVisuals.RingBorderThickness;
+            ScrollArrowHeight = style.RingVisuals.RingScrollArrowHeight;
         }
         
         private BubbleRingRenderData CreateRenderData()

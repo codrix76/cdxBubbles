@@ -68,14 +68,12 @@ namespace BubbleControlls.ControlViews
             if (theme == null)
                 return;
 
-            var visuals = theme.BubbleBaseVisuals;
-
             // Hintergrund (Fenster)
             //this.Background = visuals.Background ?? Brushes.Transparent;
 
             // Titelzeile
-            InfoTitle.Background = visuals.TitleBackground ?? Brushes.DimGray;
-            InfoTitle.Foreground = visuals.Foreground ?? Brushes.White;
+            InfoTitle.Background = theme.TitleBackground ?? Brushes.DimGray;
+            InfoTitle.Foreground = theme.Foreground ?? Brushes.White;
 
             // Info-Inhalt
             InfoBox.ApplyTheme(theme);

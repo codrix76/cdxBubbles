@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
@@ -6,87 +7,83 @@ namespace BubbleControlls.Models
 {
     public class BubbleVisualTheme
     {
-        [Display(Name = "Allgemeine Einstellungen", Description = "Allgemeine Einstellungen für Bubble Controls")]
-        public BubbleVisualBase BubbleBaseVisuals { get; set; } = new BubbleVisualBase();
-
-        [Display(Name = "Bubble Einstellungen", Description = "Alle Einstellungen für das Bubble Control")]
-        public BubbleVisualsBubble BubbleVisuals { get; set; } = new BubbleVisualsBubble();
-        // Ring-spezifisch
-
-        [Display(Name = "BubbleRing Einstellungen", Description = "Alle Einstellungen für das BubbleRing Control")] 
-        public BubbleVisualsRings BubbleRingVisuals { get; set; } = new BubbleVisualsRings();
-
-        // BubbleinfoBox spezifisch
-        [Display(Name = "BubbleInfo Einstellungen", Description = "Alle Einstellungen für das BubbleInfo Control")]
-        public BubbleVisualInfoBox BubbleInfoBoxVisuals { get; set; } = new BubbleVisualInfoBox();
-
-
-    }
-    public class BubbleVisualBase
-    {
-        [Display(Name = "Hintergrund", Description = "Allgemeine Hintergrundfarbe")]
+        [Display(Name = "Hintergrund", Description = "Hintergrundfarbe der Komponenten")]
         public Brush? Background { get; set; }
-
         [Display(Name = "Textfarbe", Description = "Farbe des angezeigten Textes")]
         public Brush? Foreground { get; set; }
-
         [Display(Name = "Titelfarbe", Description = "Farbe der Titelzeile")]
         public Brush? TitleBackground { get; set; }
-
-    }
-    public class BubbleVisualsBubble
-    {
-        [Display(Name = "Hintergrund", Description = "Hintergrundfarbe der Bubble-Innenfläche")]
-        public Brush? Background { get; set; }
-
-        [Display(Name = "Innenrahmen", Description = "Farbe des inneren Bubble-Rahmens")]
+        [Display(Name = "Innenrahmen", Description = "Farbe des inneren Rahmens")]
         public Brush? Border { get; set; }
-
-        [Display(Name = "Außenrahmen", Description = "Farbe des äußeren Bubble-Rahmens")]
+        [Display(Name = "Außenrahmen", Description = "Farbe des äußeren Rahmens")]
         public Brush? OuterBorderColor { get; set; }
-
+        // Effektfarben
         [Display(Name = "Glanzfarbe", Description = "Lichtpunktfarbe für plastische Effekte")]
-        public Color HighlightColor { get; set; }
-
+        public Color EffectColor1 { get; set; }
         [Display(Name = "Hintergrund (dunkel)", Description = "Dunklere Variante des Hintergrunds für 3D-Effekt")]
-        public Color BackgroundDarkColor { get; set; }
-
+        public Color EffectColor2 { get; set; }
+        [Display(Name = "Titel Effektfarbe 1 (Highlight)", Description = "Lichtpunktfarbe für plastische Effekte")]
+        public Color TitleEffectColor1 { get; set; }
+        [Display(Name = "Titel Effektfarbe 2", Description = "Dunklere Variante des Hintergrunds für 3D-Effekt")]
+        public Color TitleEffectColor2 { get; set; }
         [Display(Name = "Außenrahmen (Highlight)", Description = "Hellerer Rand für Außenrahmen")]
-        public Color OuterBorderHighlightColor { get; set; }
-
+        public Color OuterBorderEffectColor1 { get; set; }
         [Display(Name = "Außenrahmen (dunkel)", Description = "Dunklerer Rand für Außenrahmen")]
-        public Color OuterBorderDarkColor { get; set; }
-
+        public Color OuterBorderEffectColor2 { get; set; }
         [Display(Name = "Innenrahmen (Highlight)", Description = "Hellerer Rand für Innenrahmen")]
-        public Color InnerBorderHighlightColor { get; set; }
-
+        public Color InnerBorderEffectColor1 { get; set; }
         [Display(Name = "Innenrahmen (dunkel)", Description = "Dunklerer Rand für Innenrahmen")]
-        public Color InnerBorderDarkColor { get; set; }
-
-        [Display(Name = "Textfarbe", Description = "Farbe des angezeigten Textes")]
-        public Brush? Foreground { get; set; }
-
+        public Color InnerBorderEffectColor2 { get; set; }
+        // Schrift
         [Display(Name = "Schriftart", Description = "Verwendete Schriftfamilie")]
         public FontFamily? FontFamily { get; set; }
-
         [Display(Name = "Schriftgröße", Description = "Größe des angezeigten Textes in Punkten")]
         public double FontSize { get; set; } = 14.0;
-
-        [Display(Name = "Schriftgewicht", Description = "Dicke der Schrift (z. B. Normal, Bold)")]
+        [Display(Name = "Schriftgewicht", Description = "Dicke der Schrift (z. B. Normal, Bold)")]
         public FontWeight FontWeight { get; set; } = FontWeights.Normal;
-
         [Display(Name = "Schriftstil", Description = "Schriftschnitt wie Normal oder Kursiv")]
         public FontStyle FontStyle { get; set; } = FontStyles.Normal;
-
+        // Ränder Stärke
         [Display(Name = "Innenrahmenstärke", Description = "Dicke des inneren Rahmens")]
         public Thickness BorderThickness { get; set; }
-
         [Display(Name = "Außenrahmenstärke", Description = "Dicke des äußeren Rahmens")]
         public Thickness OuterBorderThickness { get; set; }
 
+        // Sonstiges
         [Display(Name = "3D-Gradient aktiv", Description = "Verwendet plastische 3D-Darstellung per Farbverlauf")]
         public bool Use3DGradient { get; set; }
+        
+        // Ring-spezifisch
+        [Display(Name = "BubbleRing Einstellungen", Description = "Alle Einstellungen für das BubbleRing Control")] 
+        public BubbleVisualsRings RingVisuals { get; set; } = new BubbleVisualsRings();
 
+        // BubbleinfoBox spezifisch
+        private BubbleVisualInfoBox? _infoBoxVisuals;
+
+        [Display(Name = "BubbleInfo Einstellungen", Description = "Alle Einstellungen für das BubbleInfo Control")]
+        public BubbleVisualInfoBox InfoBoxVisuals
+        {
+            get
+            {
+                if (_infoBoxVisuals == null)
+                {
+                    _infoBoxVisuals = new BubbleVisualInfoBox
+                    {
+                        InfoBackground = this.Background,
+                        InfoForeground = this.Foreground,
+                        InfoBorder = this.Border,
+                        InfoOuterBorderColor = this.OuterBorderColor,
+                        InfoEffectColor1 = this.EffectColor1,
+                        InfoOuterBorderEffectColor1 = this.OuterBorderEffectColor1,
+                        InfoInnerBorderEffectColor1 = this.InnerBorderEffectColor1,
+                        InfoBorderThickness = this.BorderThickness,
+                        InfoOuterBorderThickness = this.OuterBorderThickness
+                    };
+                }
+                return _infoBoxVisuals;
+            }
+            set => _infoBoxVisuals = value;
+        }
     }
 
     public class BubbleVisualsRings
@@ -107,36 +104,36 @@ namespace BubbleControlls.Models
         public int RingBorderThickness { get; set; } = 2;
 
         [Display(Name = "Scrollpfeil-Höhe", Description = "Höhe der Pfeile für Ringscrollen")]
-        public double ScrollArrowHeight { get; set; } = 8.0;
+        public double RingScrollArrowHeight { get; set; } = 8.0;
     }
 
     public class BubbleVisualInfoBox
     {
-        [Display(Name = "BubbleInfo Hintergrund", Description = "Hintergrundfarbe der BubbleInfo-Innenfläche")]
-        public Brush? BubbleInfoBackground { get; set; }
+        [Display(Name = "Info Hintergrund", Description = "Hintergrundfarbe der Info-Innenfläche")]
+        public Brush? InfoBackground { get; set; }
 
-        [Display(Name = "BubbleInfo-Innenrahmen", Description = "Farbe des inneren BubbleInfo-Rahmens")]
-        public Brush? BubbleInfoBorder { get; set; }
+        [Display(Name = "Info-Innenrahmen", Description = "Farbe des inneren Info-Rahmens")]
+        public Brush? InfoBorder { get; set; }
 
-        [Display(Name = "BubbleInfo-Außenrahmen", Description = "Farbe des äußeren BubbleInfo-Rahmens")]
-        public Brush? BubbleInfoOuterBorderColor { get; set; }
+        [Display(Name = "Info-Außenrahmen", Description = "Farbe des äußeren Info-Rahmens")]
+        public Brush? InfoOuterBorderColor { get; set; }
 
-        [Display(Name = "BubbleInfo Glanzfarbe", Description = "Lichtpunktfarbe für plastische Effekte")]
-        public Color BubbleInfoHighlightColor { get; set; }
+        [Display(Name = "Info Glanzfarbe", Description = "Lichtpunktfarbe für plastische Effekte")]
+        public Color InfoEffectColor1 { get; set; }
 
-        [Display(Name = "BubbleInfo Außenrahmen (Highlight)", Description = "Hellerer Rand für Außenrahmen")]
-        public Color BubbleInfoOuterBorderHighlightColor { get; set; }
+        [Display(Name = "Info Außenrahmen (Highlight)", Description = "Hellerer Rand für Außenrahmen")]
+        public Color InfoOuterBorderEffectColor1 { get; set; }
 
-        [Display(Name = "BubbleInfo Innenrahmen (Highlight)", Description = "Hellerer Rand für Innenrahmen")]
-        public Color BubbleInfoInnerBorderHighlightColor { get; set; }
+        [Display(Name = "Info Innenrahmen (Highlight)", Description = "Hellerer Rand für Innenrahmen")]
+        public Color InfoInnerBorderEffectColor1 { get; set; }
 
-        [Display(Name = "BubbleInfo Textfarbe", Description = "Farbe des angezeigten Textes")]
-        public Brush? BubbleInfoForeground { get; set; }
+        [Display(Name = "Info Textfarbe", Description = "Farbe des angezeigten Textes")]
+        public Brush? InfoForeground { get; set; }
 
-        [Display(Name = "BubbleInfo Innenrahmenstärke", Description = "Dicke des inneren Rahmens")]
-        public Thickness BubbleInfoBorderThickness { get; set; }
+        [Display(Name = "Info Innenrahmenstärke", Description = "Dicke des inneren Rahmens")]
+        public Thickness InfoBorderThickness { get; set; }
 
-        [Display(Name = "BubbleInfo Außenrahmenstärke", Description = "Dicke des äußeren Rahmens")]
-        public Thickness BubbleInfoOuterBorderThickness { get; set; }
+        [Display(Name = "Info Außenrahmenstärke", Description = "Dicke des äußeren Rahmens")]
+        public Thickness InfoOuterBorderThickness { get; set; }
     }
 }
