@@ -62,7 +62,8 @@ namespace BubbleTools
             PreviewBubble.VerticalAlignment = VerticalAlignment.Top;
             PreviewBubble.HorizontalAlignment = HorizontalAlignment.Left;
             PreviewBubble.MenuStyleTheme = currentTheme;
-
+            PreviewBubble.AlwaysOpen = true;
+            
             PreviewPanel.Children.Add(PreviewBubble);
             
             PreviewInfoControl = new  BubbleInfoControl();

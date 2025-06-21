@@ -28,6 +28,7 @@ namespace BubbleControlls.ControlViews
 
         #region Properties
 
+        public bool AlwaysOpen { get; set; } = false;
         public double MenuRadius => _viewModel.GetMenuLevelLenght;
         public BubbleAlignmentValues ViewValues { get => _viewModel.ViewValues; }
         public double MenuHideSeconds { get; set; } = 3;
@@ -131,7 +132,13 @@ namespace BubbleControlls.ControlViews
                 {
                     StartHideTimer();
                 };
+                if (AlwaysOpen)
+                {
+                    _viewModel.BubbleClicked("MainMenu"); 
+                    UpdateMenu();
+                }
             };
+            
         }
 
         #region Events
@@ -155,8 +162,6 @@ namespace BubbleControlls.ControlViews
                 {
                     // Mittlere Maustaste
                 }
-
-                
                 UpdateMenu();
             }
         }
@@ -248,9 +253,19 @@ namespace BubbleControlls.ControlViews
             Canvas.SetLeft(_additionalMenuRing, 0);
             MenuCanvas.Children.Add(_additionalMenuRing);
 
-            //_pathMenuRing.Visibility = Visibility.Collapsed;
-            //_selectedMenuRing.Visibility = Visibility.Collapsed;
-            _additionalMenuRing.Visibility = Visibility.Collapsed;
+            if (AlwaysOpen)
+            {
+                _pathMenuRing.Visibility = Visibility.Visible;
+                _selectedMenuRing.Visibility = Visibility.Visible;
+                _additionalMenuRing.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _pathMenuRing.Visibility = Visibility.Collapsed;
+                _selectedMenuRing.Visibility = Visibility.Collapsed;
+                _additionalMenuRing.Visibility = Visibility.Collapsed;
+            }
+            
 
             InvalidateMenu(startAngl, endAngl);
         }
@@ -412,6 +427,8 @@ namespace BubbleControlls.ControlViews
 
         private void ShowRings()
         {
+            if (AlwaysOpen)
+                return;
             if (_ringsVisible)
                 return;
 
@@ -422,6 +439,8 @@ namespace BubbleControlls.ControlViews
         }
         private void StartHideTimer()
         {
+            if (AlwaysOpen)
+                return;
             _hideTimer.Interval = TimeSpan.FromSeconds(MenuHideSeconds);
             _hideTimer.Start();
         }

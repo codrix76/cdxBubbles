@@ -32,7 +32,6 @@ namespace BubblesDemo
             BubbleMenu.MouseLeftButtonDown += OnMainMenuMouseDown;
             BubbleMenu.MouseMove += OnMainMenuMouseMove;
             BubbleMenu.MouseLeftButtonUp  += OnMainMenuMouseUp;
-
         }
 
         private void OnMainMenuMouseDown(object sender, MouseButtonEventArgs e)
