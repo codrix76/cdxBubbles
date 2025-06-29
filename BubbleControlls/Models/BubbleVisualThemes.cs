@@ -143,6 +143,7 @@ namespace BubbleControlls.Models
             return new BubbleVisualTheme
             {
                 Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
+                BackgroundBack = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
                 TitleBackground = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 TitleEffectColor1 = Color.FromRgb(255, 255, 255),

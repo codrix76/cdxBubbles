@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="BubbleControlls.ControlViews.BubbleSwitch"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BubbleControlls.ControlViews"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="150">
+    <Border x:Name="OuterBorder" CornerRadius="15"
+            Background="{Binding OuterBackground, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+            BorderBrush="{Binding OuterBorderBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            BorderThickness="{Binding OuterBorderThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            d:Background="Gray">
+        <!-- Inner Kapsel -->
+        <Border x:Name="InnerBorder" 
+                    Background="{Binding InnerBackground, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    BorderBrush="{Binding InnerBorderBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    BorderThickness="{Binding InnerBorderThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CornerRadius="15"
+                d:Background="White"
+                d:Width="130"
+                d:HorizontalAlignment="Left">
+            
+            <TextBlock x:Name="SwitchLabelText"
+                           Text="{Binding SwitchLabel, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                           VerticalAlignment="Center"
+                           Margin="10,0,10,0" />
+           
+        </Border>
+    </Border>
+</UserControl>

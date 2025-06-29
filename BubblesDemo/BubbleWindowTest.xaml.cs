@@ -1,4 +1,5 @@
-﻿using BubbleControlls.ControlViews;
+﻿using System.Windows;
+using BubbleControlls.ControlViews;
 using BubbleControlls.Models;
 
 namespace BubblesDemo
@@ -13,6 +14,8 @@ namespace BubblesDemo
             InitializeComponent();
             //this.WindowTheme = BubbleVisualThemes.Dark();
             this.ApplyTheme(BubbleVisualThemes.HudBlue());
+
         }
+
     }
 }

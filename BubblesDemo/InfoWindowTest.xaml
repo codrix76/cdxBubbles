@@ -4,9 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BubblesDemo"
+        xmlns:controlViews="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
         mc:Ignorable="d"
-        Title="InfoWindowTest" Height="169" Width="234">
+        Title="InfoWindowTest" Height="700" Width="1000">
     <Grid>
-        <Button x:Name="DemoBtn" Content="Demo" Height="50" Width="150"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <controlViews:BubbleSwitch
+            x:Name="BblSwitch" Grid.Row="0"
+            Width="110" HorizontalAlignment="Center"/>
+        <Button x:Name="DemoBtn"
+                Grid.Column="1" Grid.Row="0"
+                Content="Demo" Height="30"
+                Width="80"/>
+
+        <controlViews:Bubble x:Name="bubble" Height="100" Width="100"
+                             Grid.Column="1" Grid.Row="1"/>
+        <Border Grid.Column="2" Grid.Row="1"
+                Width="300" Height="300"
+                Margin="2"
+                BorderBrush="Gray" BorderThickness="1">
+            <ScrollViewer >
+                <controlViews:BubbleTreeView 
+                    x:Name="bblTree"/>
+            </ScrollViewer>
+        </Border>
+        
     </Grid>
+
 </Window>

@@ -102,4 +102,11 @@ public static class GeometryHelper
         double ds = Math.Sqrt(Math.Pow(radiusX * Math.Sin(angle), 2) + Math.Pow(radiusY * Math.Cos(angle), 2));
         return placement.Size.Width / ds;
     }
+
+    public static double GetDistance(Point p1, Point p2)
+    {
+        double dx = p1.X - p2.X;
+        double dy = p1.Y - p2.Y;
+        return dx * dx + dy * dy;
+    }
 }

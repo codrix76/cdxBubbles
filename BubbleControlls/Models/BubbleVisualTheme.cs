@@ -13,6 +13,8 @@ namespace BubbleControlls.Models
         public Brush? Foreground { get; set; }
         [Display(Name = "Titelfarbe", Description = "Farbe der Titelzeile")]
         public Brush? TitleBackground { get; set; }
+        [Display(Name = "Hintergund2", Description = "Farbe des äußeren Hintegrund")]
+        public Brush? BackgroundBack { get; set; } = Brushes.Transparent;
         [Display(Name = "Innenrahmen", Description = "Farbe des inneren Rahmens")]
         public Brush? Border { get; set; }
         [Display(Name = "Außenrahmen", Description = "Farbe des äußeren Rahmens")]
