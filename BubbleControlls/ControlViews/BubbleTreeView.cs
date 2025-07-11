@@ -1,6 +1,7 @@
 ﻿using BubbleControlls.Models;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace BubbleControlls.ControlViews
@@ -11,6 +12,7 @@ namespace BubbleControlls.ControlViews
         public event Action<BubbleTreeViewItem> NodeRightClick;
         public event Action<BubbleTreeViewItem> NodeExpanded;
         public event Action<BubbleTreeViewItem> NodeCollapsed;
+        public event Action<BubbleTreeView> SelectionChanged;
 
         #region Variablen
         private BubbleTreeViewItem _root = new BubbleTreeViewItem(0, "Root");
@@ -21,8 +23,10 @@ namespace BubbleControlls.ControlViews
         private double _horizontalStep = 40.0;
         private double _verticalStep = 4.0;
         private double _bubbleSwitchHeight = 25;
+        private bool _isMultiSelect = false;
         private List<List<BubbleTreeViewItem>> _pathList = new List<List<BubbleTreeViewItem>>();
         private List<List<BubbleTreeViewItem>> _SubList = new List<List<BubbleTreeViewItem>>();
+        private List<BubbleTreeViewItem> _selectionList = new List<BubbleTreeViewItem>();
 
         private List<BubbleSwitch> _currentList = new List<BubbleSwitch>();
         private List<BubbleSwitch> _keepList = new List<BubbleSwitch>();
@@ -48,6 +52,8 @@ namespace BubbleControlls.ControlViews
         public double SwitchHeight { get => _bubbleSwitchHeight; set => _bubbleSwitchHeight = value; }
         public double Indentation { get => _horizontalStep; set => _horizontalStep = value; }
         public double VerticalSpacing { get => _verticalStep; set => _verticalStep = value; }
+        public bool IsMultiSelect { get => _isMultiSelect; set => _isMultiSelect = value; }
+        public List<BubbleTreeViewItem> SelectionList { get => _selectionList; set => _selectionList = value; }
 
         #endregion
 
@@ -363,10 +369,59 @@ namespace BubbleControlls.ControlViews
         private void Node_Clicked(BubbleSwitch obj)
         {
             BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)obj.Tag).ID);
-            if (node != null)
+            if (node == null) return;
+
+            bool isCtrl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+
+            if (_isMultiSelect)
             {
-                NodeClick?.Invoke(node);
+                obj.IsSelectable = true;
+
+                if (isCtrl)
+                {
+                    if (_selectionList.Contains(node))
+                    {
+                        _selectionList.Remove(node);
+                        obj.IsSelected = false;
+                    }
+                    else
+                    {
+                        _selectionList.Add(node);
+                        obj.IsSelected = true;
+                    }
+                }
+                else
+                {
+                    // Ohne STRG → neue Einzel-Selektion
+                    foreach (var sw in _keepList)
+                    {
+                        sw.IsSelected = false;
+                    }
+
+                    _selectionList.Clear();
+                    _selectionList.Add(node);
+                    obj.IsSelected = true;
+                }
+
+                // Auswahl geändert
+                SelectionChanged?.Invoke(this);
             }
+            else
+            {
+                foreach (var sw in _keepList)
+                {
+                    sw.IsSelectable = true;
+                    sw.IsSelected = false;
+                }
+
+                _selectionList.Clear();
+                _selectionList.Add(node);
+                obj.IsSelected = true;
+
+                // Kein SelectionChanged nötig – Clicked deckt es ab
+            }
+
+            NodeClick?.Invoke(node);
         }
         private void Node_RightClicked(BubbleSwitch obj)
         {

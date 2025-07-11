@@ -1,5 +1,6 @@
 ﻿using BubbleControlls.ControlViews;
 using BubbleControlls.Models;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -30,11 +31,21 @@ namespace BubblesDemo
             bblTree.SwitchHeight = 25;
             bblTree.Indentation = 20;
             bblTree.VerticalSpacing = 2;
-            bblTree.NodeClick += BblTree_NodeClick;
-            bblTree.NodeExpanded += BblTree_NodeExpanded;
-            bblTree.NodeCollapsed += BblTree_NodeCollapsed;
+            //bblTree.NodeClick += BblTree_NodeClick;
+            //bblTree.NodeExpanded += BblTree_NodeExpanded;
+            //bblTree.NodeCollapsed += BblTree_NodeCollapsed;
             bblTree.NodeRightClick += BblTree_NodeRightClick;
+            bblTree.SelectionChanged += BblTree_SelectionChanged;
+            bblTree.IsMultiSelect = true;
             CreateTree();
+        }
+
+        private void BblTree_SelectionChanged(BubbleTreeView obj)
+        {
+            foreach(var itm in obj.SelectionList)
+            {
+                Debug.WriteLine(itm.Label);
+            }
         }
         #region BubbleTree
 
@@ -180,7 +191,8 @@ namespace BubblesDemo
         {
             BblSwitch.SwitchLabel = "test";
             BblSwitch.Height = 26;
-            BblSwitch.IsSwitchable = false;
+            BblSwitch.IsSwitchable = true;
+            BblSwitch.IsSelectable = true;
             //BblSwitch.OuterBorderThickness = new Thickness(2);
             //BblSwitch.OuterBorderBrush = Brushes.Blue;
             //BblSwitch.InnerBorderBrush = Brushes.Red;

@@ -175,7 +175,7 @@ namespace BubbleControlls.ControlViews
         {
             var titleBarGrid = new Grid
             {
-                Height = 30,
+                Height = 20,
                 Margin = new Thickness(3,5,3,5)            };
             titleBarGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Icon
             titleBarGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // Title
@@ -187,8 +187,8 @@ namespace BubbleControlls.ControlViews
             var titleText = new TextBlock
             {
                 Foreground = WindowTheme.Foreground ?? Brushes.White,
-                FontWeight = FontWeights.Bold,
-                FontSize = 16,
+                FontWeight = FontWeights.Normal,
+                FontSize = 12,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(12, 0, 0, 0)
             };

@@ -13,10 +13,13 @@ namespace BubbleControlls.ControlViews
         public event Action<BubbleSwitch> Toggled;
         public event Action<BubbleSwitch> Clicked;
         public event Action<BubbleSwitch> RightClicked;
+        public event Action<BubbleSwitch> Selected;
         #region Variablen
         private BubbleVisualTheme _theme = BubbleVisualThemes.Standard();
         private bool _isSwitchable = true;
         private bool _isSwitched = false;
+        private bool _isSelected = false;
+        private bool _isSelectable = false;
         #endregion
 
         #region Properties
@@ -35,6 +38,29 @@ namespace BubbleControlls.ControlViews
                 ToggleSwitch();
             }
         }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set 
+            {
+                if (_isSelectable)
+                {
+                    _isSelected = value;
+                    if (_isSelected)
+                    {
+                        Background = SelectionColor;
+                    }
+                    else
+                    {
+                        Background = Brushes.Transparent;
+                    }
+                    Selected?.Invoke(this);
+                }
+                
+            }
+        }
+        public bool IsSelectable { get => _isSelectable; set => _isSelectable = value; }
 
         #endregion
 
@@ -73,6 +99,15 @@ namespace BubbleControlls.ControlViews
             DependencyProperty.Register(nameof(OuterBackground), typeof(Brush), typeof(BubbleSwitch),
                 new PropertyMetadata(new SolidColorBrush(Color.FromRgb(200, 200, 200))));
 
+        public static readonly DependencyProperty SelectionColorProperty =
+            DependencyProperty.Register(nameof(SelectionColor), typeof(Brush), typeof(BubbleSwitch),
+                new PropertyMetadata(new SolidColorBrush(Colors.Blue)));
+
+        public Brush SelectionColor
+        {
+            get => (Brush)GetValue(SelectionColorProperty);
+            set => SetValue(SelectionColorProperty, value);
+        }
         public Brush OuterBackground
         {
             get => (Brush)GetValue(OuterBackgroundProperty);
@@ -166,8 +201,7 @@ namespace BubbleControlls.ControlViews
             get => (FontStyle)GetValue(SwitchFontStyleProperty);
             set => SetValue(SwitchFontStyleProperty, value);
         }
-
-
+        
         #endregion
         public BubbleSwitch()
         {
@@ -191,6 +225,7 @@ namespace BubbleControlls.ControlViews
         {
             e.Handled = true; // verhindert, dass OuterBorder das Event auch bekommt
             Clicked?.Invoke(this);
+
         }
         private void OuterBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
