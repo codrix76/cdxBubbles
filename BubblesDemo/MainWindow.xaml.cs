@@ -27,7 +27,7 @@ namespace BubblesDemo
                 BubbleMenu.BubbleMenuBigSize = 55.0;
                 BubbleMenu.BubbleMenuSmallSize = 40.0;
                 BubbleMenu.MainMenu = BuildMenu();
-                
+                BubbleMenu.MenuStyleTheme = BubbleVisualThemes.HudBlue();
             };
             BubbleMenu.MouseLeftButtonDown += OnMainMenuMouseDown;
             BubbleMenu.MouseMove += OnMainMenuMouseMove;

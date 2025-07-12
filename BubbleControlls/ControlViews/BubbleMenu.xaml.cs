@@ -357,7 +357,7 @@ namespace BubbleControlls.ControlViews
                 };
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
-
+                bubble.ApplyTheme(MenuStyleTheme);
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
                 pathElements.Add(bubble);                
             }
@@ -383,7 +383,7 @@ namespace BubbleControlls.ControlViews
 
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
-
+                bubble.ApplyTheme(MenuStyleTheme);
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
                 elements.Add(bubble);
             }
@@ -410,7 +410,7 @@ namespace BubbleControlls.ControlViews
 
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
-
+                bubble.ApplyTheme(MenuStyleTheme);
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
                 elements.Add(bubble);
             }
