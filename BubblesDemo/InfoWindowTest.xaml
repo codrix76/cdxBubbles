@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:BubblesDemo"
         xmlns:controlViews="clr-namespace:BubbleControlls.ControlViews;assembly=BubbleControlls"
         mc:Ignorable="d"
-        Title="InfoWindowTest" Height="700" Width="1000">
+        Title="InfoWindowTest" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"/>
@@ -39,7 +40,6 @@
                     x:Name="bblTree"/>
             </ScrollViewer>
         </Border>
-        
     </Grid>
 
 </Window>

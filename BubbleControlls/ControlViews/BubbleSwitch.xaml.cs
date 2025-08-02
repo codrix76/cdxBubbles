@@ -1,6 +1,7 @@
 ﻿using BubbleControlls.Models;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace BubbleControlls.ControlViews
@@ -11,8 +12,8 @@ namespace BubbleControlls.ControlViews
     public partial class BubbleSwitch : UserControl
     {
         public event Action<BubbleSwitch> Toggled;
-        public event Action<BubbleSwitch> Clicked;
-        public event Action<BubbleSwitch> RightClicked;
+        public event Action<BubbleSwitch, MouseButtonEventArgs> Clicked;
+        public event Action<BubbleSwitch, MouseButtonEventArgs> RightClicked;
         public event Action<BubbleSwitch> Selected;
         #region Variablen
         private BubbleVisualTheme _theme = BubbleVisualThemes.Standard();
@@ -218,13 +219,13 @@ namespace BubbleControlls.ControlViews
         private void OuterBorder_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true; // verhindert, dass OuterBorder das Event auch bekommt
-            RightClicked?.Invoke(this);
+            RightClicked?.Invoke(this, e);
         }
 
         private void InnerBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true; // verhindert, dass OuterBorder das Event auch bekommt
-            Clicked?.Invoke(this);
+            Clicked?.Invoke(this, e);
 
         }
         private void OuterBorder_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

@@ -41,7 +41,7 @@ namespace BubbleControlls.ControlViews
         }
         public static readonly DependencyProperty BubbleRenderStyleProperty =
             DependencyProperty.Register(nameof(BubbleMenuStyle), typeof(BubbleRenderStyle), typeof(BubbleMenu),
-                new PropertyMetadata(BubbleRenderStyle.Style3D, null));
+                new PropertyMetadata(BubbleRenderStyle.StylePlane, null));
 
         public BubbleMenuAlignmentType BubbleMenuAlignment
         {
@@ -66,7 +66,7 @@ namespace BubbleControlls.ControlViews
         }
         public static readonly DependencyProperty BubbleMainMenuSizeProperty =
             DependencyProperty.Register(nameof(BubbleMainMenuSize), typeof(double), typeof(BubbleMenu),
-                new PropertyMetadata(80d));
+                new PropertyMetadata(90d));
         
         public double BubbleMenuBigSize
         {
@@ -75,7 +75,7 @@ namespace BubbleControlls.ControlViews
         }
         public static readonly DependencyProperty BubbleMenuBigSizeProperty =
             DependencyProperty.Register(nameof(BubbleMenuBigSize), typeof(double), typeof(BubbleMenu),
-                new PropertyMetadata(60d));
+                new PropertyMetadata(70d));
 
         public double BubbleMenuSmallSize
         {
@@ -84,7 +84,7 @@ namespace BubbleControlls.ControlViews
         }
         public static readonly DependencyProperty BubbleMenuSmallSizeProperty =
             DependencyProperty.Register(nameof(BubbleMenuSmallSize), typeof(double), typeof(BubbleMenu),
-                new PropertyMetadata(35d));
+                new PropertyMetadata(45d));
 
         public double BubbleMenuSpacing
         {
@@ -358,7 +358,9 @@ namespace BubbleControlls.ControlViews
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
                 bubble.ApplyTheme(MenuStyleTheme);
+                bubble.RenderStyle = BubbleMenuStyle;
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
+                bubble.MouseRightButtonDown += Bubble_Clicked;
                 pathElements.Add(bubble);                
             }
             _pathMenuRing.AddElements(pathElements);
@@ -384,7 +386,9 @@ namespace BubbleControlls.ControlViews
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
                 bubble.ApplyTheme(MenuStyleTheme);
+                bubble.RenderStyle = BubbleMenuStyle;
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
+                bubble.MouseRightButtonDown += Bubble_Clicked;
                 elements.Add(bubble);
             }
             _selectedMenuRing.AddElements(elements);
@@ -411,6 +415,7 @@ namespace BubbleControlls.ControlViews
                 if (item.IconPath != null)
                     bubble.Icon = new BitmapImage(new Uri(item.IconPath));
                 bubble.ApplyTheme(MenuStyleTheme);
+                bubble.RenderStyle = BubbleMenuStyle;
                 bubble.MouseLeftButtonDown += Bubble_Clicked;
                 elements.Add(bubble);
             }

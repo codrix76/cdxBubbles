@@ -219,8 +219,8 @@ namespace BubblesDemo
                     MessageBox.Show($"Aktion ausgelöst von: {item.Text}");
                 }
             };
-            subItem1.AddSubItem(subItem2);
-            subItem.AddSubItem(subItem1);
+            subItem.AddContextItem(subItem2);
+            subItem.AddContextItem(subItem1);
             mainMenu.AddSubItem(subItem);
             subItem = new BubbleMenuItem()
             {

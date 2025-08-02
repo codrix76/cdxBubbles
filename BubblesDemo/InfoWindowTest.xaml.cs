@@ -37,7 +37,18 @@ namespace BubblesDemo
             bblTree.NodeRightClick += BblTree_NodeRightClick;
             bblTree.SelectionChanged += BblTree_SelectionChanged;
             bblTree.IsMultiSelect = true;
+            BblSwitch.MouseRightButtonDown += BblSwitch_MouseRightButtonDown;
             CreateTree();
+
+            
+        }
+
+        private void BblSwitch_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            List<BubbleMenuItem> menu = CreateContextMenu();
+            Point screenPos = PointToScreen(e.GetPosition(this));
+            BubbleContextWindow cm = new BubbleContextWindow();
+            cm.ShowAt(screenPos, menu);
         }
 
         private void BblTree_SelectionChanged(BubbleTreeView obj)
@@ -47,15 +58,114 @@ namespace BubblesDemo
                 Debug.WriteLine(itm.Label);
             }
         }
+
+        #region ContextMenu
+        private List<BubbleMenuItem> CreateContextMenu()
+        {
+            List<BubbleMenuItem> menu = new List<BubbleMenuItem>();
+            BubbleMenuItem conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu01",
+                Tooltip = "Context 01",
+                Text = "Context 01",
+                IconPath = "pack://application:,,,/Assets/Destiny.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 02",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu03",
+                Tooltip = "Context 03",
+                Text = "Context 03",
+                IconPath = "pack://application:,,,/Assets/chart01.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 04",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 05",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 06",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 07",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) => {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            conMenu = new BubbleMenuItem()
+            {
+                Name = "ConMenu02",
+                Tooltip = "Context 02",
+                Text = "Context 08",
+                IconPath = "pack://application:,,,/Assets/Data.png",
+                OnClick = (item) =>
+                {
+                    Debug.WriteLine($"Aktion ausgelöst von: {item.Text}");
+                }
+            };
+            menu.Add(conMenu);
+            return menu;
+        }
+        #endregion
         #region BubbleTree
 
-        private void BblTree_NodeRightClick(BubbleTreeViewItem obj)
+        private void BblTree_NodeRightClick(BubbleTreeViewItem obj, MouseButtonEventArgs e)
         {
             BubbleMsgBox.Show(
             $"Objekt: {obj.Label}",
             "Right-Click",
             MessageBoxButton.OK
             );
+            BubbleTreeViewItem newItem = new BubbleTreeViewItem(9999, "new Node");
+            bblTree.AddChildTo(obj, newItem);
         }
 
         private void BblTree_NodeCollapsed(BubbleTreeViewItem obj)

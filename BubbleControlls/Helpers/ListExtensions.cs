@@ -42,5 +42,30 @@ namespace BubbleControlls.Helpers
             }
             return default;
         }
+        public static T? FindDeep<T>(
+            this IEnumerable<T> list,
+            string name,
+            Func<T, string> nameSelector,
+            params Func<T, IEnumerable<T>?>[] childSelectors)
+        {
+            foreach (var item in list)
+            {
+                if (nameSelector(item) == name)
+                    return item;
+
+                foreach (var childSelector in childSelectors)
+                {
+                    var children = childSelector(item);
+                    if (children != null)
+                    {
+                        var found = FindDeep(children, name, nameSelector, childSelectors);
+                        if (found != null)
+                            return found;
+                    }
+                }
+            }
+            return default;
+        }
+
     }
 }

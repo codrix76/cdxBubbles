@@ -3,13 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace BubbleControlls.ControlViews
 {
     public class BubbleTreeView : Canvas
     {
-        public event Action<BubbleTreeViewItem> NodeClick;
-        public event Action<BubbleTreeViewItem> NodeRightClick;
+        public event Action<BubbleTreeViewItem, MouseButtonEventArgs> NodeClick;
+        public event Action<BubbleTreeViewItem, MouseButtonEventArgs> NodeRightClick;
         public event Action<BubbleTreeViewItem> NodeExpanded;
         public event Action<BubbleTreeViewItem> NodeCollapsed;
         public event Action<BubbleTreeView> SelectionChanged;
@@ -58,6 +59,14 @@ namespace BubbleControlls.ControlViews
         #endregion
 
         #region Methods
+        public void AddChildTo(BubbleTreeViewItem parent, BubbleTreeViewItem newChild)
+        {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+
+            parent.Add(newChild); // Das triggert ItemAdded intern
+            
+            UpdateBranch(parent); // Oder ggf. nur Teilstruktur neu zeichnen
+        }
         public void ApplyTheme(BubbleVisualTheme theme)
         {
             _theme = theme ?? BubbleVisualThemes.Standard();
@@ -71,6 +80,13 @@ namespace BubbleControlls.ControlViews
             CreateParents();
             InvalidateVisual();
         }
+        private void UpdateBranch(BubbleTreeViewItem item)
+        {
+            BubbleSwitch? bs = FindByTagID(item.ID);
+            if (bs == null) return;
+            SwitchToggle(bs);
+            SwitchToggle(bs);
+        }
         private void CreateRoot()
         {
             this.Children.Clear();
@@ -83,6 +99,7 @@ namespace BubbleControlls.ControlViews
             root.Tag = new SwitchInfo() { ID = -1, ParentID = -1 };
 
             root.Toggled += SwitchToggle;
+            root.RightClicked += Node_RightClicked;
             Canvas.SetLeft(root, _startPos.X);
             Canvas.SetTop(root, _startPos.Y);
             this.Children.Add(root);
@@ -366,7 +383,7 @@ namespace BubbleControlls.ControlViews
         #endregion
 
         #region Events
-        private void Node_Clicked(BubbleSwitch obj)
+        private void Node_Clicked(BubbleSwitch obj, MouseButtonEventArgs e)
         {
             BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)obj.Tag).ID);
             if (node == null) return;
@@ -421,14 +438,18 @@ namespace BubbleControlls.ControlViews
                 // Kein SelectionChanged nötig – Clicked deckt es ab
             }
 
-            NodeClick?.Invoke(node);
+            NodeClick?.Invoke(node, e);
         }
-        private void Node_RightClicked(BubbleSwitch obj)
+        private void Node_RightClicked(BubbleSwitch obj, MouseButtonEventArgs e)
         {
             BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)obj.Tag).ID);
             if (node != null)
             {
-                NodeRightClick?.Invoke(node);
+                NodeRightClick?.Invoke(node, e);
+            }
+            else
+            {
+                NodeRightClick?.Invoke(_root, e);
             }
         }
         #endregion
