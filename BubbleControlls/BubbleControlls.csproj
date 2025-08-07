@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\ColorWheel.png" />
     <None Remove="Assets\error.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\question.png" />
@@ -19,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\ColorWheel.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\destiny.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

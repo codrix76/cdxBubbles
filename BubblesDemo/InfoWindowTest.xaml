@@ -40,6 +40,10 @@
                     x:Name="bblTree"/>
             </ScrollViewer>
         </Border>
+        <Button x:Name="DemoColor"
+            Grid.Column="2" Grid.Row="0"
+            Content="ColorPicker" Height="30"
+            Width="80" Margin="10,0,10,0"/>
     </Grid>
 
 </Window>

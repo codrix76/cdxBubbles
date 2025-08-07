@@ -23,6 +23,7 @@ namespace BubblesDemo
             DemoBtn.MouseLeave += DemoBtn_MouseLeave;
             DemoBtn.MouseMove += DemoBtn_MouseMove;
             DemoBtn.Click += DemoBtn_Click;
+            DemoColor.Click += DemoColor_Click;
             infoBox.ShowInTaskbar = false;
             infoBox.Topmost = true;
             Loaded += (_, _) => { SetDefaults(); };
@@ -41,6 +42,13 @@ namespace BubblesDemo
             CreateTree();
 
             
+        }
+
+        private void DemoColor_Click(object sender, RoutedEventArgs e)
+        {
+            var cp = new BubbleColorPickerWindow();
+            cp.ShowDialog();
+
         }
 
         private void BblSwitch_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
