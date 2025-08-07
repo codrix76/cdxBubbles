@@ -6,6 +6,9 @@ namespace BubbleControlls.Models
 {
     public class BubbleVisualTheme
     {
+        [Display(Name = "ThemeName", Description = "Themennamen")]
+        public string? ThemeName { get; set; } = "unknown"; 
+
         [Display(Name = "Hintergrund", Description = "Hintergrundfarbe der Komponenten")]
         public Brush? Background { get; set; }
         [Display(Name = "Textfarbe", Description = "Farbe des angezeigten Textes")]

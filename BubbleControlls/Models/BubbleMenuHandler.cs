@@ -76,15 +76,10 @@ namespace BubbleControlls.Models
         {
             if (_mainMenu.Name == name)
                 return _mainMenu;
-            var result = _mainMenu.SubItems.FindDeep(
-                name,
-                m => m.Name,
-                m => m.SubItems,
-                m => m.ContextItems
-            );
+
             var res = _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
             if(res == null) res = _mainMenu.ContextItems.FindDeep(name, x => x.Name, x => x.ContextItems);
-            return result;
+            return res;
             //return _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
         }
 

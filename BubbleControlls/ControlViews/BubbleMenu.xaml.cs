@@ -148,6 +148,7 @@ namespace BubbleControlls.ControlViews
             {
                 if (e.ChangedButton == MouseButton.Left)
                 {
+                    Debug.WriteLine($"Bubble: {clickedBubble.Name}");
                     _additionalMenuRing.Visibility = Visibility.Collapsed;
                     string bubbleId = clickedBubble.Name;
                     _viewModel.BubbleClicked(bubbleId); 

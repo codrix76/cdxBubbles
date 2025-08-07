@@ -25,6 +25,7 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
+                ThemeName = "HudBlue",
                 Background = new SolidColorBrush(Color.FromRgb(15, 30, 60)),
                 Foreground = new SolidColorBrush(Colors.WhiteSmoke),
                 TitleBackground = new SolidColorBrush(Color.FromRgb(40, 80, 130)),
@@ -84,6 +85,7 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
+                ThemeName = "Dark",
                 Background = new SolidColorBrush(Color.FromRgb(30, 30, 30)),
                 Foreground = new SolidColorBrush(Colors.Gainsboro),
                 TitleBackground = new SolidColorBrush(Color.FromRgb(50, 50, 50)),
@@ -142,6 +144,7 @@ namespace BubbleControlls.Models
         {
             return new BubbleVisualTheme
             {
+                ThemeName = "Standard",
                 Background = new SolidColorBrush(Color.FromRgb(240, 240, 240)),
                 BackgroundBack = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
                 Foreground = new SolidColorBrush(Color.FromRgb(30, 30, 30)),

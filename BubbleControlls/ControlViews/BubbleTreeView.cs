@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml.Linq;
 
 namespace BubbleControlls.ControlViews
 {
@@ -16,9 +15,11 @@ namespace BubbleControlls.ControlViews
         public event Action<BubbleTreeView> SelectionChanged;
 
         #region Variablen
-        private BubbleTreeViewItem _root = new BubbleTreeViewItem(0, "Root");
+        private ITreeViewDataSource _dataSource = new LocalTreeViewSource();
+        private int _rootID = -1;
+        //private BubbleTreeViewItem _root = new BubbleTreeViewItem(0, "Root");
         private BubbleVisualTheme _theme = BubbleVisualThemes.Standard();
-        BubbleSwitch? rootNode = null;
+        BubbleSwitch? rootSwitch = null;
         private Point _startPos = new Point(10,10);
         private Point _lastPos = new Point(10,10);
         private double _horizontalStep = 40.0;
@@ -35,17 +36,26 @@ namespace BubbleControlls.ControlViews
         public BubbleTreeView()
         {
             RebuildTree();
-            _root.ItemAdded += ItemAdded;
-            _root.ItemRemoved += ItemRemoved;
-        }
 
+        }
+        public void ChangeDataSource(ITreeViewDataSource dataSource)
+        {
+            rootSwitch = null;
+            _dataSource = dataSource;
+            _rootID = _dataSource.GetRoot().ID;
+            RebuildTree();
+        }
         #region Properties
         public BubbleTreeViewItem Root
         {
-            get { return _root; }
+            get { return _dataSource.GetRoot(); }
             set
             {
-                _root = value;
+                if (_dataSource.GetType() == typeof(LocalTreeViewSource))
+                    _dataSource = new LocalTreeViewSource(value);
+                else
+                    throw new InvalidOperationException("Set Root only available while using LocalTreeViewSource");
+                _rootID = _dataSource.GetRoot().ID;
                 RebuildTree(true);
             }
         }
@@ -63,20 +73,25 @@ namespace BubbleControlls.ControlViews
         {
             if (parent == null) throw new ArgumentNullException(nameof(parent));
 
-            parent.Add(newChild); // Das triggert ItemAdded intern
+            if (_dataSource.GetType() != typeof(LocalTreeViewSource))
+                throw new InvalidOperationException("AddChildTo is not available in use of DataSource.");
             
-            UpdateBranch(parent); // Oder ggf. nur Teilstruktur neu zeichnen
+            parent.Add(newChild);
+            if (parent.ID == 0) //root
+                RebuildTree(true);
+            else
+                UpdateBranch(parent); // Oder ggf. nur Teilstruktur neu zeichnen
         }
         public void ApplyTheme(BubbleVisualTheme theme)
         {
             _theme = theme ?? BubbleVisualThemes.Standard();
             InvalidateVisual();
-            RebuildTree();
+            RebuildTree(true);
         }
-        private void RebuildTree(bool newData = false)
+        private void RebuildTree(bool force = false)
         {
             //this.Children.Clear();
-            if (rootNode == null || newData) CreateRoot();
+            if (rootSwitch == null || force) CreateRoot();
             CreateParents();
             InvalidateVisual();
         }
@@ -89,21 +104,23 @@ namespace BubbleControlls.ControlViews
         }
         private void CreateRoot()
         {
-            this.Children.Clear();
-            BubbleSwitch root = new BubbleSwitch();
-            root.IsSwitchable = _root.IsExpandeable;
-            root.IsSwitched = _root.IsExpanded;
-            root.ApplyTheme(_theme);
-            root.Height = _bubbleSwitchHeight;
-            root.SwitchLabel = _root.Label;
-            root.Tag = new SwitchInfo() { ID = -1, ParentID = -1 };
+            BubbleTreeViewItem root = _dataSource.GetRoot();
 
-            root.Toggled += SwitchToggle;
-            root.RightClicked += Node_RightClicked;
-            Canvas.SetLeft(root, _startPos.X);
-            Canvas.SetTop(root, _startPos.Y);
-            this.Children.Add(root);
-            rootNode = root;
+            this.Children.Clear();
+            BubbleSwitch bubbleSwitch = new BubbleSwitch();
+            bubbleSwitch.IsSwitchable = root.IsExpandeable;
+            bubbleSwitch.IsSwitched = root.IsExpanded;
+            bubbleSwitch.ApplyTheme(_theme);
+            bubbleSwitch.Height = _bubbleSwitchHeight;
+            bubbleSwitch.SwitchLabel = root.Label;
+            bubbleSwitch.Tag = new SwitchInfo() { ID = _rootID, ParentID = -1 };
+
+            bubbleSwitch.Toggled += SwitchToggle;
+            bubbleSwitch.RightClicked += Node_RightClicked;
+            Canvas.SetLeft(bubbleSwitch, _startPos.X);
+            Canvas.SetTop(bubbleSwitch, _startPos.Y);
+            this.Children.Add(bubbleSwitch);
+            rootSwitch = bubbleSwitch;
 
             ClearLists();
         }
@@ -114,8 +131,9 @@ namespace BubbleControlls.ControlViews
                 _pathList.Clear();
                 _SubList.Clear();
             }
+
             //foreach (var child in _root.Children)
-            for (int i = 0;  i < _root.Children.Count; i++)
+            for (int i = 0;  i < _dataSource.GetChildren(_rootID).Count; i++)
             {
                 if (parentindex == null)
                 {
@@ -129,6 +147,7 @@ namespace BubbleControlls.ControlViews
                 }
             }
         }
+
         private BubbleSwitch CreateNodeSwitch(BubbleTreeViewItem obj)
         {
             BubbleSwitch node = new BubbleSwitch();
@@ -153,12 +172,12 @@ namespace BubbleControlls.ControlViews
         }
         private void SwitchToggle(BubbleSwitch obj)
         {
-            BubbleTreeViewItem? itm = _root.FindByID(((SwitchInfo)obj.Tag).ID);
+            BubbleTreeViewItem? itm = _dataSource.FindByID(((SwitchInfo)obj.Tag).ID);
             if (itm != null)
             {
                 itm.IsExpanded = obj.IsSwitched;
-                int lvl = BubbleTreeViewItem.GetLevel(itm);
-                int parentIndex = GetParentIndex(itm);
+                int lvl = _dataSource.GetLevel(itm.ID);
+                int parentIndex = _dataSource.GetParentIndex(itm.ID);
                 if (lvl>=2)
                 {
                     int index = _pathList[parentIndex].IndexOf(itm);
@@ -190,16 +209,7 @@ namespace BubbleControlls.ControlViews
             }
                 
         }
-        private void ItemAdded(BubbleTreeViewItem obj)
-        {            
-            ItemCountChanged(obj);
-        }
-        private void ItemRemoved(BubbleTreeViewItem obj)
-        {
-            ItemCountChanged(obj);
-            BubbleSwitch? node = FindByTagID((int)obj.ID);
-            if (node != null) this.Children.Remove(node);
-        }
+
         private void ItemCountChanged(BubbleTreeViewItem obj)
         {
             BubbleSwitch? node = FindByTagID((int)obj.ID);
@@ -239,18 +249,19 @@ namespace BubbleControlls.ControlViews
                 .OrderBy(s => Canvas.GetTop(s))
                 .ToList();
 
-            Canvas.SetLeft(rootNode, _startPos.X);
-            Canvas.SetTop(rootNode, _startPos.Y);
+            Canvas.SetLeft(rootSwitch, _startPos.X);
+            Canvas.SetTop(rootSwitch, _startPos.Y);
 
-            _keepList = new List<BubbleSwitch>() { rootNode };
+            _keepList = new List<BubbleSwitch>() { rootSwitch };
 
             _lastPos = _startPos;
-            _root.IsExpanded = rootNode.IsSwitched;
-            if (_root.IsExpanded)
+            BubbleTreeViewItem root = _dataSource.GetRoot();
+            root.IsExpanded = rootSwitch.IsSwitched;
+            if (root.IsExpanded)
             {
-                for (int i = 0; i < _root.Children.Count; i++)
+                for (int i = 0; i < _dataSource.GetChildren(_rootID).Count; i++)
                 {
-                    BubbleTreeViewItem itm = _root.Children[i];
+                    BubbleTreeViewItem itm = _dataSource.GetChildren(_rootID)[i];
                     // Paging the parents
                     //BubbleSwitch? node = _currentList.FirstOrDefault(sw => sw.Tag is SwitchInfo si && si.ID == itm.ID);
                     //if (node == null) node = FindByTagID(itm.ID);
@@ -280,7 +291,7 @@ namespace BubbleControlls.ControlViews
 
             foreach (var sw in toRemove)
             {
-                BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)sw.Tag).ID);
+                BubbleTreeViewItem? node = _dataSource.FindByID(((SwitchInfo)sw.Tag).ID);
                 if (node != null) node.IsExpanded = false;
                 this.Children.Remove(sw);
             }
@@ -317,9 +328,9 @@ namespace BubbleControlls.ControlViews
                 _SubList[parentIndex].Clear();
             }
             _SubList[parentIndex].Clear();
-            for (int i = 0; i < itm.Children.Count; i++)
+            for (int i = 0; i < _dataSource.GetChildren(itm.ID).Count; i++)
             {
-                BubbleTreeViewItem item = itm.Children[i];
+                BubbleTreeViewItem item = _dataSource.GetChildren(itm.ID)[i];
                 // Paging the parents
                 //BubbleSwitch? node = _currentList.FirstOrDefault(sw => sw.Tag is SwitchInfo si && si.ID == item.ID);
                 //if (node == null) node = FindByTagID(item.ID);
@@ -332,26 +343,6 @@ namespace BubbleControlls.ControlViews
                 _keepList.Add(node);
                 _SubList[parentIndex].Add(item);
             }
-        }
-        public int GetParentIndex(BubbleTreeViewItem item)
-        {
-            if (_root == null || item == null)
-                return -1;
-
-            var current = item;
-
-            // Hochlaufen bis direkt unter der Root
-            while (current != null && current.Parent != _root)
-            {
-                current = current.Parent;
-            }
-
-            if (current?.Parent == _root)
-            {
-                return _root.Children.IndexOf(current);
-            }
-
-            return -1; // kein gültiger Root-Child-Vorfahre
         }
         private BubbleSwitch EnsureSwitch(BubbleTreeViewItem item)
         {
@@ -385,7 +376,7 @@ namespace BubbleControlls.ControlViews
         #region Events
         private void Node_Clicked(BubbleSwitch obj, MouseButtonEventArgs e)
         {
-            BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)obj.Tag).ID);
+            BubbleTreeViewItem? node = _dataSource.FindByID(((SwitchInfo)obj.Tag).ID);
             if (node == null) return;
 
             bool isCtrl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
@@ -442,14 +433,14 @@ namespace BubbleControlls.ControlViews
         }
         private void Node_RightClicked(BubbleSwitch obj, MouseButtonEventArgs e)
         {
-            BubbleTreeViewItem? node = _root.FindByID(((SwitchInfo)obj.Tag).ID);
+            BubbleTreeViewItem? node = _dataSource.FindByID(((SwitchInfo)obj.Tag).ID);
             if (node != null)
             {
                 NodeRightClick?.Invoke(node, e);
             }
             else
             {
-                NodeRightClick?.Invoke(_root, e);
+                NodeRightClick?.Invoke(_dataSource.GetRoot(), e);
             }
         }
         #endregion
@@ -460,22 +451,22 @@ namespace BubbleControlls.ControlViews
             base.OnRender(dc);
             Pen pen = new Pen(Brushes.Gray, 1);
             // 1. Root → ParentNodes
-            foreach (var child in _root.Children)
+            foreach (var child in _dataSource.GetChildren(_rootID))
             {
                 var parentNode = FindByTagID(child.ID);
-                if (rootNode != null && parentNode != null)
+                if (rootSwitch != null && parentNode != null)
                 {
                     DrawLLine(dc,
-                        GetRightCenter(rootNode),
+                        GetRightCenter(rootSwitch),
                         GetLeftCenter(parentNode),
                         pen,
                         horizontalFirst: false);
                 }
             }
             // 2. Parent → erster PfadNode
-            for (int i = 0; i < _root.Children.Count; i++)
+            for (int i = 0; i < _dataSource.GetChildren(_rootID).Count; i++)
             {
-                var parent = _root.Children[i];
+                var parent = _dataSource.GetChildren(_rootID)[i];
                 var parentNode = FindByTagID(parent.ID);
 
                 if (_pathList.Count > i && _pathList[i].Count > 0)
@@ -511,7 +502,7 @@ namespace BubbleControlls.ControlViews
             // 4. Letzter PathNode → SubNodes
             for (int i = 0; i < _SubList.Count; i++)
             {
-                var parent = _root.Children[i];
+                var parent = _dataSource.GetChildren(_rootID)[i];
                 var path = _pathList[i];
                 var from = path.Count > 0 ? FindByTagID(path.Last().ID) : FindByTagID(parent.ID);
 

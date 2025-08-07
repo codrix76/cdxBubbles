@@ -244,8 +244,6 @@ namespace BubblesDemo
                 }
             };
             mainMenu.AddContextItem(subItem);
-            mainMenu.AddContextItem(subItem);
-            mainMenu.AddContextItem(subItem);
             subItem = new BubbleMenuItem()
             {
                 Name = "CloseMenu",
