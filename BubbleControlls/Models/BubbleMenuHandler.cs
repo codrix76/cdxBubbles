@@ -1,4 +1,6 @@
 ﻿using BubbleControlls.Helpers;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace BubbleControlls.Models
 {
@@ -13,16 +15,37 @@ namespace BubbleControlls.Models
         private List<BubbleMenuItem> _selectableMenus = new List<BubbleMenuItem>();
         private List<BubbleMenuItem> _contextMenus = new List<BubbleMenuItem>();
         private List<BubbleMenuItem> _guiItemsToRemove = new List<BubbleMenuItem>();
+        private Dictionary<string, BubbleMenuItem> _menuMap = new Dictionary<string, BubbleMenuItem>();
         #endregion
 
         #region Properties
-        public BubbleMenuItem MainMenu { get => _mainMenu; set => _mainMenu = value; }
+        public BubbleMenuItem MainMenu { get => _mainMenu; set { _mainMenu = value; RefreshMenuMap(); } }
         public List<BubbleMenuItem> PathMenus { get => _menuPath; }
         public List<BubbleMenuItem> SelectableMenus { get => _selectableMenus; }
         public List<BubbleMenuItem> ContextMenus { get => _contextMenus; }
 
         #endregion
 
+        private void RefreshMenuMap()
+        { 
+            _menuMap.Clear();
+            var stack = new Stack<BubbleMenuItem>();
+            stack.Push(_mainMenu);
+
+            while (stack.Count > 0)
+            {
+                var n = stack.Pop();
+                _menuMap.Add(n.Name, n);
+
+                // SubMenu pushen
+                var subItems = n.SubItems;
+                for (int i = 0; i < subItems.Count; i++)
+                    stack.Push(subItems[i]);
+                var contextItem = n.ContextItems;
+                for (int i = 0; i < contextItem.Count; i++)
+                    stack.Push(contextItem[i]);
+            }
+        }
         /// <summary>
         /// Adding a new Menu, with optional parent
         /// </summary>
@@ -45,6 +68,7 @@ namespace BubbleControlls.Models
                 parentMenu.SubItems.Add(menuItem);
                 menuItem.Parent = parentMenu;
             }
+            _menuMap[menuItem.Name] = menuItem;
         }
         /// <summary>
         /// removing given BubbleMenuItem menuItem
@@ -66,6 +90,7 @@ namespace BubbleControlls.Models
             {
                 _mainMenu.SubItems.Remove(menuItem);
             }
+            _menuMap.Remove(menuItem.Name);
         }
         /// <summary>
         /// find Menu by Name
@@ -77,10 +102,11 @@ namespace BubbleControlls.Models
             if (_mainMenu.Name == name)
                 return _mainMenu;
 
-            var res = _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
-            if(res == null) res = _mainMenu.ContextItems.FindDeep(name, x => x.Name, x => x.ContextItems);
-            return res;
-            //return _mainMenu.SubItems.FindDeep(name, x => x.Name, x => x.SubItems);
+            _menuMap.TryGetValue(name, out var menuItem);
+            if (menuItem != null)
+                return menuItem;
+
+            return null;
         }
 
         /// <summary>

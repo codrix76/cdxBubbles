@@ -10,7 +10,7 @@ namespace BubbleControlls.ControlViews
     {
         private BitmapSource? _colorBitmap;
 
-        public Color SelectedColor { get; private set; }
+        public Color SelectedColor { get; set; }
 
         public BubbleColorPickerWindow()
         {
