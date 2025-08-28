@@ -1,24 +1,30 @@
 ﻿using System.Windows.Media;
 
+
 namespace BubbleControlls.Models
 {
     public class BubbleTreeViewItem
     {
-        public event Action<BubbleTreeViewItem> ItemAdded;
-        public event Action<BubbleTreeViewItem> ItemRemoved;
-        public BubbleTreeViewItem(int id, string label)
-        {
-            ID = id;
-            Label = label;
-        }
+        public static readonly string ROOTKEY = "%_-$ROOT$-_%";
 
-        public int ID { get; set; } = -1;
-        public string Label { get; set; } = String.Empty;
+        public event Action<BubbleTreeViewItem>? ItemAdded;
+        public event Action<BubbleTreeViewItem>? ItemRemoved;
+
+        //public int ID { get; set; }
+        public string Key { get; set; }
+        public string Label { get; set; }
         public List<BubbleTreeViewItem> Children { get; set; } = new List<BubbleTreeViewItem>();
         public BubbleTreeViewItem? Parent { get; set; } = null;
         public bool IsExpanded { get; set; } = false;
         public bool IsExpandeable => Children.Count > 0;
         public Brush? CustomColor { get; set; } = null;
+
+        //public BubbleTreeViewItem(int id, string label)
+        public BubbleTreeViewItem(string key, string label)
+        {
+            Key = key;
+            Label = label;
+        }
 
         public void Add(BubbleTreeViewItem item)
         {
@@ -32,14 +38,14 @@ namespace BubbleControlls.Models
             ItemRemoved?.Invoke(item);
         }
 
-        public BubbleTreeViewItem? FindByID(int id)
+        public BubbleTreeViewItem? FindByID(string key)
         {
-            if (this.ID == id)
+            if (this.Key == key)
                 return this;
 
             foreach (var child in Children)
             {
-                var found = child.FindByID(id);
+                var found = child.FindByID(key);
                 if (found != null)
                     return found;
             }

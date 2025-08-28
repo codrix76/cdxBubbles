@@ -11,11 +11,14 @@ namespace BubbleControlls.ControlViews
     /// </summary>
     public partial class BubbleSwitch : UserControl
     {
-        public event Action<BubbleSwitch> Toggled;
-        public event Action<BubbleSwitch, MouseButtonEventArgs> Clicked;
-        public event Action<BubbleSwitch, MouseButtonEventArgs> RightClicked;
-        public event Action<BubbleSwitch> Selected;
+        public event Action<BubbleSwitch>? Toggled;
+        public event Action<BubbleSwitch>? Expanded;
+        public event Action<BubbleSwitch>? Colapsed;
+        public event Action<BubbleSwitch, MouseButtonEventArgs>? Clicked;
+        public event Action<BubbleSwitch, MouseButtonEventArgs>? RightClicked;
+        public event Action<BubbleSwitch>? Selected;
         #region Variablen
+        public string Key { get; set; }
         private BubbleVisualTheme _theme = BubbleVisualThemes.Standard();
         private bool _isSwitchable = true;
         private bool _isSwitched = false;
@@ -202,7 +205,7 @@ namespace BubbleControlls.ControlViews
             get => (FontStyle)GetValue(SwitchFontStyleProperty);
             set => SetValue(SwitchFontStyleProperty, value);
         }
-        
+
         #endregion
         public BubbleSwitch()
         {
@@ -214,6 +217,21 @@ namespace BubbleControlls.ControlViews
             OuterBorder.MouseLeftButtonUp += OuterBorder_MouseLeftButtonUp;
             OuterBorder.MouseRightButtonUp += OuterBorder_MouseRightButtonUp;
             InnerBorder.MouseLeftButtonUp += InnerBorder_MouseLeftButtonUp;
+            Key = "newSwitch";
+        }
+
+
+        public BubbleSwitch(string key)
+        {
+            InitializeComponent();
+            this.DataContext = this;
+            Loaded += (_, _) => {
+                Dispatcher.BeginInvoke(new Action(() => ToggleSwitch()));
+            };
+            OuterBorder.MouseLeftButtonUp += OuterBorder_MouseLeftButtonUp;
+            OuterBorder.MouseRightButtonUp += OuterBorder_MouseRightButtonUp;
+            InnerBorder.MouseLeftButtonUp += InnerBorder_MouseLeftButtonUp;
+            Key = key;
         }
 
         private void OuterBorder_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -236,6 +254,10 @@ namespace BubbleControlls.ControlViews
                 _isSwitched = !_isSwitched;
             ToggleSwitch();
             Toggled?.Invoke(this);
+            if (_isSwitched)
+                Expanded?.Invoke(this);
+            else
+                Colapsed?.Invoke(this);
         }
         #region Methods
         public void SwitchON()
@@ -268,17 +290,17 @@ namespace BubbleControlls.ControlViews
             FontStyle = FontStyles.Normal;
 
         }
-        public void ApplyTheme(BubbleVisualTheme theme)
+        public void ApplyTheme(BubbleVisualTheme? theme)
         {
             if (theme == null) return;
 
             // Farben
-            InnerBackground = theme.Background;
-            InnerBorderBrush = theme.Border;
+            InnerBackground = theme.Background ?? BubbleVisualThemes.Standard().Background!;
+            InnerBorderBrush = theme.Border ?? BubbleVisualThemes.Standard().Border!;
             InnerBorderThickness = theme.BorderThickness;
 
-            OuterBackground = theme.BackgroundBack;
-            OuterBorderBrush = theme.OuterBorderColor;
+            OuterBackground = theme.BackgroundBack ?? BubbleVisualThemes.Standard().BackgroundBack!;
+            OuterBorderBrush = theme.OuterBorderColor ?? BubbleVisualThemes.Standard().OuterBorderColor!;
             OuterBorderThickness = theme.OuterBorderThickness;
 
             Foreground = theme.Foreground;

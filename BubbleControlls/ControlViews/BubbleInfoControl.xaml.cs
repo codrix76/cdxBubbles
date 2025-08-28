@@ -17,24 +17,24 @@ namespace BubbleControlls.ControlViews
             Loaded += (_, _) => ApplyAllVisuals();
         }
 
-        public void ApplyTheme(BubbleVisualTheme theme)
+        public void ApplyTheme(BubbleVisualTheme? theme)
         {
             if (theme == null) return;
 
             // Farben
-            BackgroundBrush = theme.InfoBoxVisuals.InfoBackground;
+            BackgroundBrush = theme.InfoBoxVisuals.InfoBackground ?? BubbleVisualThemes.Standard().InfoBoxVisuals.InfoBackground!;
             BackgroundEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoEffectColor1);
 
-            OuterBorderBrush = theme.InfoBoxVisuals.InfoOuterBorderColor;
+            OuterBorderBrush = theme.InfoBoxVisuals.InfoOuterBorderColor ?? BubbleVisualThemes.Standard().InfoBoxVisuals.InfoOuterBorderColor!;
             OuterBorderEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoOuterBorderEffectColor1);
 
-            InnerBorderBrush = theme.InfoBoxVisuals.InfoBorder;
+            InnerBorderBrush = theme.InfoBoxVisuals.InfoBorder ?? BubbleVisualThemes.Standard().InfoBoxVisuals.InfoBorder!;
             InnerBorderEffectBrush = new SolidColorBrush(theme.InfoBoxVisuals.InfoInnerBorderEffectColor1);
 
-            Foreground = theme.InfoBoxVisuals.InfoForeground;
+            Foreground = theme.InfoBoxVisuals.InfoForeground ?? BubbleVisualThemes.Standard().InfoBoxVisuals.InfoForeground!;
 
             // Schrift
-            FontFamily = theme.FontFamily;
+            FontFamily = theme.FontFamily ?? BubbleVisualThemes.Standard().FontFamily!;
             FontSize = theme.FontSize;
             FontWeight = theme.FontWeight;
             FontStyle = theme.FontStyle;
@@ -60,7 +60,7 @@ namespace BubbleControlls.ControlViews
             }
 
             OuterBorder.BorderBrush = OuterBorderBrush;
-            InnerBorder.BorderBrush = InnerBorderBrush;
+            InnerBorder!.BorderBrush = InnerBorderBrush;
             UpdateBackgroundBrush(BackgroundBrush);
             InnerBorder.Opacity = BackgroundOpacity;
 
@@ -258,6 +258,7 @@ namespace BubbleControlls.ControlViews
             get => (double)GetValue(BackgroundOpacityProperty);
             set => SetValue(BackgroundOpacityProperty, value);
         }
+
         public static readonly DependencyProperty ForegroundProperty =
             DependencyProperty.Register(nameof(Foreground), typeof(Brush), typeof(BubbleInfoControl),
                 new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(30, 30, 30)), FrameworkPropertyMetadataOptions.AffectsRender));

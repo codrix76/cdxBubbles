@@ -13,12 +13,12 @@ namespace BubbleControlls.ControlViews
     public partial class BubbleContextMenu : UserControl
     {
         #region Variablen
-        private bool _isLoaded;
-        private readonly BubbleMenuViewModel _viewModel = new();
-        private readonly double _defaultMargin = 10;
-        private double _menuWidth;
-        private double _menuHeight;
-        private Point _menuCenter = new(0, 0);
+        //private bool _isLoaded;
+        //private readonly BubbleMenuViewModel _viewModel = new();
+        //private readonly double _defaultMargin = 10;
+        //private double _menuWidth;
+        //private double _menuHeight;
+        //private Point _menuCenter = new(0, 0);
         private readonly BubbleRingControl _menuRing = new();
         private List<BubbleMenuItem> _menuItems = new List<BubbleMenuItem>();
 

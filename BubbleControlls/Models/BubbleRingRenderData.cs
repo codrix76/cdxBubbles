@@ -14,8 +14,8 @@ public class BubbleRingRenderData
     public double StartAngleDeg { get; set; }
     public double EndAngleDeg { get; set; }
     public double RotationDeg { get; set; }
-    public Brush Fill { get; set; }
-    public Brush Border { get; set; }
+    public Brush Fill { get; set; } = new SolidColorBrush();
+    public Brush Border { get; set; } = new SolidColorBrush();
     public int BorderOpacity { get; set; }
     public int FillOpacity { get; set; }
     public int RingOpacity { get; set; }

@@ -28,18 +28,18 @@ namespace BubblesDemo
             infoBox.Topmost = true;
             Loaded += (_, _) => { SetDefaults(); };
             //bblTree.ApplyTheme(BubbleVisualThemes.Dark());
-            bblTree.SwitchFontSize = 11;
-            bblTree.SwitchHeight = 25;
-            bblTree.Indentation = 20;
-            bblTree.VerticalSpacing = 2;
+            //bblTree.SwitchFontSize = 11;
+            //bblTree.SwitchHeight = 25;
+            //bblTree.Indentation = 20;
+            //bblTree.VerticalSpacing = 2;
             //bblTree.NodeClick += BblTree_NodeClick;
             //bblTree.NodeExpanded += BblTree_NodeExpanded;
             //bblTree.NodeCollapsed += BblTree_NodeCollapsed;
-            bblTree.NodeRightClick += BblTree_NodeRightClick;
-            bblTree.SelectionChanged += BblTree_SelectionChanged;
-            bblTree.IsMultiSelect = true;
+            //bblTree.NodeRightClick += BblTree_NodeRightClick;
+            //bblTree.SelectionChanged += BblTree_SelectionChanged;
+            //bblTree.IsMultiSelect = true;
             BblSwitch.MouseRightButtonDown += BblSwitch_MouseRightButtonDown;
-            CreateTree();
+            //CreateTree();
 
             
         }
@@ -59,13 +59,13 @@ namespace BubblesDemo
             cm.ShowAt(screenPos, menu);
         }
 
-        private void BblTree_SelectionChanged(BubbleTreeView obj)
-        {
-            foreach(var itm in obj.SelectionList)
-            {
-                Debug.WriteLine(itm.Label);
-            }
-        }
+        //private void BblTree_SelectionChanged(BubbleTreeView obj)
+        //{
+        //    foreach(var itm in obj.SelectionList)
+        //    {
+        //        Debug.WriteLine(itm.Label);
+        //    }
+        //}
 
         #region ContextMenu
         private List<BubbleMenuItem> CreateContextMenu()
@@ -165,115 +165,114 @@ namespace BubblesDemo
         #endregion
         #region BubbleTree
 
-        private void BblTree_NodeRightClick(BubbleTreeViewItem obj, MouseButtonEventArgs e)
-        {
-            BubbleMsgBox.Show(
-            $"Objekt: {obj.Label}",
-            "Right-Click",
-            MessageBoxButton.OK
-            );
-            BubbleTreeViewItem newItem = new BubbleTreeViewItem(9999, "new Node");
-            bblTree.AddChildTo(obj, newItem);
-        }
+        //private void BblTree_NodeRightClick(BubbleTreeViewItem obj, MouseButtonEventArgs e)
+        //{
+        //    BubbleMsgBox.Show(
+        //    $"Objekt: {obj.Label}",
+        //    "Right-Click",
+        //    MessageBoxButton.OK
+        //    );
+        //    BubbleTreeViewItem newItem = new BubbleTreeViewItem(9999, "new Node");
+        //}
 
-        private void BblTree_NodeCollapsed(BubbleTreeViewItem obj)
-        {
-            BubbleMsgBox.Show(
-            $"Objekt: {obj.Label}",
-            "Node-Collapsed",
-            MessageBoxButton.OK
-            );
-        }
+        //private void BblTree_NodeCollapsed(BubbleTreeViewItem obj)
+        //{
+        //    BubbleMsgBox.Show(
+        //    $"Objekt: {obj.Label}",
+        //    "Node-Collapsed",
+        //    MessageBoxButton.OK
+        //    );
+        //}
 
-        private void BblTree_NodeExpanded(BubbleTreeViewItem obj)
-        {
-            BubbleMsgBox.Show(
-            $"Objekt: {obj.Label}",
-            "Node-Expanded",
-            MessageBoxButton.OK
-            );
-        }
+        //private void BblTree_NodeExpanded(BubbleTreeViewItem obj)
+        //{
+        //    BubbleMsgBox.Show(
+        //    $"Objekt: {obj.Label}",
+        //    "Node-Expanded",
+        //    MessageBoxButton.OK
+        //    );
+        //}
 
-        private void BblTree_NodeClick(BubbleTreeViewItem obj)
-        {
-            BubbleMsgBox.Show(
-            $"Objekt: {obj.Label}",
-            "Node-Click",
-            MessageBoxButton.OK
-            );
-        }
-        public void CreateTree()
-        {
-            BubbleTreeViewItem root = new BubbleTreeViewItem(-1, "Root");
-            //BubbleTreeViewItem item1 = new BubbleTreeViewItem(1,"Parent 01");
-            //item1.Add(new BubbleTreeViewItem(3, "Child 01.01"));
-            //item1.Add(new BubbleTreeViewItem(4, "Child 01.02"));
-            //BubbleTreeViewItem item2 = new BubbleTreeViewItem(2,"Parent 02");
-            //item2.Add(new BubbleTreeViewItem(5, "Child 02.01"));
-            //item2.Add(new BubbleTreeViewItem(6, "Child 02.02"));
-            //root.Add(item1);
-            //root.Add(item2);
-            root = GenerateNode("root", 6);
-            root.ID = -1;
-            bblTree.Root = root;
+        //private void BblTree_NodeClick(BubbleTreeViewItem obj)
+        //{
+        //    BubbleMsgBox.Show(
+        //    $"Objekt: {obj.Label}",
+        //    "Node-Click",
+        //    MessageBoxButton.OK
+        //    );
+        //}
+        //public void CreateTree()
+        //{
+        //    BubbleTreeViewItem root = new BubbleTreeViewItem(-1, "Root");
+        //    //BubbleTreeViewItem item1 = new BubbleTreeViewItem(1,"Parent 01");
+        //    //item1.Add(new BubbleTreeViewItem(3, "Child 01.01"));
+        //    //item1.Add(new BubbleTreeViewItem(4, "Child 01.02"));
+        //    //BubbleTreeViewItem item2 = new BubbleTreeViewItem(2,"Parent 02");
+        //    //item2.Add(new BubbleTreeViewItem(5, "Child 02.01"));
+        //    //item2.Add(new BubbleTreeViewItem(6, "Child 02.02"));
+        //    //root.Add(item1);
+        //    //root.Add(item2);
+        //    root = GenerateNode("root", 6);
+        //    root.ID = -1;
+        //    bblTree.Root = root;
 
-        }
-        public void CreateDynamicTestTree(int deep = 2)
-        {
-            int idCounter = 1;
+        //}
+        //public void CreateDynamicTestTree(int deep = 2)
+        //{
+        //    int idCounter = 1;
 
-            BubbleTreeViewItem root = new BubbleTreeViewItem(-1, "Root");
+        //    BubbleTreeViewItem root = new BubbleTreeViewItem(-1, "Root");
 
-            for (int p = 1; p <= 2; p++) // Zwei Parents
-            {
-                var parent = new BubbleTreeViewItem(idCounter++, $"Parent {p:D2}");
+        //    for (int p = 1; p <= 2; p++) // Zwei Parents
+        //    {
+        //        var parent = new BubbleTreeViewItem(idCounter++, $"Parent {p:D2}");
 
-                for (int c = 1; c <= 3; c++) // Erste Ebene Children
-                {
-                    var child = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}");
+        //        for (int c = 1; c <= 3; c++) // Erste Ebene Children
+        //        {
+        //            var child = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}");
 
-                    for (int gc = 1; gc <= 3; gc++) // Zweite Ebene (Grandchildren)
-                    {
-                        var grandChild = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}.{gc:D2}");
-                        for (int ggc = 1; gc <= 3; gc++) // Zweite Ebene (Grandchildren)
-                        {
-                            var grandGChild = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}.{gc:D2}.{ggc:D2}");
-                            grandChild.Add(grandGChild);
-                        }
-                        child.Add(grandChild);
-                    }
+        //            for (int gc = 1; gc <= 3; gc++) // Zweite Ebene (Grandchildren)
+        //            {
+        //                var grandChild = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}.{gc:D2}");
+        //                for (int ggc = 1; gc <= 3; gc++) // Zweite Ebene (Grandchildren)
+        //                {
+        //                    var grandGChild = new BubbleTreeViewItem(idCounter++, $"Child {p:D2}.{c:D2}.{gc:D2}.{ggc:D2}");
+        //                    grandChild.Add(grandGChild);
+        //                }
+        //                child.Add(grandChild);
+        //            }
 
-                    parent.Add(child);
-                }
+        //            parent.Add(child);
+        //        }
 
-                root.Add(parent);
-            }
+        //        root.Add(parent);
+        //    }
 
-            bblTree.Root = root;
-        }
+        //    bblTree.Root = root;
+        //}
 
-        private BubbleTreeViewItem GenerateNode(string name, int depthLeft)
-        {
-            var node = new BubbleTreeViewItem(_nodeID, name);
-            int p = _nodeID;
-            if (depthLeft > 0)
-            {
-                int childCount = _random.Next(1, 6); // 1–5 Kinder
+        //private BubbleTreeViewItem GenerateNode(string name, int depthLeft)
+        //{
+        //    var node = new BubbleTreeViewItem(_nodeID, name);
+        //    int p = _nodeID;
+        //    if (depthLeft > 0)
+        //    {
+        //        int childCount = _random.Next(1, 6); // 1–5 Kinder
 
-                for (int i = 0; i < childCount; i++)
-                {
-                    _nodeID++;
-                    var child = GenerateNode($"Node: {_nodeID}, P:{p}", depthLeft - 1);
-                    //child.CustomColor = new SolidColorBrush(HeatValueToColor(DoubleToByte(_random.NextDouble() * 100.0)));
-                    node.Add(child);
-                }
-            }
-            else
-            {
-                //node.CustomColor = new SolidColorBrush(HeatValueToColor(DoubleToByte(_random.NextDouble() * 100.0)));
-            }
-            return node;
-        }
+        //        for (int i = 0; i < childCount; i++)
+        //        {
+        //            _nodeID++;
+        //            var child = GenerateNode($"Node: {_nodeID}, P:{p}", depthLeft - 1);
+        //            //child.CustomColor = new SolidColorBrush(HeatValueToColor(DoubleToByte(_random.NextDouble() * 100.0)));
+        //            node.Add(child);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        //node.CustomColor = new SolidColorBrush(HeatValueToColor(DoubleToByte(_random.NextDouble() * 100.0)));
+        //    }
+        //    return node;
+        //}
 
         public Color HeatValueToColor(byte value)
         {

@@ -22,6 +22,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <controlViews:BubbleSwitch
+            Key="Demo"
             x:Name="BblSwitch" Grid.Row="0"
             Width="110" HorizontalAlignment="Center"/>
         <Button x:Name="DemoBtn"
@@ -35,10 +36,6 @@
                 Width="300" Height="300"
                 Margin="2"
                 BorderBrush="Gray" BorderThickness="1">
-            <ScrollViewer >
-                <controlViews:BubbleTreeView 
-                    x:Name="bblTree"/>
-            </ScrollViewer>
         </Border>
         <Button x:Name="DemoColor"
             Grid.Column="2" Grid.Row="0"

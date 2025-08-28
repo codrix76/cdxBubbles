@@ -1,69 +1,59 @@
-﻿using System.Data.Common;
-
-namespace BubbleControlls.Models;
+﻿namespace BubbleControlls.Models;
 
 public class LocalTreeViewSource : ITreeViewDataSource
 {
-    private BubbleTreeViewItem _root;
+    private BubbleTreeViewItem _root = new BubbleTreeViewItem(BubbleTreeViewItem.ROOTKEY, "Root");
 
     public LocalTreeViewSource()
     {
-        _root = new BubbleTreeViewItem(0, "Root");
-    }
-    public LocalTreeViewSource(BubbleTreeViewItem root)
-    {
-        _root = root;
+        _root.IsExpanded = true;
     }
 
-    public BubbleTreeViewItem GetRoot()
-    { return _root; }
-
-    public List<BubbleTreeViewItem> GetChildren(int itemID)
+    public List<BubbleTreeViewItem> GetRoot()
     {
-        if (itemID == 0)
-            return _root.Children;
-
-        BubbleTreeViewItem? item = _root.FindByID(itemID);
-        if (item == null) return new();
-        return item.Children;
+        return _root.Children;
+    }
+    public void SetRoot(List<BubbleTreeViewItem> root)
+    {
+        _root.Children.AddRange(root);
+    }
+    public List<BubbleTreeViewItem> GetChildren(string key)
+    {
+        var item = _root.FindByID(key);
+        return item?.Children ?? new List<BubbleTreeViewItem>();
     }
 
-    public int GetLevel(int itemID)
+    public BubbleTreeViewItem? FindByID(string key)
+        => _root.FindByID(key);
+
+    /// <summary>
+    /// Sucht den Index des Vorfahren, der direktes Kind der Super-Root ist.
+    /// </summary>
+    public int GetParentIndex(string key)
     {
-        BubbleTreeViewItem? item=  _root.FindByID(itemID);
-        if (item == null) return 0;
-        return BubbleTreeViewItem.GetLevel(item);
-    }
+        var current = _root.FindByID(key);
+        if (current == null) return -1;
 
-    public BubbleTreeViewItem? FindByID(int itemID)
-    {
-        return _root.FindByID(itemID);
-    }
-
-    public int GetParentIndex(int itemID)
-    {
-        BubbleTreeViewItem? item = _root.FindByID(itemID);
-        if (_root == null || item == null)
-            return -1;
-
-        var current = item;
-
-        // Hochlaufen bis direkt unter der Root
-        while (current != null && current.Parent != _root)
-        {
+        while (current != null && current.Parent != null && current.Parent != _root)
             current = current.Parent;
-        }
 
         if (current?.Parent == _root)
-        {
             return _root.Children.IndexOf(current);
-        }
 
-        return -1; // kein gültiger Root-Child-Vorfahre
+        return -1;
     }
-    public void SetExpanded(int itemID, bool expanded)
+
+    public string GetRootParentKey(string key)
     {
-        BubbleTreeViewItem? item = _root.FindByID(itemID);
-        if (item != null) item.IsExpanded = expanded;
+        var current = _root.FindByID(key);
+        if (current == null) return "";
+
+        while (current != null && current.Parent != null && current.Parent != _root)
+            current = current.Parent;
+
+        if (current != null && (current.Parent == null || current.Parent == _root))
+            return current.Key;
+
+        return "";
     }
 }
